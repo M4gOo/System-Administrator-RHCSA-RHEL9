@@ -1,0 +1,32 @@
+
+
+console  when the computer linux boot and the OS is loading showing a lot text.
+
+virtual terminal Linux has booted press Ctrl + ALT + F2 
+
+terminal emulator - linux installed in your local machine and you want to type a command you open a teminal emulator
+
+to connect a remote server with gui interface is slightly tricky. Doesnt have standards. Can use different versios of VNC (this case need to download vnc client - vnc viewer)
+
+ssh
+ssh daemon running on the server
+ssh client on the user
+
+============== linux acc ==============
+uid
+info in /etc/passwd
+gid
+group -> /etc/group
+
+id <username> -> users has username,uid,gid, home dir, shell /bin/sh
+
+superuser acc = root
+uid=0
+
+systemacc
+uid <100 or between 500-1000
+usually no home dir, if they have it is not create under /home. Example ssh 
+
+service acc
+they are like the same as systemacc. Example nginx
+
