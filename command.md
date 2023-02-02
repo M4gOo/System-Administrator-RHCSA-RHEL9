@@ -41,3 +41,7 @@ under /etc/sudoers  for users to run specific commands: user localhost=/usr/bin/
  mkdir and subdirectories ( -p flag)
   mkdir -p /tmp/1/2/3/4/5/6/7/8/9
   
+  
+============= List, set, and change standard ugo/rwx permissions
+
+  
