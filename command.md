@@ -38,5 +38,6 @@ under /etc/sudoers  for users to run specific commands: user localhost=/usr/bin/
   rm -r to delete directories
   
   
-  
+ mkdir and subdirectories ( -p flag)
+  mkdir -p /tmp/1/2/3/4/5/6/7/8/9
   
