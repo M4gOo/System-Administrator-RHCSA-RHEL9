@@ -1,0 +1,41 @@
+
+HARD LINKS ===================================================
+
+stat /home/user/picture.jpg
+it will show the inode. Inode remember all the pieces are store and keeps track like permissions, when modified, etc
+links. usually you have one link which it will link the absolute path file to the inode
+
+in case for example another user want to see the picture, you dont need copy and paste. This saves resource storage
+
+ln path_to_target_file path_to_link_file
+path_to_target_file - file you wnat to link
+path_to_link_file - name of the new directory you wnat the pictures be copied
+
+ln /home/user/Pictures/picture.jpg /home/new_user/Pictures/picture.jpg
+ln /tmp/hlink /home/bob/hlink
+
+if the user delete his file the new user still can have access to the pictures
+
+limitations
+  only for files, not directories
+  only link on the same file system
+  make sure has right permissions, the example abore we might add the user and new_user to the same group ( useradd -a -G family user ,  useradd -a -G family new_user)
+  
+  
+  
+ SOFT LINKS ===================================================
+ 
+ soft link points to a path, like a shortcut
+ 
+ ln -s /home/user/Pictures/picture.jpg /home/user/Desktop/pictures_shortcut.jpg
+  ln -s /tmp /home/bob/link_to_tmp
+ 
+ when you list ls -l it will showw the " L " at the beginning like:  lrwx------
+ 
+ can use the command below to check the path link
+ readlink pictures_shortcut.jpg
+ 
+ if someone does change can break the link and it will be show in red when listed. to tackle that use relative paths to direct to the file and not the file itself, because if someone delete it wont work the link
+ 
+ can soft link files, directories, can be in different file systems
+ 
