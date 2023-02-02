@@ -20,3 +20,23 @@ under /etc/sudoers  for users to run specific commands: user localhost=/usr/bin/
  info <command>, --help; man; man man; man 1 printf, apropos (in case I forgot the name of the command, search in the man pages; in case it is new VM run sudo mandb)
  apropos -s 1,8 <wildcard>
   check manuals programs packages installed on the system /usr/share/doc
+
+  ls -alh 
+  shows bytes of the files
+  
+ absolute path always start with the /
+  relative example you are /home/user and want to move to /var/log -> cd /var/log
+  
+  when copy it is a good practice to terminate with / whne it is directory
+  cp file.txt dir/
+  cp file.txt dir ->this dir could be a file
+  cp -r (recursive)
+  cp -r Copy/ Paste/  with the paste dir already exist it will be under Paste/ this Paste/Copy/files and dir
+                      with the paste dir doesnt exist it will be under Paste/ this Paste/files and dir
+  when use move command mv, doesnt need to use the flag -r
+  
+  rm -r to delete directories
+  
+  
+  
+  
