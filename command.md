@@ -44,4 +44,32 @@ under /etc/sudoers  for users to run specific commands: user localhost=/usr/bin/
   
 ============= List, set, and change standard ugo/rwx permissions
 
+  can only change to a group that the user belongs to
+  change group
+  chgrp <group_name> dir/file
+  
+  groups that user is part of
+  groups
+  
+  change owner
+  chown
+  sudo chown <user> <file/dir>
+  
+  to change group and owner at same time
+  sudo chown user:group <file/dir>
+  
+  when directories has R means they can be listed; W can create files/subdir; X you be able to use cd
+  
+ the system linux allow permitions from left to right
+    if even the owner has only read permissions and the user belongs to a group which can read and write. The user wouldnt be able to write in the dir/file
+      -r--rw----
+    but if another user who belong the group, login and try  to write it will be able to do that
+  
+  to change permissions
+  chmod <permissions> file/dir
+  
+  
+  SUID, SGID, and sticky bit
+
+  
   
