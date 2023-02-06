@@ -199,3 +199,16 @@ suid when is set that whenever the file is executed it is going to be executed a
   
   
   
+  ================== Analyze text using basic regular expressions  ================================================
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216956502-76314052-048e-42f0-b610-242cafc1136a.png)
+
+  ![image](https://user-images.githubusercontent.com/57456345/216956665-04e642ec-ca3b-41ec-bec9-235e944bdcdc.png)
+
+  ![image](https://user-images.githubusercontent.com/57456345/216956874-bff42496-cf91-4090-9fff-cb1346826c21.png)
+
+  
+  
+  
+  
+  
