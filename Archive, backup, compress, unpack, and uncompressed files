@@ -1,0 +1,18 @@
+
+create an archive requires 3 steps
+  Archiving - pack those files and dir into a single file backup.tar
+  Compress the archive (makes smaller size of the original) backup.tar.gz
+  Copy where you would keep your backup
+  
+before extract always check the content and the paths  
+archive also store permissions and ownership info
+  
+  achive file = tarball
+  tar tf archive.tar     list content archive
+  tar cf archive.tar file1     create a tar file with content to archive 
+  tar rf archive.tar file1    add a file to tar archive
+  tar cf archive.tar Pictures/  create a tar file with entirely directory content to archive
+  tar cf archive.tar /home/user/Pictures/  the content it be save with the path /home/user/Pictures/
+  tar xf archive.tar      it will extract in our current dir
+  tar xf archive.tar -C /tmp/      it will extract in the path given
+  sudo tar xf archive.tar -C /tmp/      it will extract in the path given and the ownership and permission it will be preserved.
