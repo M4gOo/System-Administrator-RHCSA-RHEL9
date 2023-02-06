@@ -180,4 +180,18 @@ suid when is set that whenever the file is executed it is going to be executed a
  sdiff -y file1 file2  (side by side)  
   
   
-                             
+ LESS command has more features than MORE command
+  less /var/log/text.log     (arrow keys for up and down; search function /string  then press N for next instance --i for sensitive  go back instance shift+N)    
+  
+  more /var/log/text.log   (use space to move pages)
+  
+  vim text.txt
+  use /search_string\c     \c case sensitive   
+  to coppy the line yy and paste p
+  to cut is dd
+  
+  
+  ==================== GREP ===========================
+  
+  
+  
