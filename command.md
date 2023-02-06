@@ -158,7 +158,7 @@ suid when is set that whenever the file is executed it is going to be executed a
   
   ![image](https://user-images.githubusercontent.com/57456345/216945745-dc02349a-2708-4bd5-a53a-ff23b653bc9d.png)
 
-  cut -d ' ' -f 1 file.txt   -> first column that appears on each line
+  cut -d ' ' -f 1 file.txt    first column that appears on each line
   output: ravi
           mark
           jon
@@ -192,9 +192,13 @@ suid when is set that whenever the file is executed it is going to be executed a
   
   
   ==================== GREP ===========================
+  
   grep -i 'string' /path-file   i case sensitive
+  
   grep -r 'string' /path         r recursive
+  
   grep -w 'string' /path         w match the only word
+  
   grep -o 'string' /path         o output it will show only the word
   
   
