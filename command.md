@@ -192,6 +192,10 @@ suid when is set that whenever the file is executed it is going to be executed a
   
   
   ==================== GREP ===========================
+  grep -i 'string' /path-file   i case sensitive
+  grep -r 'string' /path         r recursive
+  grep -w 'string' /path         w match the only word
+  grep -o 'string' /path         o output it will show only the word
   
   
   
