@@ -187,8 +187,11 @@ suid when is set that whenever the file is executed it is going to be executed a
   
   analyze files, see the differences between them 
  diff file1 file2
+  
  diff -c file1 file2 
+  
  diff -y file1 file2  (side by side)
+  
  sdiff -y file1 file2  (side by side)  
   
   
@@ -222,6 +225,73 @@ suid when is set that whenever the file is executed it is going to be executed a
   ![image](https://user-images.githubusercontent.com/57456345/216956665-04e642ec-ca3b-41ec-bec9-235e944bdcdc.png)
 
   ![image](https://user-images.githubusercontent.com/57456345/216956874-bff42496-cf91-4090-9fff-cb1346826c21.png)
+
+  . it will match any one character; can use -wr for full word and not partil word, to match a DOT use \. (this is be a regular period)
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216957734-4e5ded0d-1234-41e4-888b-f63a7711f8f9.png)
+
+  ![image](https://user-images.githubusercontent.com/57456345/216957893-6808a477-c73d-4d49-8656-c55dc95c52e4.png)
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216958105-7c960a30-be35-4b06-8a15-fe3a9be550ff.png)
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216958391-b90a531e-8721-4bfa-8677-e96b6e7b123a.png)
+  
+  need to use plus symbol to avoid these output, the * lets previous character exist one or more times, but also 0 times
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216958629-5ad6c84b-10b1-4099-92ba-66351f96ce8a.png)
+  
+  to avoid to use \ and get confuse with \. and so on. It is good practice to use grep -E or egrep
+
+  ![image](https://user-images.githubusercontent.com/57456345/216959006-eacaeddc-1204-454c-a58c-c4beedc667bf.png)
+
+  ![image](https://user-images.githubusercontent.com/57456345/216959478-d6c24dd7-8370-4b4b-991d-91a310010dfa.png)
+
+  to find at least 3 zeros  egrep -r '0{3,}' /path/ 
+  
+  exactly 3 zeros           egrep -r '0{3}' /path/ 
+  
+  range of zeros           egrep -r '0{3,5}' /path/ 
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216960615-f9a9d734-519e-4806-817d-dd4b76bafa4a.png)
+  
+  match one thing or the other 
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216960969-14b6608b-04ad-4ec9-9400-fff1920de129.png)
+
+  ![image](https://user-images.githubusercontent.com/57456345/216961104-6e90e5ff-b0de-4c25-bbfa-ec40be1c8de9.png)
+
+  Ranges or Sets []
+  [a-z] [0-9] - ranges
+  [abz954]    - sets
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216961472-f7992cc3-1345-4af3-990b-66d7d76116b7.png)
+
+  ()   
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216962486-14c135b4-8a71-457d-be84-b7a7e9b56229.png)
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216962535-7fc7afb2-f101-4282-a774-a01c4f8de126.png)
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216962984-d88e3106-90de-43b2-88e4-9934cc9778c1.png)
+  
+  ![image](https://user-images.githubusercontent.com/57456345/216963365-b01debf3-d9df-422a-933e-488f98b1dfcb.png)
+
+  
+  
+
+
+  
+
+  
+  
+  
+
+  
+  
+  
+
+
+  
 
   
   
