@@ -70,6 +70,84 @@ under /etc/sudoers  for users to run specific commands: user localhost=/usr/bin/
   
   
   SUID, SGID, and sticky bit
-
+suid when is set that whenever the file is executed it is going to be executed as the user ID of the owner of the file
+  chmod 4664 file.txt  -> -rwSrw-r---   file.txt  means only the suid are set and the X (execute permission) not set
+  chmod 4764 file.txt  -> -rwsrw-r---   file.txt means the X and the suid are set
+  
+  SGID ----------
+  chmod 2664 file.txt  -> -rw-rwSr--- 
+  
+  SUID + SGID
+    chmod 6664 file.txt  -> -rwSrwSr--- 
+  
+  find files which has suid or sgid
+  find / -perm /6000    -> it will find all suid, sgid and suid+sgid
+  find / -perm /4000
+  find / -perm /2000
+  
+  sticky bit
+  set on dir that are shared between people. This block other users to delete or rename dir that doesn't belong to them even they have permissions to delete, change names in your profile
+   chmod +t dir
+  chmod 1777 dir    drwxrwxrwt dir
   
   
+  ================== FIND ==================
+  
+  find /path -name file.txt
+  find /path -iname file.txt  -case sensitive
+  find -mmin        modified minute (modified means creation or editing a file) Modified means when the contens have been modified
+     find -mmin 5     5 min ago (if now is 11:00 it will find files in 10:55)
+    find -mmin -5     5 min ago (if now is 11:00 it will find files BETWEEN 10:55 until 11:00)
+  find -mmin +5     list files before 5 min ago (if now is 11:00 it will find files from 10:55 to the infinite 10:45, 10:30, 9:30, etc)
+  
+  find -mtime 0     search for files per days or past-24hours periods
+  0 past 24 hours
+  1 24h to 48h
+  
+  modified
+  find -cmin -5   modified last 5 minutes
+  
+  find -size
+  c bytes
+  k kilobytes
+  M megabytes
+  G gigabytes
+  
+  find -size 512k       = 512
+  find -size +512k      > 512
+  find -size -512k      < 512
+                             Find all files between 5mb and 10mb in the /usr directory
+                             sudo find /usr -type f -size +5M -size -10M
+             
+   find -perm 664       exactly perm
+   find -perm -664       find bearly perm  
+   find -perm -u=rw,g=rw,o=r       find bearly perm                          
+   find -perm /664       find files with any of these perm                          
+                             
+  find -name "f*" -size 512k      AND operator                     
+  find -name "f*" -o -size 512k      OR operator  
+  find -not -name "f*"              NOT operator
+ 
+  Find files/directories under /var/log/ directory that the group can write to, but others cannot read or write to
+   sudo find /var/log/ -perm -g=w ! -perm /o=rw                          
+  
+  
+ find file
+  find /path -type f                         
+  
+ 
+  
+  =========================  Compare and manipulate file content =======================================
+   tac file.txt   -> will see bottom to top  inside the file which is small
+  cat file.txt    -> top to bottom inside the file which is small
+  tail file.txt   ->  will see bottom to top  inside the file which is large, default is 10 lines
+  tail -n 20 file.txt ->  will see bottom to top  inside the file which is large, shows 20 lines
+  
+  
+  
+  
+  
+  
+  
+  
+                             
