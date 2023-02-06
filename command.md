@@ -139,18 +139,26 @@ suid when is set that whenever the file is executed it is going to be executed a
   
   =========================  Compare and manipulate file content =======================================
    tac file.txt   -> will see bottom to top  inside the file which is small
+  
   cat file.txt    -> top to bottom inside the file which is small
+  
   tail file.txt   ->  will see bottom to top  inside the file which is large, default is 10 lines
+  
   tail -n 20 file.txt ->  will see bottom to top  inside the file which is large, shows 20 lines
+  
   head file.txt   ->  will see top to bottom  inside the file which is large, default is 10 lines
+  
   head -n 20 file.txt ->  will see top to bottom   inside the file which is large, shows 20 lines
   
   
   sed 's/old_string/new_string/g' file.txt
+  
   s -> substitute
+  
   g -> global replace
   
    sed -i 's/old_string/new_string/g' file.txt
+  
   -i -> will edit the file, it will swap the strings
   
   
@@ -159,13 +167,17 @@ suid when is set that whenever the file is executed it is going to be executed a
   ![image](https://user-images.githubusercontent.com/57456345/216945745-dc02349a-2708-4bd5-a53a-ff23b653bc9d.png)
 
   cut -d ' ' -f 1 file.txt    first column that appears on each line
+  
   output: ravi
           mark
           jon
           ravi
           mary
+  
   d -> delimiter
+  
   ' ' -> words are separated by space, ',' words separated by comma
+  
   f -> fields we want extract
   
   
