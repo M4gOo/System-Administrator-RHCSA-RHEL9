@@ -150,6 +150,8 @@ suid when is set that whenever the file is executed it is going to be executed a
   
   head -n 20 file.txt ->  will see top to bottom   inside the file which is large, shows 20 lines
   
+  head -5 file.txt  ->  will see top to bottom   inside the file which is large, shows 5 lines
+  
   
   sed 's/old_string/new_string/g' file.txt
   
@@ -160,6 +162,18 @@ suid when is set that whenever the file is executed it is going to be executed a
    sed -i 's/old_string/new_string/g' file.txt
   
   -i -> will edit the file, it will swap the strings
+  
+  sed -i 's/disabled/enabled/gi'
+  
+  gi - ignore case sensitive
+  
+  Change all values enabled to disabled only from line number 500 to 2000.
+  
+   sed -i '500,2000s/enabled/disabled/g' file
+  
+  Replace all occurrence of string #%$2jh//238720//31223 with $2//23872031223 i
+  
+  sed -i 's~#%$2jh//238720//31223~$2//23872031223~g' file
   
   
   extract the name alone in the file
@@ -219,6 +233,10 @@ suid when is set that whenever the file is executed it is going to be executed a
   
   
   ================== Analyze text using basic regular expressions  ================================================
+  
+  https://regexr.com/
+  https://regexr.com/
+  
   
   ![image](https://user-images.githubusercontent.com/57456345/216956502-76314052-048e-42f0-b610-242cafc1136a.png)
 
