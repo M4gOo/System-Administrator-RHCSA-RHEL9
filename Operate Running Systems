@@ -40,4 +40,24 @@ sudo systemctl isolate rescue.target      (root permission, there will be more p
 
 
 Interrupt the boot process in order to gain access to a system ===========================================================
+When the PC is start, press down when you see the grub boot screen and chose one of the kernel and press E
+at the bottom type rd.break. When boot it will be in the emergency mode
+this command can help when you lost the root password on RHEL8
+mount -o remount rw /sysroot
+cd /sysroot
+chroot /sysroot
+passwd root
+touch /.autorelabel -hidden file in the root dir
+reboot
+exit
 
+on RHEL9
+When the PC is start, press down when you see the grub boot screen and chose one of the kernel and press E
+at the second line after r\o and before crashkernel
+change r\o to r\w
+ctrl + e - to go to end of line
+init=/bin/bash
+ctrl + x
+passwd (after reboot, in the terminal as root)
+touch /.autorelabel -hidden file in the root dir. this fix the SELinux config
+exec /sbin/init
