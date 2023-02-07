@@ -87,4 +87,75 @@ grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg - this is only for EFI
 sudo systemctl reboot
 
 
+Diagnose and manage processes ================================================================================================
+man ps   -then type /EXAMPLES
+
+ps a is different than ps -a
+
+ps will show programs laiched in our current terminal window or session
+
+ps aux -display all process in the machine. 
+        ax show all process
+        u list processes in a user oriented format (can see useful column like CPU and memory)
+        
+top
+
+ps <PID>
+
+ps u <PID>    cpu and memory
+
+ps -U <username>
+
+ps u -U <username>
+
+pgrep -a <process>
+
+
+niceness value, between -19 to 19, more negative more resource will be available
+
+nice -n 11 <process>    
+
+regular user can only assign nice number between 0 to 19
+
+ps l    will show the nice value in the column (NI)
+
+to change the nice number when the process is up
+sudo renice <nice_value> <PID>
+
+to give signals to the programs
+
+list of signals 
+kill -L
+
+sudo kill -SIGHUP <PID>
+
+
+ctrl + Z -> background process. the process will be frozen
+fg        -> bring back to foreground
+
+
+to run in back ground use the &
+sleep 300&
+
+check commands in the bacckground  
+jobs  
+when you use the & and wants bring back use
+jobs command to see the programs are running and also the number then
+fg <select_the_number>
+
+if the job is stopped with ctrl+z  use the jobs command to check the number and then use
+bg <select_the_number>
+
+
+
+what files or dir resources using right now
+for example to see which files and dir bash process is currently using
+lsof
+ls - list
+of- open files
+
+lsof <PID>
+
+
+
 
