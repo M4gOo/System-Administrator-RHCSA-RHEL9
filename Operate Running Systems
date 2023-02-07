@@ -1,0 +1,43 @@
+
+
+
+Boot, reboot, and shutdown a system safely===================================================
+
+
+systemctl - system control
+
+sudo systemctl reboot
+sudo systemctl poweroff
+
+sudo systemctl reboot --force
+sudo systemctl poweroff --force
+
+to "press" reset button
+sudo systemctl reboot --force --force
+
+"unplug" the system
+sudo systemctl poweroff --force --force
+
+to schedule a time to reboot or/and shutdown
+sudo shutdown 02:00   (2am)
+sudo shutdown +15     in 15min shutdown
+sudo shutdown -r 02:00    reboot -r
+sudo shutdown -r +15      reboot in 15min
+sudo shutdown -r +1 'Shceduled restart to do an offline-backup of our database'  -  single quotes, message to tell the user a message before reboot/shutdown
+
+
+Boot or change system into different operating modes===================================================
+
+to check our default boot
+systemcl get-default
+graphical.target
+
+sudo systemctl set-default multi-user.target  
+sudo systemctl isolate graphical.target  (temporary gives a graphical prompt, after reboot back to the default you set to boot)
+sudo systemctl isolate emergency.target   (for troubleshooting, read permissions, few system are loaded). You must have root password
+sudo systemctl isolate rescue.target      (root permission, there will be more programs than emergency). You must have root password
+
+
+
+Interrupt the boot process in order to gain access to a system ===========================================================
+
