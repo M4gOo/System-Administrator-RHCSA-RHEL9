@@ -189,4 +189,23 @@ last
 lastlog  (ssh will see an IP addr)
 
 
+Manage tuning profiles ==========================================================================================================
+tuned is a service that monitors your system and optimizes the performance under certain workloads
+like High throughput systems, low latency and power saving
 
+when installed it will automatically selects what it believes is the best profile for youyr system
+if the High throughput is selected in a VM the virtual guest profile would get selected
+
+sudo yum install tuned
+sudo systemctl enable --now tuned
+tuned-adm --help
+tuned-adm active                show the active profile
+tuned-adm verify
+tuned-adm list
+tuned-adm profile balanced
+tuned-adm profile_info
+tuned-adm recommend
+tuned-adm auto_profile
+tuned-adm profile_mode
+tuned is located in /usr/lib/tuned
+/etc/tuned      main configuration custom profiles
