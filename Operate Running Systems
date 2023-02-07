@@ -61,3 +61,30 @@ ctrl + x
 passwd (after reboot, in the terminal as root)
 touch /.autorelabel -hidden file in the root dir. this fix the SELinux config
 exec /sbin/init
+
+
+Install, configure and troubleshoot bootloaders==========================================================================
+
+one of the programs that loads up when turn on the computer it is a bootloader, this is to start the linux kernel
+popular bootloader on linux is the GRUB
+
+problem with the bootloader so the OS wont boot at all. We can use an USB sticky and boot from there using troubleshooting
+then select - Rescue a CentOS Stream system 
+choose option 1
+chroot /mnt/sysroot
+grub2-mkconfig -o /boot/grub2/grub.cfg   - generate a GRUB conf file when you have BIOS
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg   - generate a GRUB conf file when you have EFI
+lsblk - need to set the grub at the beginning of the disk, first check the block device (check for sd or vd), look for /boot, /
+grub2-install /dev/sda
+dnf resinstall grub2-efi grub2-efi-modules shim (this is for EFI only)
+exit
+
+
+change GRUB conf
+sudo vim /etc/default/grub
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg - this is only for EFI
+sudo systemctl reboot
+
+
+
