@@ -1,0 +1,25 @@
+
+popular tool 
+
+      rsync = remote synchronization
+      remote server must have ssh daemon running
+      
+      rsync -a Pictures/ username@<IP>:/home/username/Picutres/
+      a: archive option, sync the all files, subdir, file perm and so on
+      if you to the reverse, it will create the dir in your local host
+      rsync -a username@<IP>:/home/username/Picutres/ Pictures/
+      can synch 2 locals dir instead one
+      rsynch -a Pictures/ Backup/Pictures/
+      
+      
+      backup entire disk or partition
+      it will take a photo (imaging) for every bit
+      before take this image you should unmount that disc or partition to make sure no data is being changed while you back it up
+      sudo dd if=/dev/vda of=diskimage.raw bs=1M status=progress
+      if= - it is the input file
+      of= - specify the name or path you would like to use for the output, wher you want to store that image
+      BS - block size (M -megabyte), this will speed up the process quite a bit
+      status - tells the dd to show you the progress
+      
+      to restore just swap  if and of. Dont run this on your virtaul machine otherwise it will overwrite your disc
+      sudo dd if=diskimage.raw of=/dev/vda bs=1M status=progress
