@@ -158,4 +158,35 @@ lsof <PID>
 
 
 
+Locate and analyze system log files ======================================================================================
+
+log daemon rsyslog is the popular in Linux that stores all logs in /var/log
+
+ls /var/log/
+
+grep -r 'ssh' /var/log/
+
+system logs
+/var/log/messages
+/var/log/
+
+tail -F /var/log/secure   (you can watch the log waiting for inputs; liveview)
+
+journalctl              ( > you can use to navigate)
+journalctl /bin/sudo
+journalctl -u sshd.service
+journalctl -e    (go to end to the journalctl)
+journalctl -F     (liveview)
+journalctl -p err              (use journalctl -p to list those using 2 TAB -> (err, alert, crit, debug, emerge, info, notice, warning, ...))
+journalctl -S 02:00   -S for specify time
+journalctl -S 01:00 -U 02:00            logs starte in 01:00 to 02:00
+journalctl -S  '2021-11-16 12:04:55'
+journalctl logs are reset after reboot/power off, to save create /var/log/journal/
+
+
+to see who is logged in the system
+last     
+lastlog  (ssh will see an IP addr)
+
+
 
