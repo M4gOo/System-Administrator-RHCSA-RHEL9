@@ -1,0 +1,22 @@
+
+transfer files securely
+
+scp
+
+scp username@<ip>:/remotepath /localpath
+it will copy file from remote to our local machine
+
+
+sftp it is part of ssh like scp. it os more interactive than scp
+
+sftp username@<ip>
+sftp> help  -> check the commands
+
+sftp> get file.txt  -> download remote to your local current dir 
+
+sftp> get -r Pictures/  -> download entirely dir
+
+sftp> put file10.txt  -> upload local to remote, can use the flag -r for entirely dir
+
+
+
