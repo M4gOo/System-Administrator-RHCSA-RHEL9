@@ -296,11 +296,26 @@ suid when is set that whenever the file is executed it is going to be executed a
 
   
   
+==================== input-output redirection =======================
 
+  ![image](https://user-images.githubusercontent.com/57456345/217201925-f2230aef-20ed-41b8-8abc-8ade0c0faaff.png)
 
   
-
+if you want to save the output with the errors as well
   
+ ![image](https://user-images.githubusercontent.com/57456345/217202171-15a00c7f-f145-4d70-8bed-2d1322065744.png)
+  
+  ![image](https://user-images.githubusercontent.com/57456345/217207367-b2d23284-4c74-4d11-9d2b-fed0208326c4.png)
+
+  this is good for shell script <<<
+  
+  ![image](https://user-images.githubusercontent.com/57456345/217207501-52ec20ab-3397-465f-a28e-aa77f98aa2aa.png)
+
+   ![image](https://user-images.githubusercontent.com/57456345/217209347-9a82fb44-29e1-4e9c-8195-d3a0a71394b7.png)
+
+                                                                                                                                                  
+                                                                                                                                                  
+                                                                                                                                                  
   
   
 
