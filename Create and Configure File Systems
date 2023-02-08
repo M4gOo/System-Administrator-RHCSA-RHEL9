@@ -78,6 +78,65 @@ sudo blkid /dev/vdb1
 
 
 
-Configure disk compression =======================================================================================
+Configure disk compression ==========================================================================================================
+
+virtual data optimizer - VDO
+helps with zero-block filtering; deduplication and compression
+
+zero-block filtering -look all the block and filters out block that contain only zeros (no data)
+
+deduplication - video check if data has been written to the disc already in another place
+
+compression - compress the data and packed together to save space on the disk
+
+
+sudo yum install vdo
+
+sudo systemctl enable --now vdo
+
+sudo vdo create --name=vdo_storage --device=/dev/vdb --vdoLogicalSize=10G
+
+sudo vdostats --human-readable
+
+sudo mkfs.xfs -K /dev/mapper/vdo_storage  
+
+sudo udevadm settle
+
+sudo vdostats --human-readable
+
+mount vdo devices
+
+sudo mkdir /mnt/myvdo
+
+sudo vi /etc/fstab
+      /dev/mapper/vdo_storage       /mnt/myvdo        xfs   _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service 0 0
+       _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service  -> mount options are required for all video devices to be mounted
+       at boot time, the service needs to be load before the device can be mounted again.
+
+df -h /mnt/myvdo
+
+saving space with VDO ---------------
+rhel9  
+sudo pvcreate /dev/vdb
+sudo vgcreate vdo_volume /dev/vdb
+sudo lvcreate --type vdo -n vdo_storage -L 100%FREE -V 10G vdo_volume/vdo_pool1
+sudo mkfs.xfs -K /dev/vdo_volume/vdo_storage     OR     sudo mkfs.ext4 -E nodiscard /dev/vdo_volume/vdo_storage 
+
+
+mounting lvmvdo devices
+
+manlvmvdo
+sudo mkdir /mnt/myvdo
+sudo vi /etc/fstab
+                   /dev/vdo_volume/vdo_storage       /mnt/myvdo        xfs   defaults    0 0
+sudo mount -a
+df -h /mnt/myvdo
+
+
+Manage layered storage ==========================================================================================================
+
+
+
+
 
 
