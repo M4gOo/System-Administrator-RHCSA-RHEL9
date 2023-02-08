@@ -111,3 +111,57 @@ pb - physical volumes
  sudo cryptsetup close mysecuredisk
  sudo cryptsetup luksFormat /dev/vde2        to encrypt part of the disk, only the partition
  sudo cryptsetup open /dev/vde2 mysecuredisk
+ 
+ 
+ Create and manage RAID devices ==========================================================================================
+ 
+ raid 0 - stripped, if we lose one disk all data will be lost
+ raid 1 - redundant, mirror array, clone all data in all storages
+ raid 5 - min 3 disk, has parity on each disk (used to rebuilt in lost of data), can lose 1 disc
+ radi 6 - 4 discs, can lose 2 discs and still recovers data
+ raid 10  - combination level 0 and 1
+ 
+ sudo mdadm --create /dev/md0 --level=0 --raid-devices=3 /dev/vdc /dev/vdd /dev/vde
+ sudo mkfs.ext4 /dev/md0
+ sudo mdadm --stop /dev/md0    to stop or deactivate an array
+ sudo mdadm --zero-superblock /dev/vdc /dev/vdd /dev/vde   to avoid the linux when bootup looking for arrays, if dont use this command linux will 
+ built the array 
+ sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/vdc /dev/vdd --spare-devices=1 /dev/vde      add spare disk in an array
+ add/remove more disks on the array /dev/md0
+ sudo mdadm --manage /dev/md0 --add /dev/vde 
+ sudo mdadm --manage /dev/md0 --remove /dev/vde 
+ cat /proc/mdstat             look the status of array
+ 
+ 
+ 
+ Create, manage and diagnose advanced file system permissions ================================================================
+ 
+ ACLs defines specific permissions for two or more users/groups
+ 
+ sudo setfacl --modify user:<username>:rw file.txt
+ when you use the command ls -l will see a + mark at the end
+ to check tha acl in the file
+ getfacl file.txt    the output shows the mask, which means the maximum permission we can get in that file
+ sudo setfacl --modify mask:r file.txt         to set/change a mask
+ sudo setfacl --remove user/group:<username/groupname> file.txt         to remove acl group/user
+sudo setfacl --recursive -m user:<username>:rw dir/             to set ucl dir and subdir/files as well
+sudo setfacl --recursive --remove user:<username> dir/             to remove ucl dir and subdir/files as well
+
+to only append to a file, this way you can not overwrite like
+echo hi > file1 it wont work
+run the command
+sudo chattr +a file1
+echo hi> file1   -> the output shows operation not permitted
+echo hi >> file1   -> it will work after run the program chattr
+sudo chattr -a file1     to remove the append
+sudo chattr +i file1   immutable cannot be change, even the root cannot do it. To remove instead +i type -i
+lsattr file1    to show the permissions set
+
+
+
+
+
+
+ 
+ 
+ 
