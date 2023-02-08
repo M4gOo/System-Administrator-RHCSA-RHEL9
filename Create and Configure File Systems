@@ -1,0 +1,83 @@
+
+centOS use xfs file system, but can use ext4
+
+sudo mkfs.xfs /dev/sdb1    
+sudo mkfs.ext4 /dev/sdb1
+
+sudo mkfs.xfs   - it will show many flags we can use
+xfs             - double TAB to check more utilities
+
+sudo tune2fs -l /dev/sdb2   -> this is to change in the ext4 filesystem
+
+man mkfs.ext4
+man mkfs.xfs
+
+
+Create, mount, unmount, and use vfat file systems =============================================================================
+
+vfat   virtual file allocation table
+is used primarily for compability reasons, every OS can read files from vfat file systems
+is ussed to share storage between windows and linux
+
+to change the partition type use
+sudo fdisk /dev/vdb       t for type; b for W95 FAT32
+sudo mkfs.vfat /dev/vdb1      up to 2GB in size
+sudo mkfs.vfat -F 32 /dev/vdb1     2GB or larger size, up to 16TB with 4096 byte per sector
+
+sudo mkdir /myvfat
+sudo mount /dev/vdb1 /myvfat/
+sudo vi /etc/fstab
+      /dev/vdb1 /myvfat vfat defaults 0 0
+sudo umount /myvfat/
+
+
+Configure systems to mount file systems at or during boot =======================================================================
+
+the files be accesible we must first mount
+first look at a dir often used for temporarily mounting random filesystem
+  ls /mnt/
+
+to mount we use
+sudo mount /dev/vdb1 /mnt/
+
+with the file system mounted then we can create file on it
+sudo touch /mnt/testfile
+
+to see the block is mounted
+lsblk
+
+to unmount a file system use
+sudo umount /mnt/
+
+/etc/fstab
+/dev/mapper/cs-root   /   xfs   defaults  0   0
+1 - tell linux to mount the file system contained in the partition
+2 - specify the mount point
+3 - filesystem type
+4 - mount options
+5 - tell the utility dump should back up the files (0 is disabled; 1 enabled) - it is not used nowadays
+6 - decide what to do when errors are detected  (0 filesystem shoud never be scanned for erros; 1 scan first for errors before - root filesystem
+; 2 scan after scan number 1 - other filesystems)
+
+man fstab
+
+sudo vim /etc/fstab
+/dev/vdb1/    /mybackups    xfs   defaults 0  2
+
+sudo systemctl daemon-reload
+
+mount swap partition when boot up
+sudo vim /etc/fstab
+/dev/mapper/cs-swap    none    swap   defaults 0  0
+/dev/vdb3   none      swap    defaults 0 0 
+
+
+you can use UUID, to avoid connect the storages in diferent connectors on motherboard, instead to use in fstab /dev/vdb1/
+you can check the uuid in
+sudo blkid /dev/vdb1
+
+
+
+Configure disk compression =======================================================================================
+
+
