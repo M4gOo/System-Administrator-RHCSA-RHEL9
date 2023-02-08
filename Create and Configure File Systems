@@ -135,6 +135,50 @@ df -h /mnt/myvdo
 
 Manage layered storage ==========================================================================================================
 
+Stratis is a local storage management tool. Manages pools of physical storage, helps simplify storage management
+central component of Stratis is the storage pool, they are created from one or more disks or partitions, after created volumes can be
+created on top of that
+
+stratis is similar to lvm, but is easier to configure, deploy and manage
+XFS file system
+dont use XFS tools to manage stratis filesystem
+
+sudo yum install stratisd stratis-cli
+
+sudo systemctl enable --now stratisd.service
+
+sudo stratis pool create my-pool /dev/vdc
+can use one more block  just specify in the command 
+sudo stratis pool create my-pool /dev/vdc /dev/vdd
+
+sudo stratis pool list              
+sudo stratis blockdev
+
+create a filesystem
+sudo stratis fs create my-pool myfs1                  myfs1 is the filesystem create on top of the pool
+sudo stratis fs
+
+sudo mkdir /mnt/mystratis
+sudo vi /etc/fstab 
+            /dev/stratis/my-pool/myfs1  /mnt/mystratis      xfs   x-systemd.requires=stratisd.service  0   0
+sudo mount -a
+sudo cp /home/username/file /mnt/mystratis
+
+to add storage
+sudo stratis pool add-data my-pool /dev/vdd
+sudo stratis pool
+
+filesystem snapshots
+sudo stratis fs snapshot my-pool myfs1 myfs1-snapshot
+sudo stratis fs   to check the snapshot
+
+to recover from snapshot
+rename the current statis file system 
+sudo stratis fs rename my-pool myfs1 myfs1-old
+next rename the snapshot to use the original filesystem name
+sudo stratis fs rename my-pool myfs1-snapshot myfs1
+sudo umount /mnt/mystratis
+sudo mount /mnt/mystratis
 
 
 
