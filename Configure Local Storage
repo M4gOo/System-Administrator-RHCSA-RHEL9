@@ -83,4 +83,31 @@ pb - physical volumes
  sudo lvresize --resizefs --size 3G <type_groupname>/partition1             to resize a logical volume with the filesystem, they CANNOT SHRINK
  
  
+ Create and configure encrypted storage ===================================================================================
  
+ plane mode - we need to open the device 
+ sudo cryptsetup --verify-passphrase open --type plain /dev/vde mysecuredisk
+ open is to open the device for reading encrypted data from it and writing encrypted data to it
+ mysecuredisk is the name of the disk you want
+ --verify-passphrase is to type twice the passwor,because the plane mode doesnt check if the password is not correct
+ 
+ it will be saved in /dev/mapper/mysecuredisk
+ act like a disk, which you can mount, create file system 
+ sudo mkfs.xfs /dev/mapper/mysecuredisk
+ sudo mount /dev/mapper/mysecuredisk /mnt
+ it is important to close otherwise can be readable in /dev/mapper
+ sudo umount /mnt
+ sudo cryptsetup close mysecuredisk
+ 
+ LUKS - need format the storage and open
+ another way to encypt and easier. Format the disk or partition we intend to use with linux encryption
+ sudo cryptsetup luksFormat /dev/vde
+ sudo cryptsetup luksChangeKey /dev/vde      change the password the encryption key
+ once formatted can open using
+ sudo cryptsetup open /dev/vde mysecuredisk
+ we dont need specify the type of encryption when we format a device with Luks that writes a very small block of data to the storage
+ called header
+ sudo mkfs.xfs /dev/mapper/mysecuredisk
+ sudo cryptsetup close mysecuredisk
+ sudo cryptsetup luksFormat /dev/vde2        to encrypt part of the disk, only the partition
+ sudo cryptsetup open /dev/vde2 mysecuredisk
