@@ -54,3 +54,33 @@ then
 sudo  mkswap /swap
 sudo swapon --verbose /swap
 
+
+Manage and configure LVM storage ===================================================================================
+lvm = logical volume manager
+free spaces in multiple portions of disk or if we have multiple discs that we would like to combine together
+
+man lvm
+check some commands can type
+vg in the terminal
+pv
+it will show a list of commands
+
+sudo dnf install lvm2
+pb - physical volumes
+ sudo lvmdiskscan
+ sudo pvcreate /dev/sdc /dev/sdd
+ sudo pvs
+ sudo vgcreate <type_any_name_for_groupname> /dev/sdc /dev/sdd
+ sudo vgextend  <type_groupname> /dev/sde          to extend the volume group
+ sudo vgs       list volumes groups
+ sudo vgreduce  <type_groupname>   /dev/sde   to remove a physical volume
+ sudo pvremove /dev/sde           to remove entirely from lvm
+ sudo lvcreate --size 2G --name partition1  <type_groupname>         need to add a partition, need to add a logical volume 
+ sudo lvresize --extents 100%VG  my_volume/partition1               to grow the logical volume after partition the disk
+ sudo lvresize --size 2G   my_volume/partition1               to shrink
+ sudo lvdisplay             check the lv and pv
+ sudo mkfs.xfs   /dev/<type_groupname>/partition1                to store files and dir on a logical volume we need a filesystem
+ sudo lvresize --resizefs --size 3G <type_groupname>/partition1             to resize a logical volume with the filesystem, they CANNOT SHRINK
+ 
+ 
+ 
