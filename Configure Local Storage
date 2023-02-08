@@ -158,6 +158,29 @@ sudo chattr +i file1   immutable cannot be change, even the root cannot do it. T
 lsattr file1    to show the permissions set
 
 
+Setup user and group disk quotas for filesystems ================================================================
+
+quotas is a simple way to limit how much storage space each user or group can use
+
+sudo dnf install quota
+sudo vim /etc/fstab
+      /dev/vdb1 /mybackups xfs ro,noexec 0 2
+      /dev/vdb1 /mybackups xfs defaults,usrquota,grpquota 0 2   ->add defaults,usrquota,grpquota
+ then save the file and reboot
+ sudo systemctl reboot
+ sudo quotacheck --create-files --user --group /dev/vdb2       it will create to files in a filesystem aquota.group and aquota.user
+ sudo quotaon /mnt    this is when you mount in /mnt
+ 
+ create a file with a specific size
+ fallocate --length 100M /path/dir/100Mfile
+ 
+ to edit quotas to a user
+ sudo edquota --user <username>
+ sudo quota --user <username>    if the user use more than capacity, it will have a grace period wwith that the user wont be able to write any data
+ sudo quota --edit-period        to edit the grace period, soft limit
+ sudo edquta --group <group_name>
+ 
+      
 
 
 
