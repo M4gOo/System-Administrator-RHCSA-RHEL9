@@ -1,1 +1,55 @@
 
+Scheduling jobs with cron --------------------------------------
+
+cat /etc/crontab 
+  can use  ',' this it will run multiple times like 15min and 45minutes -> 15,45
+  can use '-', set hours to 2-4 2am,3am,4am
+  can use '/', to specifies steps, every 4hours it will run
+  
+crontab -e 
+  edit he table of youyr current user
+  
+crontab -l   - to see user logged in cronjobs
+
+to edit as sudo just add usdo at the front
+sudo crontab -l   
+sudo crontab -e
+
+to add with different user
+sudo crontab -e -u <username>
+
+to remove ccronjob
+crontab -r
+sudo crontab -r -u <username>
+
+to run a sheel script in a cronjob dont add extension
+makes executable
+sudo chmod +rx /etc/cron.hourly/shellscript
+if want run hourly (/etc/cron.hourly) just move to this dir, using sudo 
+
+
+
+Scheduling jobs with anacron ------------------------------
+using anacron we dont care the time the job is going to run, just want to run daily, hourly,...
+
+to add a job need to edit the file
+sudo vim /etc/anacrontab
+
+can use anacron -T  to test the job
+
+
+Scheduling jobs with at ------------------------------
+just specify the time
+
+at 15:00
+at> /usr/bin/touch  file
+ctrl +d to save the job
+
+at 'December 01 2020'
+at '1:30 December 01 2020'
+at 'now + 30 minutes'     in 30 minutes from now
+
+atq   to see the jobs
+at -c <job_id>    to see what the jobs does
+
+atrm <job_id>     to remove the job
