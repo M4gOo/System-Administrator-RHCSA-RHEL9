@@ -1,0 +1,19 @@
+
+stream allow to designate multiple versions of software packages to group together as modules
+give greater flexibility and compatibility options
+module is a set of packages that normally get installed togehter
+
+available modules
+sudo yum module list
+
+install
+sudo yum module  install nodejs
+sudo yum module list --installed nodejs
+
+
+different version  (/name-of-profile), can get the name in module list
+sudo yum install module nodejs:14/development
+
+to change the module 
+sudo yum module reset nodejs
+sudo yum module  install nodejs:16/development
