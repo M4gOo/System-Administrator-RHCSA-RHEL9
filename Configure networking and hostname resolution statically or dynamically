@@ -161,5 +161,36 @@ sudo firewall-cmd --runtime-to-permanent       OR       sudo firewall-cmd --add-
 Statically route IP traffic ========================================================================================================
 
 
+it is good to specify the IP of your won machine
+sudo ip route add 192.168.0.0/24 via 10.11.12.100 dev enp0s3   dev-device name; enp0s3 is the name of interface
+sudo ip route add default via 10.0.0.100    gateway, if you you want to rech at 1.2.3.8 routing table is consulted and if no specific route is found
+then this data packet iis sent to the default route which is 10.0.0.100
+
+to delete
+sudo ip route del 192.168.0.0/24
+sudo ip route del via 10.0.0.100
+
+those routes added this way are temporary, to make permanent
+nmcli connection show
+nmcli connection modify <enp0s3> +ipv4.routes "192.168.0.0/24 10.0.0.100" 
+this means if you want to reach to 192.168.0.0/24 route all traffic through the device 10.0.0.100
+sudo nmcli device reapply <enp0s3>
+
+to confirm
+ip route show
+
+to remove
+home nmcli connection modify <enp0s3> -ipv4.routes "192.168.0.0/24 10.0.0.100"    use the - (minus)
+
+you can use the tool 
+sudo nmtui
+sudo nmcli device reapply <enp0s3>
+
+
+Configure time service clients ===============================================================================================================
+
+
+
+
 
 
