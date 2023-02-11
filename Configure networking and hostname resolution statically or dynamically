@@ -1,0 +1,66 @@
+
+if the host need to access the internet, it will need a gateway and DNS.
+Host wants to access google, it will ask DNS resolver what is the IP addr for google, then
+DNS gives the IP-google so the host can connect to the google. Now the host can talk to the gateway
+like I want this data to reach to IP-google, then the gateway sends it out from our network
+to another network until reach the destination
+
+dynamically  settings are from a service like DHCP
+manually we need to set up the IP
+
+first look for the name of the network
+ip link show      OR      ip l
+output it will be sometime like
+enp0s3:....
+
+different network interface, with more info
+ip addresses show    OR    ip a
+enp0s3:....
+inet IPv4
+
+network cards that use wire start with letter E, wirelless with W 
+
+IPv4 - 32bits
+IPv6 - 128bits
+
+routing table
+ip route show     OR    ip r
+ip addr via default gateway
+the output it will something like
+default via 192.168.1.1 dev enp0s3 ...
+the default getway it will be what is show above
+
+to see the DNS that the system is currently using
+/etc/resolv.conf
+the output it will something like
+nameserver 192.168.1.1
+
+nameserver it will be always a valid DNS resolver, it is normal see two or more listed here,
+those are for backups
+
+static DNS
+sudo /etc/hosts
+
+
+centOS it will configure waht is inside this file
+/etc/sysconfig/network-scripts/
+inside the file you see the different network adapter, choose one and it will show
+BOOTPROTO=dhcp
+this means it is auto configured
+for static change dhcp for none
+ in RH distros a program called network manager is the default or managing anything.
+ 
+ 2 usefull tools network manager has
+
+ nmtui - network manager text user interface
+ usually is installed by default, if not use dnf package
+ sudo nmtui
+ it will show another window wher eyou can configure the network inteface
+ configure the DNS, Gateway, IPv4 + subnet if you choose manually
+ to apply the configuration reboot or
+ sudo nmcli device reapply enps03
+ 
+ 
+ 
+ 
+
