@@ -109,9 +109,13 @@ sudo passwd --lock root
 
 
 
+Configure PAM ============================================================================================================================
 
+plugable authentication module
+this gives us flexibility about how we want certain utilities to perform authentication on our system
 
-
+/etc/pam.d/
+there will see alot utilities, to edit use vi, then you just need uncomment 
 
 
 
