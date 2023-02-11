@@ -89,6 +89,29 @@ to delete a grooup
 sudo groupdel <groupname>
 
 
+Manage access to the root account  ==========================================================================================================
+
+login as a root, when the user has sudo priv
+sudo --login   OR  sudo -i
+
+when the user doesnt have sudo priv, but knows root password
+su -  
+
+some system they have root locked, means we cannot login with root acc only with the password
+we can login using sudo -i, but not su -
+also can login using ssh private key
+
+to unlock use
+sudo passwd root   OR   sudo passwd --unlock root
+
+to lock root acc, avoid using password
+sudo passwd --lock root
+
+
+
+
+
+
 
 
 
