@@ -67,10 +67,26 @@ sudo chage --list <username>
 
 Create, delete, and modify local groups and group memberships ===========================================================================
 
+sudo groupadd developers
 
+add user to a group
+sudo gpasswd --add <usrname> <developers>
 
+to see which group the user belongs to
+groups <username>
 
+delete a user to a group
+sudo gpasswd --delete <username> <developers>
 
+change the primary group of the user
+sudo usermod -g <developers> <username>     OR   sudo usermod --gid <developers> <username>
+the capital G flag is to change the secondary group
+
+to rename the group
+sudo groupmod --new-name <nem_name> <old_name>
+
+to delete a grooup
+sudo groupdel <groupname>
 
 
 
