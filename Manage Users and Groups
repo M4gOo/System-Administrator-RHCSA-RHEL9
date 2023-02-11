@@ -1,0 +1,83 @@
+
+Create, delete, and modify local user accounts ===========================================================================
+
+sudo useradd <username>
+it will automatically create user and group with the username, also a shell and a home dir
+sudo useradd --shell /bin/othershell --home-dir /home/otherdirectory/ john
+
+useradd --defaults   OR  useradd -D
+
+another defaults configurations can be seen in
+cat /etc/login.defs
+
+setup a password
+sudo passwd <username>
+
+delete acc and group. Home dir it will remain
+sudo userdel <username>
+
+sudo userdel --remove john   OR      sudo userdel -r john
+
+delete a groupd
+sudo groupdel <groupname>
+
+to choose id for the user
+sudo useradd --uid 1100 <username>
+
+to check the id numbers and home dir
+ls -ln /home
+
+id
+check gorup, userid and so on
+
+create system account
+sudo useradd --system <systemname>
+those numbers are smaller than 1000
+usually daemon use system accs
+
+with want to change conf after create user
+sudo usermod --home /home/otherdir --move-home john   OR    sudo usermod -d /home/otherdir -n john
+sudo usermod --login <new_username> <old_username>    OR    sudo usermod -l <new_username> <old_username>
+sudo usermod --shell /home/otherdir <username>        OR    sudo usermod -s /home/otherdir <username>
+
+disable the acc
+sudo usermod --lock <username>        
+username cannot login even using the password, but can login using ssh if was set up before lock
+to avoid that set up a expire date
+sudo usermod --expiredate 2020-12-20 <username>     if you want to set up now, just choose a date in the past
+to remove expiry date 
+sudo usermod --expiredate "" <username> 
+
+to set up an expiration date for password
+sudo chage --lastday 0 <username>
+
+to cancel exiration date for password
+sudo chage --lastday -1 <username>
+
+to set up a date for user change the password
+sudo chage --maxdays 30 <username>
+
+set up for password never expiry
+sudo chage --maxdays -1 <username>
+
+to see the list for password expires
+sudo chage --list <username>
+
+
+
+Create, delete, and modify local groups and group memberships ===========================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
