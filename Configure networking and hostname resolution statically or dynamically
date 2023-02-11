@@ -113,3 +113,53 @@ sudo lsof -p <pid>
 
 Implement packet filtering ===========================================================================================================
 
+with a firewall added to the system will filter out what network packets are allowed to come into our system and even what network packets are 
+allowed to go out
+
+red hat has firewalld
+the firewall manager puts every network interface in zones, each zones has own rules
+zone drop is very restrictive and blocks all incoming connections
+zone trusted - all connections are accepted, for example in a office you ccepted all those incoming connections
+
+the default zone is public, every incoming connection is blocked, except  what we allow
+check the zone 
+firewall-cmd --get-default-zone
+
+change the zone
+firewall-cmd --set-default-zone=public
+
+to see current firewall rules
+sudo firewall-cmd --list-all
+ the output it will show the cockpit, where you can use a command to check the port are listening for the service cockpit
+sudo firewall-cmd --info-service=cockpit 
+ the output it will show the cockpit servie allow incoming connections to port example 9595 through a tcp protocol
+ 
+to allow traffic can be both
+sudo firewall-cmd --add-service=http   OR    sudo firewall-cmd --add-port=80/tcp
+
+then if you check the list, it will add a new rule in front of the cockpit
+sudo firewall-cmd --list-all
+
+to remove
+sudo firewall-cmd --remove-service=http    OR    sudo firewall-cmd --remove-port=80/tcp
+
+instead to block all incoming traffic, can use different rule based on where the traffic is coming from
+sudo firewall-cmd --add-source=10/11/12/0/24 --zone=trusted
+
+check active zones
+firewall-cmd --get-active-zones
+
+remove filter based on ip addr
+sudo firewall-cmd --remove-source=10.11.12.0/24 --zone=trusted
+
+all the rules set above are no permanent if reboot the rules will be lost, to keep permanent does those commands below
+sudo firewall-cmd --add-port=123/tcp                                                                              add
+sudo firewall-cmd --list-all                                                                                      check
+sudo firewall-cmd --runtime-to-permanent       OR       sudo firewall-cmd --add-port=123/tcp --permanent          permanent
+
+
+Statically route IP traffic ========================================================================================================
+
+
+
+
