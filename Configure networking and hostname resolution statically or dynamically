@@ -62,5 +62,54 @@ for static change dhcp for none
  
  
  
+ Configure network services to start automatically at boot ==============================================================================
  
+ if the network manager is not working it wont have ips, gateways and so on
+ check the network manager, mus be enabled
+ systemctl status NetworkManager.service
+ 
+ to install
+ dnf install NetworkManager
+ 
+ 
+ another way to enable nmcli at boot is 
+ nmcli connection show  (take note of the name connection)
+ sudo nmcli connection modify <name=enp0s3> auto connect yes
+
+
+
+Start, stop, and check the status of network services =======================================================================================
+SS  - modern tool
+Netstat
+
+
+sudo ss -tunlp  
+-l : listening means ready to accept an incoming connection
+-t : tcp connections
+-u : udp connections
+-n: numeric values, we get port number
+-p: processes is envolved, with p flag needs sudo priv
+
+ss -ltun    without p it will show the service name instead of port number
+
+the output will have some 
+Netid  State    Recv-Q   Send-Q     Local Address:Port      Peer Address:Port  Process                                                                        
+udp    UNCONN   0        0          127.0.0.1:323             0.0.0.0:*      users:(("chronyd",pid=684,fd=13))                                     
+udp    UNCONN   0        0                0.0.0.0:22            0.0.0.0:*      users:(("ssh",pid=1249,fd=7))                                                                              
+udp    UNCONN   0        0                   [::]:53198             [::]:*      users:(("avahi-daemon",pid=921,fd=15))                                        
+tcp    LISTEN   0        128                [::1]:631               [::]:*      users:(("cupsd",pid=1092,fd=6))    
+
+127.0.0.1:323  - the program is listning for incoming connections from the system itself, but no from other computers
+0.0.0.0:22  - it will accept connections from any external IP addr
+[::]:53198 - this means same as 0.0.0.0, but listening for connections from IPv6
+[::1]:631 - this means same as 127.0.0.1, but listening for connections from IPv6
+
+
+in this table you can see the PID, with that we can check the pid and the files that are open by this process
+ps  <pid>
+sudo lsof -p <pid>
+
+
+
+Implement packet filtering ===========================================================================================================
 
