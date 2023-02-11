@@ -189,6 +189,25 @@ sudo nmcli device reapply <enp0s3>
 
 Configure time service clients ===============================================================================================================
 
+keep the clock accurate
+chrony daemon 
+
+to see it is enable
+systemctl status chronyd.service
+
+run this command to check the system clock is synchronized
+timedatectl
+
+if is not enable by default first check if the time zone is set correctly
+sudo timedatectl set-timezone America/New_York          to see all available zones timedatectl list-timezones
+sudo dnf install chrony
+sudo sysstemctl start chronyd.service
+sudo sysstemctl enable chronyd.service
+then checck the ntp is enable and system clock is synch using the command
+timedatectl
+in case is not enable
+sudo systemctl set-ntp true
+
 
 
 
