@@ -117,7 +117,7 @@ this gives us flexibility about how we want certain utilities to perform authent
 /etc/pam.d/
 there will see alot utilities, to edit use vi, then you just need uncomment 
 
-
+ 
 
 
 
