@@ -110,15 +110,19 @@ kernel runtime parameters is what the linux kernel does its job internally
  
  Restore default file contexts ==============================================================================================
  
+ Using booleans values to modify settings of boot time, stop the boot process
  
+ can add enforcing=0 ; this cause the system to boot into permissive mode for SELinux
+  
+  ![image](https://user-images.githubusercontent.com/57456345/218545692-50e026f4-6160-4db4-8238-73d68c8bad80.png)
+
+  selinux=0 ; the kernel wont load anything to SELinux and the next time the system gets booted without that parameter
+  it is going to force an auto relabel of the file system to get all the file context
+  
+  autorelabel=1 ; force an auto relabel
  
- 
- 
- 
- 
- 
- 
- 
+  
+  
  
  
  
