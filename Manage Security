@@ -90,8 +90,25 @@ if it is Permissive means it is allowing everything and locking actions that sho
 
 Change kernel runtime parameters, persistent and non-persistent ===========================================================
 
-
+kernel runtime parameters is what the linux kernel does its job internally
+ kernel deals with low level stop like allocating memory, handling network traffic and so on. Most of those settings involve
+ those types of things.
+ To see all kernel runtime parameters currently in use
+ sudo sysctl -a
  
+ to change the values, for example ipv6.
+ sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
+ this change is not persistent
+ 
+ to make a change persistent
+ /etc/sysctl.d/*.conf
+ 
+ to immediately set up the changes use
+ sudo sysctl -p /etc/sysctl.d/<swap-less.conf>
+ 
+ 
+ 
+ Restore default file contexts ==============================================================================================
  
  
  
