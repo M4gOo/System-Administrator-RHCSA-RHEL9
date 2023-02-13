@@ -111,11 +111,14 @@ sudo passwd --lock root
 
 Configure PAM ============================================================================================================================
 
+best way is to -> man pam.conf
+manuals for all pam modules -> man pam (press TAB twice)
+
 plugable authentication module
 this gives us flexibility about how we want certain utilities to perform authentication on our system
 
-/etc/pam.d/
-there will see alot utilities, to edit use vi, then you just need uncomment 
+/etc/pam.d/ -> this is the file that defines the plugable auth modules that should be used by the su, for example
+there will see alot utilities, to edit use vi, then you just need uncomment to add an extra ayth module
 
  
 
