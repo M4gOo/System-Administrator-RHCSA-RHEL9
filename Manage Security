@@ -50,6 +50,69 @@ inside this file we can add host with informations
  
  List and Identify SELinux file and process contexts ======================================================================
  
+ linux kernel can be easily extended with so-called modules, one of them is SELinux that add variant advanced
+ capabilities of restricting access
+ SELinux is enable by defaut by centos 
+ 
+ ls -Z
+ drwxr-xr-x. devops devops unconfined_u:object_r:user_home_t:s0 Desktop
+ 
+unconfined_u:object_r:user_home_t:s0   ->string is called SElabel or SElinux context
+unconfined_u - user
+object_r     - role
+user_home_t  - type
+s0           - level
+
+only certain users can enter certains roles and certain types
+lets authorized users and processes do their job, by grating the permissions they need
+authorized users and processes are allowed to take only a limited set of actions
+everything else is denied
+
+ps axZ
+
+
+to see the security context assigned to the current user. What got applied to our user when we logged in
+you can use:
+id -Z
+
+when we log in the user we log in as is automatically map to an SELinux user
+To see this mapping is done
+sudo semanage login -l
+sudo semanage user -l  ->group
+
+to see the SELinux is actively restricting actions 
+getenforce
+the output it must be Enforcing
+if is Disabled is not doing anything
+if it is Permissive means it is allowing everything and locking actions that should have been restricted intead of denying
+
+
+
+Change kernel runtime parameters, persistent and non-persistent ===========================================================
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  
  
