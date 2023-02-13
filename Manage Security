@@ -1,0 +1,56 @@
+
+configuring SSH servers and clients
+
+configuration file
+/etc/ssh/sshd_config      (sshd -> the D means daemon)   man sshd_config
+/etc/ssh/ssh_config       (this is the config file for client, no D)
+
+
+/etc/ssh/sshd_config
+  can change the port number
+  can change the AddressFamily, this can change for ipv4, ipv6 or both (look at man page and search for Family)
+  can change ListernAddress, so you can specify a IP addr to listen
+  can change PermitRootLogin, this case you can login as a root using ssh service
+  can change the PasswordAuthentication, this case choosen no, only ssh keys it will be possible to login
+  can change the x11forwarding - start a remote app and forwarding to you local machine to interact
+  
+For example disable passwordauthentication global, but if you want do an exemption for an user add below PasswordAuthentication
+Match User <username>
+      PasswordAuthentication yes
+      
+After change need to reload to apply the new changes
+sudo systemctl reload sshd.service
+
+
+For the client we can add a file under ~/.ssh/config, change the permission chmod 600 config
+inside this file we can add host with informations
+  Host centos
+        Hostname <IP>
+        Port 22
+        User <username>
+ 
+ then you can use only ssh centos  to access the host/server
+ 
+ To use ssh keys, generate keys in the client
+ ssh-keygen
+ 
+ then copy the public key to the server
+ ssh-copy-id username@IP
+ 
+ to remove fingerprint from a specific server saved in the known host
+ ssh-keygen -R <IP>
+ 
+ when you login using ssh, the client has some default config file
+ /etc/ss/ssh_config
+ this is not a good practice to make change in this file because future upgrade of the 
+ ssh client it might overwrite the changes, better way is to modify in 
+ /etc/ssh/ssh_config.d/<name_of_conf_file>
+ then you can add new port, for example
+ 
+ 
+ List and Identify SELinux file and process contexts ======================================================================
+ 
+ 
+ 
+ 
+
