@@ -90,7 +90,44 @@ skopeo sync --src docker --dest dir registry.company.com/busybox /media/usb
 
 
 
+Configure a container to start automatically as a systemd service and attach persistent storage ==============================
 
+to run docker as user (not root) from boot
+
+to switch module screen
+first reset
+sudo yum module reset container-tools
+
+then install the version you want
+sudo yum module install container-tools:3.0
+
+need create a dir under usser home dir
+mkdir -p ~/.config/systemd/user
+
+
+create a persistent storage to use in the container
+mkdir -p ~/container_storage
+
+create a container
+podman run -d --name container_service -p 1025:8080 -v ~/container_storage:/var/www/html:Z registry.access.redhat.com/rhscl/httpd-24-rhel7
+
+:Z - SELinux
+
+podman ps -a
+
+under  ~/.config/systemd/user
+generate systemd files 
+podman generate systemd --name container_service --files --new 
+
+to make sure user can launch systemd, need to enable login setting for the user
+loginctl enable-linger
+systemctl --user daemon-reload
+
+systemctl --user enable --now container-container_service.service
+sudo systemctl reboot
+curl localhost:1025/file.html
+
+podman ps -a
 
 
 
