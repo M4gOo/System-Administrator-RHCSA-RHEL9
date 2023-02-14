@@ -1,0 +1,7 @@
+
+ssh -V
+hostnamectl set-hostname new-hostname          No Reboot Required
+/etc/hosts  /etc/hostname                      Reboot Required
+mandb                             command is used If the apropos command does not work
+apropos "NFS mounts"
+
