@@ -57,7 +57,40 @@ to start a container stopped/exited
 docker start <container_name-OR-containerID>
 
 
-  
+Perform container management using commands such as podman and skopeo ==================================================
+
+man skopeo
+man skopeo-copy
+
+
+Skopeo is a CLI utility that performs various operations on coontainer images/repo
+
+sudo yum install skopeo
+
+like podman, skopeo can be used to inspect repo
+unlike podman skopeo can inspect without pulling the image
+
+skopeo inspect docker://registry.fedoraproject.org/fedora:latest
+
+can be used also to inspect containers
+skopeo inspect --config docker://registry.fedoraproject.org/fedora:latest | jq
+
+can be used to copy images between different storage mechanisms, like container Registries
+skopeo copy docker://quay.io/build/stable docker://registry.enterprise.com/build
+first addr is the remote repo
+second addr is the registry inside of the enterprise
+
+skopeo copy oci:busy_boxocilayout:latest dir:emptydir
+
+delete image
+skopeo delete docker://localhost:5000/imagename
+
+syncing registries
+skopeo sync --src docker --dest dir registry.company.com/busybox /media/usb
+
+
+
+
 
 
 
