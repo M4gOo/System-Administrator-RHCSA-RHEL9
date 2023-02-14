@@ -1,1 +1,64 @@
 
+
+RHEL8 doesnt have any officil uspport for Docker, we can replace to other tool podman
+sudo dnf install docker
+it will install podman-docker
+we can use docker commands as normal, but it will be podman behind the scene
+
+/etc/containers/registries.conf
+comment the lines unqualified-search-registries
+create a new line with: unqualified-search-registries=["docker.io"] -> this sets the default software repo of containers to docker.io
+
+to avoid a message pop up after using docker command
+sudo touch /etc/containers/nodocker
+
+docker search nginx
+docker pull docker.io/library/nginx    OR docker pull nginx
+
+#to check images
+docker images
+
+#delete image
+docker rmi nginx
+docker rmi <image_id>
+
+a non official image need to use a full path
+
+Create a container.
+docker run -d <image>
+docker run -d nginx
+docker run -d docker.io/library/nginx
+docker run -d <image_id>
+
+-d: --detach
+
+docker run -d <image> --name <container_name>
+
+docker run -d <image> --name <container_name> -p 8080:80
+port mapping fo the container, someone connect at port 8080 it will be redirected to port 80 of the container
+
+to check  use netcat at port 8080
+nc localhost 8080
+GET /
+
+check containers running
+docker ps
+
+check containers exited
+docker ps -all
+
+to stop a container
+docker stop <container_name-OR-containerID>
+
+to delete a container
+docker rm <container_name-OR-containerID>
+
+to start a container stopped/exited
+docker start <container_name-OR-containerID>
+
+
+  
+
+
+
+
