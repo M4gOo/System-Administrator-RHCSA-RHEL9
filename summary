@@ -4,4 +4,35 @@ hostnamectl set-hostname new-hostname          No Reboot Required
 /etc/hosts  /etc/hostname                      Reboot Required
 mandb                             command is used If the apropos command does not work
 apropos "NFS mounts"
+cp -r /tmp/Invoice  /home/bob/           Copy directory (including all its contents)
+cp -a /tmp/Invoice  /home/bob/            to preserve its attributes.
+mv /home/bob/lfcs/* /home/bob/new-data/       Move all content
+rm -r /home/bob/lfcs                           Delete directory
+ln -s /tmp ~/link_to_tmp                        a soft link
+ln  /tmp/hlink /home/bob/hlink                  a hard link
+mkdir -p /tmp/1/2/3/4/5/6/7/8/9/        create all of these sub-directories automatically
 
+find  
+    find /path -mmin -5           find files and directories modified in the last 5 minutes
+     -mmin -120                   modified in the last 2 hours
+      -type d                     type d directory    f file
+      -perm                       permissions 0777
+      -size 20M                   size 20MB 
+      -size +5M -size -10M        between 5mb and 10mb
+    -perm -g=w ! -perm /o=rw      group can write to, but others cannot read or write
+                                  have to be at least w. If there's also an extra r or x in there, it will still match.
+                                  others have not to be r or w. That means, if any of these two permissions, r or w match for others, the result has to be excluded.
+    -size 213k -o -perm 402       213 kilobytes or a file that has permission 402                              
+      u+s,g+s,o+t                 set user id. setgid is short for set group id.
+      
+head   head -5 myfile                                display the top 5 lines
+ sed -i 's/disabled/enabled/ig' values.conf        ignoring the case sensitivity - any string like disabled, DISABLED, Disabled etc   
+                                                    must match and should be replaced with enabled.
+ grep -ic ^Section testfile                       file begin with string Section, regardless of case. -c count lines
+ grep -w 'man' testfile                           it must be an exact match.
+                                                  For example the line like # before /usr/man. or NOCACHE keeps man should match but # given manpath. or 
+                                                  For a manpath must not match.
+                                                  
+ 2>&1                                             save all command output (both errors/warnings and normal output
+ 
+ 
