@@ -16,3 +16,4 @@ archive also store permissions and ownership info
   tar xf archive.tar      it will extract in our current dir
   tar xf archive.tar -C /tmp/      it will extract in the path given
   sudo tar xf archive.tar -C /tmp/      it will extract in the path given and the ownership and permission it will be preserved.
+  tar acf archive.tar.gz dir1  
