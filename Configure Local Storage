@@ -38,14 +38,14 @@ to check if the system uses any kindof swap areas
 swapon --show
 
 to make a partition be a swap area
-sudo mkswap /dev/vdb3   (check first with the command lsblk)
+sudo mkswap /dev/vdb3   (check first with the command lsblk) - this command format a partition as swap space
 sudo swapon --verbose /dev/vdb3
 
 But if you reboot the system the partition wont be used as swap
 sudo swapoff /dev/vdb3   stop using the partition as swap
 create a  file with empty zeros
 sudo dd if=/dev/zero of=/swap bs=1M count=128 status=progress
-dd will copy the if file to of, count means to qrite 1 megabyte block 128 times. it will be 128Megabytes
+dd will copy the if file to of, count means to write 1 megabyte block 128 times. it will be 128Megabytes
 
 make sure so set proper permissions
 sudo chmod 600 /swap
