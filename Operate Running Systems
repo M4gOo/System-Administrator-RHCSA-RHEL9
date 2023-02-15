@@ -154,7 +154,7 @@ lsof
 ls - list
 of- open files
 
-lsof <PID>
+sudo lsof -p <PID>
 
 
 
