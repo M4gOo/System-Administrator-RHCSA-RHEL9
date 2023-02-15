@@ -207,5 +207,5 @@ tuned-adm profile_info
 tuned-adm recommend
 tuned-adm auto_profile
 tuned-adm profile_mode
-tuned is located in /usr/lib/tuned
+tuned profiles are located in /usr/lib/tuned   
 /etc/tuned      main configuration custom profiles
