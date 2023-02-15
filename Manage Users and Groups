@@ -16,6 +16,7 @@ sudo passwd <username>
 delete acc and group. Home dir it will remain
 sudo userdel <username>
 
+delete acc and the home dir
 sudo userdel --remove john   OR      sudo userdel -r john
 
 delete a groupd
