@@ -6,7 +6,7 @@
  bz - bzip
  c - create
  f= - file
- t - list content in .start.gz
+ t - list content in .start.gz              star -t -f=backup.star.gz
  
  tar cfj /home/bob/asset_backup.tar.bz2 --absolute-names /opt/assets/
 
