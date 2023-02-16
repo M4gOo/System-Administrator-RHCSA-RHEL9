@@ -1,5 +1,6 @@
 
 ================================================ TAR / STAR
+ #
  star -zc -f=/home/bob/backup.star.gz ~/files
  z - gzip
  bz - bzip
@@ -11,7 +12,7 @@
 
 ================================================ FIND
 
-
+#
 find /opt/assets -type f -perm 2664 -exec cp -p "{}" /home/bob/specialfiles/ \;
 
 SUID - 4
@@ -25,6 +26,7 @@ Sticky bit - 1
 
 ================================================ GREP
 
+#
 grep "passed" /home/bob/examresults > /home/bob/passed.txt
 grep "failed" /home/bob/examresults > /home/bob/failed.txt
 
@@ -40,6 +42,7 @@ The purpose of target units is to group together various systemd units through a
 The graphical.target unit for starting a graphical session, starts system services such as the GNOME Display Manager (gdm.service) or Accounts Service (accounts-daemon.service), 
 and also activates the multi-user.target unit.
 
+#
 systemctl get-default
 systemctl set-default
 ls -l /usr/lib/systemd/system/
@@ -66,13 +69,246 @@ unit target that pulls in the services required for system initialization
 
 
 =============================================== niceness value
-Niceness value is a number attached to processes in *nix systems  by the kernel process scheduler to calculate a process' 
-'true priority'—which is used to decide how much CPU time is allocated to it.
+Niceness value is a number attached to processes in *nix systems   
+is used to decide how much CPU time is allocated to it.
+used to change the priority of a process, which, in effect, determines the urgency with which it is executed in the system. 
+The nice command configures the priority of a Linux process before it is started. 
+The renice command sets the priority of an already running process.
 
+ -20 the highest priority
+ +19 lowest
+ 
+ By default, any Linux process created by a user has a nice value of 0
+ 
+ check the nice (NI)
+ #
+ ps -l
+ ps -le | grep <service>
+ top
+ 
+ #
+ sudo renice -n <-20 to 19>  -p <PID>
+ nice -nice_value command-arguments
+ sudo renice -n 5 -u <username>       modify the priority of all processes owned by a group
+ sudo renice -n 5 -g <groupname>      modify the priority of all processes owned by a user
 
 
 ============================================== swap 
-https://linuxize.com/post/create-a-linux-swap-file/
+
+Swap is a space on a disk that is used when the amount of physical RAM memory is full. When a Linux system runs out of RAM, 
+inactive pages are moved from the RAM to the swap space.
+
+Create a file that will be used for swap
+If faillocate is not installed or if you get an error message 
+#
+sudo fallocate -l 1G /swapfile
+
+use the following command to create the swap file
+#
+sudo dd if=/dev/zero of=/swapfile bs=1024 count=1048576
+
+Only the root user should be able to write and read the swap file
+#
+sudo chmod 600 /swapfile
+
+mkswap utility to set up the file as swap area
+#
+sudo mkswap /swapfile
+
+Enable the swap (non permanent)
+#
+sudo swapon /swapfile
+
+#
+sudo vi /etc/fstab  (permanent)
+/swapfile swap swap defaults 0 0
+
+To verify that the swap is active
+#
+swapon
+
+remove Swap File 
+#
+sudo swapoff -v /swapfile
+Remove the swap file entry in /etc/fstab
+sudo rm /swapfile
+
+
+================================================================== partitions
+
+Your hard drive is usually partitioned into logical volumes called partitions.
+ 
+ check first the hard-disk and the partitions
+ #
+ lsblk
+ 
+ #
+ cfdisk /dev/sdb
+ fdisk /dev/sdb
+ 
+ 
+ ================================================================== LVM - https://web.mit.edu/rhel-doc/5/RHEL-5-manual/Cluster_Logical_Volume_Manager/LV_create.html
+ 
+ #
+ sudo pvcreate /dev/hdd                                     create a physical volume
+ sudo vgcreate <volume_groupname> /dev/sda6 /dev/sda7       create a volume group (with two physical volumes)
+ sudo lvcreate -l 100%FREE -n storage volume1               create a logical volume named storage using 100% of the free space on the volume group volume1
+ 
+
+
+================================================================== crontab
+
+sudo vi /etc/crontab
+
+=================================================================== modules
+
+
+
+
+
+
+
+
+
+
+
+Create a physical volume for lvm on /dev/vdb with below command:
+
+
+sudo pvcreate /dev/vdb
+
+Create a new volume group named volume1 with /dev/vdb as a member:
+
+
+sudo vgcreate volume1 /dev/vdb
+
+Create a logical volume named storage using 100% of the free space on the volume group volume1:
+
+
+sudo lvcreate -n storage -l 100%FREE volume1
+
+
+
+
+Create an XFS filesystem on /dev/volume1/storage with below command:
+
+
+sudo mkfs.xfs /dev/volume1/storage
+
+Create a mount point at /storage as below:
+
+
+sudo mkdir /storage/
+
+Using an editor such as vi, edit /etc/fstab and add a line:
+
+
+/dev/volume1/storage /storage xfs defaults 0 0
+
+Mount the file system you have created with below command:
+
+
+sudo mount -a
+
+
+
+Create a new Stratis pool named kodekloud on /dev/vdd as below:
+
+
+sudo stratis pool create kodekloud /dev/vdd
+
+Create a new Stratis filesystem on the kodekloud pool, and name this filesystem kodekloud_files with below command:
+
+
+sudo stratis fs create kodekloud kodekloud_files
+
+With below command, create a new mount point at /kodekloud/ for this Stratis filesystem:
+
+
+sudo mkdir /kodekloud/
+
+Using an editor such as vi, edit /etc/fstab and add a line:
+
+
+/dev/stratis/kodekloud/kodekloud_files /kodekloud xfs x-systemd-requires=stratisd.service 0 0
+
+Mount the kodekloud_files filesystem to the mount point you created with below command:
+
+
+sudo mount -a
+
+
+
+
+Reset the module stream for the container-tools package as below:
+
+
+sudo yum -y module reset container-tools
+
+Then use yum to install version 3.0 of the container-tools package with below command:
+
+
+sudo yum -y module install container-tools:3.0 --skip-broken --allowerasing --nobest
+
+
+
+
+Run the below command for default route information and save it to the file /home/bob/routes.txt:
+
+
+ip route >> /home/bob/route.txt
+
+
+
+To determine the PID for the sshd.service with below command:
+
+
+systemctl status sshd.service
+
+To get SELinux context label for the sshd process as below:
+
+
+ps Z <PID>
+
+
+Using an editor like vi edit the file /home/bob/context.txt and copy the line under LABEL from the previous command. Example as below:
+
+
+system_u:system_r:sshd_t:s0-s0:c0.c1023
+
+
+
+
+Determine the current SELinux mode on the system as save it to /home/bob/mode.txt:
+
+
+getenforce > /home/bob/mode.txt
+
+
+
+
+Determine the SELinux file context for the file at /home/bob/mystery as below:
+
+
+ls -Z /home/bob/mystery
+
+Save the file context label into /home/bob/file_context.txt using an editor like vi. For example, the context is similar to below text:
+
+
+unconfined_u:object_r:user_home_t:s0
+
+
+
+
+podman run -d --name my_web -p 1026:80 -v /home/bob/kodekloud:/usr/share/nginx/html:Z docker.io/library/nginx
+
+
+
+skopeo sync --src docker --dest dir docker.io/nginx:latest /home/bob/nginx
+
+
+
+
 
 
 
