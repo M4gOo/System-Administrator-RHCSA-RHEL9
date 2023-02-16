@@ -83,6 +83,9 @@ change the primary group of the user
 sudo usermod -g <developers> <username>     OR   sudo usermod --gid <developers> <username>
 the capital G flag is to change the secondary group
 
+group named cricket and set its GID to 9875
+sudo groupadd -g 9875 cricket 
+
 to rename the group
 sudo groupmod --new-name <nem_name> <old_name>
 
