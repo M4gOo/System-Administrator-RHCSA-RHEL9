@@ -35,4 +35,4 @@ head   head -5 myfile                                display the top 5 lines
                                                   
  2>&1                                             save all command output (both errors/warnings and normal output
  
- 
+ lsblk                                            display block devices, such as disks or partitions
