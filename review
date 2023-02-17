@@ -154,6 +154,27 @@ Your hard drive is usually partitioned into logical volumes called partitions.
  sudo vgcreate <volume_groupname> /dev/sda6 /dev/sda7       create a volume group (with two physical volumes)
  sudo lvcreate -l 100%FREE -n storage volume1               create a logical volume named storage using 100% of the free space on the volume group volume1
  
+ 
+======================================================================== Create FileSystem
+
+mkfs.xfs block-device
+
+
+mount -t TYPE DEVICE_NAME DIRECTORY
+-t option to specify the file system
+
+
+ It instructs the operating system that filesystem is ready to use and associate it with a particular point in the system's hierarchy. 
+ Mounting will make files, directories and devices available to the users.
+The mount command is used to make a device or file system accessible to the system, and then to connect 
+its root directory to a mount point on the local file system.
+
+Mounting is the act of associating a storage device to a particular location in the directory tree. For example, when the system boots, a particular storage device (commonly called the root partition) is associated with the root of the directory tree, i.e., that storage device is mounted on / (the root directory).
+
+Let's say you now want to access files on a CD-ROM. You must mount the CD-ROM on a location in the directory tree (this may be done automatically when you insert the CD). Let's say the CD-ROM device is /dev/cdrom and the chosen mount point is /media/cdrom. The corresponding command is
+
+mount /dev/cdrom /media/cdrom
+After that command is run, a file whose location on the CD-ROM is /dir/file is now accessible on your system as /media/cdrom/dir/file. When you've finished using the CD, you run the command umount /dev/cdrom or umount /media/cdrom (both will work; typical desktop environments will do this when you click on the “eject” or ”safely remove” button).
 
 
 ================================================================== crontab
@@ -207,7 +228,6 @@ Using an editor such as vi, edit /etc/fstab and add a line:
 
 Mount the file system you have created with below command:
 
-
 sudo mount -a
 
 
@@ -241,10 +261,7 @@ sudo mount -a
 
 
 Reset the module stream for the container-tools package as below:
-
-
 sudo yum -y module reset container-tools
-
 Then use yum to install version 3.0 of the container-tools package with below command:
 
 
