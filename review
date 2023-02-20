@@ -403,8 +403,14 @@ ps -el | grep <service>
 ps -Z <service_PID>
 
 
+current SELinux mode on the system
+#
+getenforce
 
 
+ SELinux file context for the file at /home/user
+ ls -Z /home/user
+ 
 
 
 
