@@ -177,9 +177,16 @@ mount /dev/cdrom /media/cdrom
 After that command is run, a file whose location on the CD-ROM is /dir/file is now accessible on your system as /media/cdrom/dir/file. When you've finished using the CD, you run the command umount /dev/cdrom or umount /media/cdrom (both will work; typical desktop environments will do this when you click on the “eject” or ”safely remove” button).
 
 
-================================================================== crontab
+================================================================== crontab   ----- https://ostechnix.com/a-beginners-guide-to-cron-jobs/
 
 sudo vi /etc/crontab
+
+sudo crontab -e -u <username>
+
+
+to check this list
+Minute(0-59) Hour(0-23) Day_of_month(1-31) Month(1-12) Day_of_week(0-6) 0 Saturday 6 Sunday
+cat /etc/crontab 
 
 =================================================================== modules
 
@@ -191,6 +198,15 @@ sudo vi /etc/crontab
 Stratis is a hybrid user-and-kernel local storage management system that supports advanced storage features. The central concept of Stratis is a storage pool. 
 This pool is created from one or more local disks or partitions, and volumes are created from the pool.
 
+
+================================================================= /etc/fstab
+ The fstab file typically lists all available disks and disk partitions, and indicates 
+ how they are to be initialized or otherwise integrated into the overall system's file system
+
+
+===================================================== how to check the filesystem type of a logical volume
+lsblk -f
+file -L -s /dev/mapper/d2-vmStorage
 
 
 
