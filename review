@@ -402,5 +402,134 @@ making it a lightweight and modular solution for working with container images a
 
 
 
+grep -r [A-Z,a-z] /opt/assets/
+
+
+#!/bin/bash
+echo "Exiting with code 150."
+exit 150
+
+
+#!/bin/bash
+if [ -f "/opt/assets2/asset75" ]
+then
+  echo "File exists. Making a copy."
+  mkdir /home/bob/backups/
+  cp /opt/assets2/asset75 /home/bob/backups/
+else
+  echo "File not found."
+fi
+
+
+#!/bin/bash
+for file in $(ls /opt/assets3/)
+  do
+    echo Read file $file. >> /home/bob/read_log.txt
+  done
+  
+  
+  /dev/md0 /raid xfs defaults,usrquota,grpquota 0 0
+
+
+
+
+
+Create a single partition on /dev/vde that uses the entire available disk space and set the partition type vfat file system as below:
+
+
+sudo fdisk /dev/vde
+
+
+Follow the below instructions after running the command:
+
+
+Choose n for new
+
+Choose p for primary, and use the entire disk space available.
+
+Choose t for type for the partition.
+
+Choose Lto list all codes and choose b for W95 FAT32.
+
+Choose w to write the changes and exit.
+
+
+
+
+Format the partition /dev/vde1 with a 32-bit vfat filesystem with below command:
+
+
+sudo mkfs.vfat -F 32 /dev/vde1
+
+
+Create a mount point at /vfat/ as below:
+
+
+sudo mkdir /vfat/
+
+
+Using an editor such as vi, edit /etc/fstab and add an entry as follow:
+
+
+/dev/vde1 /vfat vfat defaults 0 0
+
+
+Mount the filesystem to the /vfat/ as below:
+
+
+sudo mount -a
+
+
+
+
+/dev/stratis/web_storage/web_storage1 /mnt/web_storage xfs x-systemd.requires=stratisd.service 0 0
+
+
+/dev/mapper/compressed /mnt/compressed xfs _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service 0 0
+
+
+
+sudo ip route del 10.0.0.101
+
+
+
+
+Using an editor like vi write the below line in /home/bob/grubcommand.txt file:
+
+
+autorelabel=1
+
+
+
+
+Which command would you use to restore the default SELinux file contexts to all files in the hypothetical directory /home/bob/context?
+
+Write your answer in the file /home/bob/restore.txt.
+
+info_outline
+Solution
+Using an editor like vi save the below command in /home/bob/restore.txt file:
+
+
+restorecon -R /home/bob/context/
+or 
+restorecon -r /home/bob/context/
+
+
+
+
+Create the appropriate directory and any necessary parent directories to store rootless systemd service files for the user bob.
+
+info_outline
+Solution
+Using below command create the appropriate directory to store rootless systemd service files for the user bob :
+
+
+mkdir -p ~/.config/systemd/user/
+
+
+
+
+
 
 
