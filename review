@@ -260,7 +260,7 @@ sudo mount /mnt/mystratis
 ====================================              Deploy, Configure, and Maintain Systems                ================================================
 
 
-================================================================== CRONTAB  ----- https://ostechnix.com/a-beginners-guide-to-cron-jobs/
+================================================================== CRONTAB  
 
 cat /etc/crontab 
   can use  ',' this it will run multiple times like 15min and 45minutes -> 15,45
@@ -294,8 +294,27 @@ sudo cat /var/log/cron
 
 to send an email to user change the MAILTO=root
 
+=================================         WORKING WITH PACKAGES MODULES STREAM                       ==============================================
+=================================================================== modules   
 
-=================================================================== modules   ????????????????????????????????????
+stream allow to designate multiple versions of software packages to group together as modules
+give greater flexibility and compatibility options
+module is a set of packages that normally get installed together
+
+available modules
+sudo yum module list
+
+install
+sudo yum module  install nodejs
+sudo yum module list --installed nodejs
+
+
+different version  (/name-of-profile), can get the name in module list
+sudo yum install module nodejs:14/development
+
+to change the module 
+sudo yum module reset nodejs
+sudo yum module  install nodejs:16/development
 
 Reset the module stream for the container-tools package as below:
 sudo yum -y module reset container-tools
@@ -373,8 +392,15 @@ By eliminating redundant chunks of data, VDO can greatly reduce actual used disk
 
 
 
+=============================                  SELinux                   ==============================================================
 
+SELinux context label for the sshd process
+#
+check the PID for the process
+systemctl status <service>
+ps -el | grep <service>
 
+ps -Z <service_PID>
 
 
 
