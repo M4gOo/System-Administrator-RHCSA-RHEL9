@@ -214,6 +214,59 @@ lsblk -f
 file -L -s /dev/mapper/d2-vmStorage
 
 
+================================================================= FIND
+
+find /opt/assets/ -type f -exec grep -Iq . {} \; -print        find file that contains text, when the others are empty
+
+
+
+================================================================= RAID
+
+ raid 0 - stripped, if we lose one disk all data will be lost
+ raid 1 - redundant, mirror array, clone all data in all storages
+ raid 5 - min 3 disk, has parity on each disk (used to rebuilt in lost of data), can lose 1 disc
+ radi 6 - 4 discs, can lose 2 discs and still recovers data
+ raid 10  - combination level 0 and 1
+ 
+ sudo mdadm --create /dev/md0 --level=0 --raid-devices=3 /dev/vdc /dev/vdd /dev/vde
+ sudo mkfs.ext4 /dev/md0
+ sudo mdadm --stop /dev/md0    to stop or deactivate an array
+ sudo mdadm --zero-superblock /dev/vdc /dev/vdd /dev/vde   to avoid the linux when bootup looking for arrays, if dont use this command linux will 
+ built the array 
+ sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/vdc /dev/vdd --spare-devices=1 /dev/vde      add spare disk in an array
+ add/remove more disks on the array /dev/md0
+ sudo mdadm --manage /dev/md0 --add /dev/vde 
+ sudo mdadm --manage /dev/md0 --remove /dev/vde 
+ cat /proc/mdstat             look the status of array
+ 
+ 
+================================================================ Setup user and group disk quotas for filesystems
+
+quotas is a simple way to limit how much storage space each user or group can use
+
+sudo dnf install quota
+sudo vim /etc/fstab
+      /dev/vdb1 /mybackups xfs ro,noexec 0 2
+      /dev/vdb1 /mybackups xfs defaults,usrquota,grpquota 0 2   ->add defaults,usrquota,grpquota
+ then save the file and reboot
+ sudo systemctl reboot
+ sudo quotacheck --create-files --user --group /dev/vdb2       it will create to files in a filesystem aquota.group and aquota.user
+ sudo quotaon /mnt    this is when you mount in /mnt
+ 
+ create a file with a specific size
+ fallocate --length 100M /path/dir/100Mfile
+ 
+ to edit quotas to a user
+ sudo edquota --user <username>
+ sudo quota --user <username>    if the user use more than capacity, it will have a grace period wwith that the user wont be able to write any data
+ sudo quota --edit-period        to edit the grace period, soft limit
+ sudo edquta --group <group_name>
+ 
+ 
+====================================================================================== VDO
+Virtual Data Optimizer (VDO) is a block virtualization technology that provides transparent deduplication of data. 
+By eliminating redundant chunks of data, VDO can greatly reduce actual used disk capacity.
+
 
 
 
