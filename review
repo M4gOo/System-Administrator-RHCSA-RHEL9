@@ -188,9 +188,14 @@ to check this list
 Minute(0-59) Hour(0-23) Day_of_month(1-31) Month(1-12) Day_of_week(0-6) 0 Saturday 6 Sunday
 cat /etc/crontab 
 
-=================================================================== modules
+=================================================================== modules   ????????????????????????????????????
+
+Reset the module stream for the container-tools package as below:
+sudo yum -y module reset container-tools
+Then use yum to install version 3.0 of the container-tools package with below command:
 
 
+sudo yum -y module install container-tools:3.0 --skip-broken --allowerasing --nobest
 
 
 ================================================================== Stratis
@@ -279,12 +284,7 @@ sudo mount -a
 
 
 
-Reset the module stream for the container-tools package as below:
-sudo yum -y module reset container-tools
-Then use yum to install version 3.0 of the container-tools package with below command:
 
-
-sudo yum -y module install container-tools:3.0 --skip-broken --allowerasing --nobest
 
 
 
@@ -303,8 +303,8 @@ systemctl status sshd.service
 
 To get SELinux context label for the sshd process as below:
 
-
 ps Z <PID>
+
 
 
 Using an editor like vi edit the file /home/bob/context.txt and copy the line under LABEL from the previous command. Example as below:
@@ -337,11 +337,13 @@ unconfined_u:object_r:user_home_t:s0
 
 
 podman run -d --name my_web -p 1026:80 -v /home/bob/kodekloud:/usr/share/nginx/html:Z docker.io/library/nginx
+podman run -d --name my_web -p 1026:80 -v /home/bob/kodekloud:/usr/share/nginx/html:Z docker.io/library/nginx
 
 
 
 skopeo sync --src docker --dest dir docker.io/nginx:latest /home/bob/nginx
-
+With Skopeo, you can inspect images on a remote registry without having to download the entire image with all its layers, 
+making it a lightweight and modular solution for working with container images across different formats
 
 
 
