@@ -30,7 +30,7 @@ archive also store permissions and ownership info
 ================================================ FIND
 
 #
-find /opt/assets -type f -perm 2664 -exec cp -p "{}" /home/bob/specialfiles/ \;
+find /opt/assets -type f -perm 2664 -exec cp -p {} /home/bob/specialfiles/ \;
 
 SUID - 4
 SGID - 2
@@ -39,6 +39,10 @@ Sticky bit - 1
       find will execute <command> and will substitute {} with the filename(s) found. 
       with ; a single <command> for each file is executed 
       escaped here as \; to prevent the shell from interpreting it
+
+{} \; : executing the commands for each found result
+{} + : executing the command once with all results argument like this -> ls file1.txt file2.txt file3.txt
+
 
 
 ================================================ GREP
@@ -116,7 +120,7 @@ Swap is a space on a disk that is used when the amount of physical RAM memory is
 inactive pages are moved from the RAM to the swap space.
 
 Create a file that will be used for swap
-If faillocate is not installed or if you get an error message 
+If falllocate is not installed or if you get an error message 
 #
 sudo fallocate -l 1G /swapfile
 
@@ -150,6 +154,10 @@ sudo swapoff -v /swapfile
 Remove the swap file entry in /etc/fstab
 sudo rm /swapfile
 
+create a  file with empty zeros
+#
+sudo dd if=/dev/zero of=/swap bs=1M count=128 status=progress
+dd will copy the if file to of, count means to write 1 megabyte block 128 times. it will be 128Megabytes
 
 ================================================================== partitions
 
@@ -170,6 +178,7 @@ Your hard drive is usually partitioned into logical volumes called partitions.
  sudo pvcreate /dev/hdd                                     create a physical volume
  sudo vgcreate <volume_groupname> /dev/sda6 /dev/sda7       create a volume group (with two physical volumes)
  sudo lvcreate -l 100%FREE -n storage volume1               create a logical volume named storage using 100% of the free space on the volume group volume1
+ sudo lvcreate -l 60%FREE -n storage volume1                 60% of the total space in volume group volume1
  
  
 ======================================================================== Create FileSystem
