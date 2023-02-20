@@ -186,7 +186,10 @@ sudo vi /etc/crontab
 
 
 
+================================================================== Stratis
 
+Stratis is a hybrid user-and-kernel local storage management system that supports advanced storage features. The central concept of Stratis is a storage pool. 
+This pool is created from one or more local disks or partitions, and volumes are created from the pool.
 
 
 
