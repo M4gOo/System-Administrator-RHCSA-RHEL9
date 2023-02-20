@@ -181,6 +181,11 @@ Your hard drive is usually partitioned into logical volumes called partitions.
  sudo lvcreate -l 60%FREE -n storage volume1                 60% of the total space in volume group volume1
  
  
+
+=========================                Create and Configure File Systems                ======================================================
+
+
+
 ======================================================================== Create FileSystem
 
 mkfs.xfs block-device
@@ -203,16 +208,92 @@ mount /dev/cdrom /media/cdrom
 After that command is run, a file whose location on the CD-ROM is /dir/file is now accessible on your system as /media/cdrom/dir/file. When you've finished using the CD, you run the command umount /dev/cdrom or umount /media/cdrom (both will work; typical desktop environments will do this when you click on the “eject” or ”safely remove” button).
 
 
-================================================================== crontab   ----- https://ostechnix.com/a-beginners-guide-to-cron-jobs/
+======================================================================  STRATIS
 
-sudo vi /etc/crontab
+Stratis is a local storage management tool. Manages pools of physical storage, helps simplify storage management
+central component of Stratis is the storage pool, they are created from one or more disks or partitions, after created volumes can be
+created on top of that
 
+stratis is similar to lvm, but is easier to configure, deploy and manage
+XFS file system
+dont use XFS tools to manage stratis filesystem
+
+sudo yum install stratisd stratis-cli
+
+sudo systemctl enable --now stratisd.service
+
+sudo stratis pool create my-pool /dev/vdc
+can use one more block  just specify in the command 
+sudo stratis pool create my-pool /dev/vdc /dev/vdd
+
+sudo stratis pool list              
+sudo stratis blockdev
+
+create a filesystem
+sudo stratis fs create my-pool myfs1                  myfs1 is the filesystem create on top of the pool
+sudo stratis fs
+
+sudo mkdir /mnt/mystratis
+sudo vi /etc/fstab 
+            /dev/stratis/my-pool/myfs1  /mnt/mystratis      xfs   x-systemd.requires=stratisd.service  0   0
+sudo mount -a
+sudo cp /home/username/file /mnt/mystratis
+
+to add storage
+sudo stratis pool add-data my-pool /dev/vdd
+sudo stratis pool
+
+filesystem snapshots
+sudo stratis fs snapshot my-pool myfs1 myfs1-snapshot
+sudo stratis fs   to check the snapshot
+
+to recover from snapshot
+rename the current statis file system 
+sudo stratis fs rename my-pool myfs1 myfs1-old
+next rename the snapshot to use the original filesystem name
+sudo stratis fs rename my-pool myfs1-snapshot myfs1
+sudo umount /mnt/mystratis
+sudo mount /mnt/mystratis
+
+
+
+====================================              Deploy, Configure, and Maintain Systems                ================================================
+
+
+================================================================== CRONTAB  ----- https://ostechnix.com/a-beginners-guide-to-cron-jobs/
+
+cat /etc/crontab 
+  can use  ',' this it will run multiple times like 15min and 45minutes -> 15,45
+  can use '-', set hours to 2-4 2am,3am,4am
+  can use '/', to specifies steps, every 4hours it will run
+  Minute(0-59) Hour(0-23) Day_of_month(1-31) Month(1-12) Day_of_week(0-6) 0 Saturday 6 Sunday
+  
+crontab -e 
+  edit he table of youyr current user
+  
+crontab -l   - to see user logged in cronjobs
+
+to edit as sudo just add usdo at the front
+sudo crontab -l   
+sudo crontab -e
+
+to add with different user
 sudo crontab -e -u <username>
 
+to remove cronjob
+crontab -r
+sudo crontab -r -u <username>
 
-to check this list
-Minute(0-59) Hour(0-23) Day_of_month(1-31) Month(1-12) Day_of_week(0-6) 0 Saturday 6 Sunday
-cat /etc/crontab 
+to run a sheel script in a cronjob dont add extension
+makes executable
+sudo chmod +rx /etc/cron.hourly/shellscript
+if want run hourly (/etc/cron.hourly) just move to this dir, using sudo 
+
+check the logs
+sudo cat /var/log/cron
+
+to send an email to user change the MAILTO=root
+
 
 =================================================================== modules   ????????????????????????????????????
 
@@ -224,10 +305,6 @@ Then use yum to install version 3.0 of the container-tools package with below co
 sudo yum -y module install container-tools:3.0 --skip-broken --allowerasing --nobest
 
 
-================================================================== Stratis
-
-Stratis is a hybrid user-and-kernel local storage management system that supports advanced storage features. The central concept of Stratis is a storage pool. 
-This pool is created from one or more local disks or partitions, and volumes are created from the pool.
 
 
 ================================================================= /etc/fstab
@@ -296,69 +373,10 @@ By eliminating redundant chunks of data, VDO can greatly reduce actual used disk
 
 
 
-Create a physical volume for lvm on /dev/vdb with below command:
-
-
-sudo pvcreate /dev/vdb
-
-Create a new volume group named volume1 with /dev/vdb as a member:
-
-
-sudo vgcreate volume1 /dev/vdb
-
-Create a logical volume named storage using 100% of the free space on the volume group volume1:
-
-
-sudo lvcreate -n storage -l 100%FREE volume1
 
 
 
 
-Create an XFS filesystem on /dev/volume1/storage with below command:
-
-
-sudo mkfs.xfs /dev/volume1/storage
-
-Create a mount point at /storage as below:
-
-
-sudo mkdir /storage/
-
-Using an editor such as vi, edit /etc/fstab and add a line:
-
-
-/dev/volume1/storage /storage xfs defaults 0 0
-
-Mount the file system you have created with below command:
-
-sudo mount -a
-
-
-
-Create a new Stratis pool named kodekloud on /dev/vdd as below:
-
-
-sudo stratis pool create kodekloud /dev/vdd
-
-Create a new Stratis filesystem on the kodekloud pool, and name this filesystem kodekloud_files with below command:
-
-
-sudo stratis fs create kodekloud kodekloud_files
-
-With below command, create a new mount point at /kodekloud/ for this Stratis filesystem:
-
-
-sudo mkdir /kodekloud/
-
-Using an editor such as vi, edit /etc/fstab and add a line:
-
-
-/dev/stratis/kodekloud/kodekloud_files /kodekloud xfs x-systemd-requires=stratisd.service 0 0
-
-Mount the kodekloud_files filesystem to the mount point you created with below command:
-
-
-sudo mount -a
 
 
 
