@@ -486,7 +486,7 @@ making it a lightweight and modular solution for working with container images a
 
 
 
-
+tyyr
 grep -r [A-Z,a-z] /opt/assets/
 
 
