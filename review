@@ -333,6 +333,7 @@ archive also store permissions and ownership info
  tar xf archive.tar -C /tmp/      it will extract in the path given
  sudo tar xf archive.tar -C /tmp/      it will extract in the path given and the ownership and permission it will be preserved
  star -zc -f=/home/bob/backup.star.gz ~/files
+ 
  z - gzip
  bz - bzip
  c - create
