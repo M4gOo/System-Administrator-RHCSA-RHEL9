@@ -53,6 +53,10 @@ Move all content of
 #
 mv /home/bob/dir/* /home/bob/new-dir/
 
+list full time
+#
+ls --full-time
+
 
 ===================================================== Hostnamectl & /etc/hostname
 
@@ -128,6 +132,67 @@ Verify Hard links
 Use the ls -i command to view the inode number. Files that are hard-linked together share the same inode number. 
 
 
+================================================================= FIND
+
+
+#
+find /opt/assets/ -type f -exec grep -Iq . {} \; -print        find file that contains text, when the others are empty
+#
+find /opt/assets -type f -perm 2664 -exec cp -p {} /home/bob/specialfiles/ \;
+
+
+SUID - 4
+SGID - 2
+Sticky bit - 1
+-exec <command> {} \;
+      find will execute <command> and will substitute {} with the filename(s) found. 
+      with ; a single <command> for each file is executed 
+      escaped here as \; to prevent the shell from interpreting it
+
+{} \; : executing the commands for each found result
+{} + : executing the command once with all results argument like this -> ls file1.txt file2.txt file3.txt  
+
+
+find /path -name file.txt
+find /path -iname file.txt              -case sensitive
+find -mmin        modified minute (modified means creation or editing a file) Modified means when the contens have been modified
+find -mmin 5      5 min ago (if now is 11:00 it will find files in 10:55)
+find -mmin -5     5 min ago (if now is 11:00 it will find files BETWEEN 10:55 until 11:00)
+find -mmin +5     list files before 5 min ago (if now is 11:00 it will find files from 10:55 to the infinite 10:45, 10:30, 9:30, etc)
+  
+find -mtime 0     search for files per days or past-24hours periods
+0 past 24 hours
+1 24h to 48h
+  
+modified
+find -cmin -5   modified last 5 minutes
+  
+find -size
+c bytes
+k kilobytes
+M megabytes
+G gigabytes
+  
+find -size 512k       = 512
+find -size +512k      > 512
+find -size -512k      < 512
+                            
+sudo find /usr -type f -size +5M -size -10M           Find all files between 5mb and 10mb in the /usr directory
+             
+find -perm 664       exactly perm
+find -perm -664       find bearly perm  
+find -perm -u=rw,g=rw,o=r       find bearly perm                          
+find -perm /664       find files with any of these perm                          
+                             
+find -name "f*" -size 512k          AND operator                     
+find -name "f*" -o -size 512k       OR operator  
+find -not -name "f*"                NOT operator
+ 
+Find files/directories under /var/log/ directory that the group can write to, but others cannot read or write to
+sudo find /var/log/ -perm -g=w ! -perm /o=rw                          
+  
+
+
 ================================================ TAR / STAR
  
  create an archive requires 3 steps
@@ -156,21 +221,7 @@ archive also store permissions and ownership info
  
  tar cfj /home/bob/asset_backup.tar.bz2 --absolute-names /opt/assets/
 
-================================================ FIND
 
-#
-find /opt/assets -type f -perm 2664 -exec cp -p {} /home/bob/specialfiles/ \;
-
-SUID - 4
-SGID - 2
-Sticky bit - 1
--exec <command> {} \;
-      find will execute <command> and will substitute {} with the filename(s) found. 
-      with ; a single <command> for each file is executed 
-      escaped here as \; to prevent the shell from interpreting it
-
-{} \; : executing the commands for each found result
-{} + : executing the command once with all results argument like this -> ls file1.txt file2.txt file3.txt
 
 
 
@@ -470,9 +521,7 @@ lsblk -f
 file -L -s /dev/mapper/d2-vmStorage
 
 
-================================================================= FIND
 
-find /opt/assets/ -type f -exec grep -Iq . {} \; -print        find file that contains text, when the others are empty
 
 
 
