@@ -32,10 +32,15 @@ when copy it is a good practice to terminate with / whne it is directory
 #
 cp file.txt dir/
 cp file.txt dir ->this dir could be a file
-cp -r (recursive)
+cp -r (recursive - it will copy the directory (including all its contents)) cp -r /tmp/Invoice /home/user   It will have /home/user/Invoice/files
 cp -r Copy/ Paste/  with the paste dir already exist it will be under Paste/ this Paste/Copy/files and dir
                     with the paste dir doesnt exist it will be under Paste/ this Paste/files and dir
 when use move command mv, doesnt need to use the flag -r
+cp -a  (keep the attributes) - to learn more read this - https://medium.com/for-linux-users/linux-file-attributes-made-easy-8d100c0a5813
+(to deal with the attributes of the files install the package sudo yum install e2fsprogs)
+lsattr myfile.txt 
+--------------e----- myfile.txt
+
 
 #
 rm -r to delete directories
@@ -43,6 +48,10 @@ rm -r to delete directories
 #  
  mkdir and subdirectories ( -p flag)
  mkdir -p /tmp/1/2/3/4/5/6/7/8/9
+
+Move all content of
+#
+mv /home/bob/dir/* /home/bob/new-dir/
 
 
 ===================================================== Hostnamectl & /etc/hostname
@@ -72,13 +81,51 @@ apropos "nfs mount"
 check manuals programs packages installed on the system /usr/share/doc
 
 
+=================================================== SOFT LINKS
+ 
+ 
+ soft link points to a path, like a shortcut
+ 
+ ln -s /home/user/Pictures/picture.jpg /home/user/Desktop/pictures_shortcut.jpg
+ ln -s /tmp /home/bob/link_to_tmp
+ 
+ when you list ls -l it will show the " L " at the beginning like:  lrwx------
+ 
+ can use the command below to check the path link
+ readlink pictures_shortcut.jpg
+ 
+ if someone does change can break the link and it will be show in red when listed. to tackle that use relative paths to direct to the file 
+ and not the file itself, because if someone delete it wont work the link
+ 
+ can soft link files, directories, can be in different file systems
 
 
+===================================================   HARD LINKS   - INODE 
 
+A "hard link" is a directory entry that points to the same data on disk as a directory entry somewhere else.
 
+stat /home/user/picture.jpg
+it will show the inode. Inode remember all the pieces are store and keeps track like permissions, when modified, etc
+links. usually you have one link which it will link the absolute path file to the inode
 
+in case for example another user want to see the picture, you dont need copy and paste. This saves resource storage
 
+ln path_to_target_file path_to_link_file
+path_to_target_file - file you want to link
+path_to_link_file - name of the new directory you want the pictures be copied
 
+ln /home/user/Pictures/picture.jpg /home/new_user/Pictures/picture.jpg
+ln /tmp/hlink /home/bob/hlink
+
+if the user delete his file the new user still can have access to the pictures
+
+limitations
+  only for files, not directories
+  only link on the same file system
+  make sure has right permissions, the example above we might add the user and new_user to the same group ( useradd -a -G family user ,  useradd -a -G family new_user)
+
+Verify Hard links
+Use the ls -i command to view the inode number. Files that are hard-linked together share the same inode number. 
 
 
 ================================================ TAR / STAR
