@@ -51,6 +51,11 @@ Sticky bit - 1
 grep "passed" /home/bob/examresults > /home/bob/passed.txt
 grep "failed" /home/bob/examresults > /home/bob/failed.txt
 
+#
+grep -r [A-Z,a-z] /opt/assets/               find file that contains text, when the others are empty. And also print the content
+
+r: recursive
+
 
 ================================================ TUNED
 Sysadmins can use the static profiles to define specific performance parameters or allow the system to switch profiles dynamically depending on the existing workload.
@@ -360,6 +365,10 @@ find /opt/assets/ -type f -exec grep -Iq . {} \; -print        find file that co
  sudo mdadm --manage /dev/md0 --add /dev/vde 
  sudo mdadm --manage /dev/md0 --remove /dev/vde 
  cat /proc/mdstat             look the status of array
+ 
+ 
+in /etc/fstab
+/dev/md0 /raid xfs defaults 0 0
  
  
 ================================================================ Setup user and group disk quotas for filesystems
