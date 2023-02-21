@@ -1,4 +1,7 @@
 
+  ======================================             Essential Tools                    ===================================================================
+
+
 save all command output (both errors/warnings and normal output
 sudo ./script.sh > /home/bob/output.txt 2>&1 
 #
@@ -349,6 +352,18 @@ create an archive requires 3 steps
   
 before extract always check the content and the paths  
 archive also store permissions and ownership info
+
+
+===================================              Operate Running Systems                         ======================================
+
+
+
+
+
+
+
+
+
 
 
 ================================================ TUNED
