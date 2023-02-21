@@ -164,8 +164,8 @@ find -mtime 0     search for files per days or past-24hours periods
 0 past 24 hours
 1 24h to 48h
   
-modified
-find -cmin -5   modified last 5 minutes
+created
+find -cmin -5   created last 5 minutes
   
 find -size
 c bytes
@@ -190,8 +190,29 @@ find -not -name "f*"                NOT operator
  
 Find files/directories under /var/log/ directory that the group can write to, but others cannot read or write to
 sudo find /var/log/ -perm -g=w ! -perm /o=rw                          
+! expr : True if ‘expr’ is false.
+not to be r or w. That means, if any of these two permissions, r or w match for others, the result has to be excluded
   
+================================================ CHMOD  - SETUID, SETGID, STICKY BIT
 
+
+[S ; s (with x)] SETUID -  makes an executable run with the privileges of the owner of the file
+[S ; s (with x)]SETGID -  makes an executable run with the privileges of the group of the file.
+[T ; t (with x)] STICKY BIT - This permission does not affect individual files. At the directory level, it restricts file deletion. 
+                              Only the owner (and root) of a file can remove the file within that directory.
+
+4 - r
+2 - w
+1 - x
+
+u - user (owner)
+g - group
+o - other 
+a - all (u, g, and o)
+
+sudo chmod g+rw
+sudo chmod u-w
+chmod go+rw 
 
 ================================================ TAR / STAR
  
