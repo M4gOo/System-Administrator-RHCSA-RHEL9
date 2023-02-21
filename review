@@ -356,6 +356,82 @@ archive also store permissions and ownership info
 
 ===================================              Operate Running Systems                         ======================================
 
+===================================================  Boot, reboot, and shutdown a system safely
+
+
+systemctl - system control
+
+sudo systemctl reboot
+sudo systemctl poweroff
+
+sudo systemctl reboot --force
+sudo systemctl poweroff --force
+
+to "press" reset button
+sudo systemctl reboot --force --force
+
+"unplug" the system
+sudo systemctl poweroff --force --force
+
+to schedule a time to reboot or/and shutdown
+sudo shutdown 02:00   (2am)
+sudo shutdown +15     in 15min shutdown
+sudo shutdown -r 02:00    reboot -r
+sudo shutdown -r +15      reboot in 15min
+sudo shutdown -r +1 'Shceduled restart to do an offline-backup of our database'  -  single quotes, message to tell the user a message before reboot/shutdown
+sudo shutdown -c    to cancel shutdown
+
+
+===================================================================   Install, configure and troubleshoot bootloaders
+
+
+On a system booting through legacy BIOS mode, what file would you edit before generating a new grub configuration file
+/etc/default/grub
+
+what command would you use to generate the new grub configuration file
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+one of the programs that loads up when turn on the computer it is a bootloader, this is to start the linux kernel
+popular bootloader on linux is the GRUB
+
+problem with the bootloader so the OS wont boot at all. We can use an USB sticky and boot from there using troubleshooting
+then select - Rescue a CentOS Stream system 
+choose option 1
+chroot /mnt/sysroot
+grub2-mkconfig -o /boot/grub2/grub.cfg   - generate a GRUB conf file when you have BIOS
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg   - generate a GRUB conf file when you have EFI
+
+Install grub to /dev/vda
+#
+lsblk - need to set the grub at the beginning of the disk, first check the block device (check for sd or vd), look for /boot, /
+grub2-install /dev/sda
+dnf resinstall grub2-efi grub2-efi-modules shim (this is for EFI only)
+exit
+
+
+change GRUB conf
+sudo vim /etc/default/grub
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg - this is only for EFI
+sudo systemctl reboot
+
+
+===================================================  Boot or change system into different operating modes
+
+
+system's current default boot target can be basic.target, graphical.target , etc
+
+to check our default boot
+systemcl get-default
+graphical.target
+
+sudo systemctl set-default multi-user.target  
+sudo systemctl isolate graphical.target  (temporary gives a graphical prompt, after reboot back to the default you set to boot)
+sudo systemctl isolate emergency.target   (for troubleshooting, read permissions, few system are loaded). You must have root password
+sudo systemctl isolate rescue.target      (root permission, there will be more programs than emergency). You must have root password
+
+
+
 
 
 
