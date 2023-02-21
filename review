@@ -214,6 +214,71 @@ sudo chmod g+rw
 sudo chmod u-w
 chmod go+rw 
 
+
+=================================================================== HEAD, TAIL, TAC
+
+  tac file.txt   -> will see bottom to top  inside the file which is small
+  
+  cat file.txt    -> top to bottom inside the file which is small
+  
+  tail file.txt   ->  will see bottom to top  inside the file which is large, default is 10 lines
+  
+  tail -n 20 file.txt ->  will see bottom to top  inside the file which is large, shows 20 lines
+  
+  head file.txt   ->  will see top to bottom  inside the file which is large, default is 10 lines
+  
+  head -n 20 file.txt ->  will see top to bottom   inside the file which is large, shows 20 lines
+  
+  head -5 file.txt  ->  will see top to bottom   inside the file which is large, shows 5 lines
+  
+  
+ ===================================================================  SED 
+  
+  sed 's/old_string/new_string/g' file.txt
+  s -> substitute
+  g -> global replace
+  
+  sed -i 's/old_string/new_string/g' file.txt
+  -i -> will edit the file, it will swap the strings
+  
+  sed -i 's/disabled/enabled/gi'
+  gi - ignore case sensitive. For example, any string like disabled, DISABLED, Disabled
+  
+  
+  Change all values enabled to disabled only from line number 500 to 2000.
+  
+  sed -i '500,2000s/enabled/disabled/g' file
+  
+  Replace all occurrence of string #%$2jh//238720//31223 with $2//23872031223 i
+  
+  sed -i 's~#%$2jh//238720//31223~$2//23872031223~g' file
+  
+  
+  
+=================================================================== DIFF
+
+analyze files, see the differences between them 
+for the flags is good to look at diff --help
+
+diff file1 file2
+diff -c file1 file2 
+diff -y file1 file2  (side by side)
+sdiff -y file1 file2  (side by side)  
+
+
+
+=================================================================== CUT
+
+ cut -d ';' -f 2 testfile
+ 
+ 
+
+=================================================================== GREP 
+
+
+egrep -w '[A-Z][a-z]{2}' /etc/nsswitch.conf           starts with a capital letter and are then followed by exactly two lowercase letters  
+
+
 ================================================ TAR / STAR
  
  create an archive requires 3 steps
