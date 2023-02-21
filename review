@@ -1,5 +1,6 @@
 
-
+save all command output (both errors/warnings and normal output
+sudo ./script.sh > /home/bob/output.txt 2>&1 
 #
 id  uid,gid,...
 #
@@ -282,6 +283,7 @@ sdiff -y file1 file2  (side by side)
 
 
 egrep -w '[A-Z][a-z]{2}' /etc/nsswitch.conf           starts with a capital letter and are then followed by exactly two lowercase letters  
+grep -r [A-Z,a-z] /opt/assets/                        find file that contains text, when the others are empty. And also print the content
 egrep '[0-9]{5}' textfile                             file there's a number that has 5 digits
 grep -c '^2' textfile                                 how many numbers begin with a number 2
 grep -ic '^SECTION' testfile                          how many lines begin with string Section
@@ -294,13 +296,14 @@ grep -r 'c.t' /etc                                    execute, cat, cut
 grep -wr 'c.t' /etc/                                  cat, cut, cpt
 grep '\.' file                                        to search for DOT in a file
 grep '/.*/' /etc/                                     to search anything with /bla/, / /, /path/hello
+egrep 'disabled?'                                     will search for disabled, disable
+egrep 'disabled|enabled'                              match one thing or the other
 
 to avoid to use \ and get confuse with . and so on. It is good practice to use grep -E or egrep
 
 egrep -r '0{3,}' /path/                              to find at least 3 zeros 
 egrep -r '0{3}' /path/                               exactly 3 zeros
 egrep -r '0{3,5}' /path/                             range of zeros
-
  
 
 
@@ -308,6 +311,8 @@ egrep -r '0{3,5}' /path/                             range of zeros
 -i : ignore string case
 -w : exactly word
 -r : recursive search
+
+
 ================================================================ TAR / STAR
  
  create an archive requires 3 steps
@@ -336,20 +341,13 @@ archive also store permissions and ownership info
  
  tar cfj /home/bob/asset_backup.tar.bz2 --absolute-names /opt/assets/
 
-
-
-
-
-================================================ GREP
-
-#
-grep "passed" /home/bob/examresults > /home/bob/passed.txt
-grep "failed" /home/bob/examresults > /home/bob/failed.txt
-
-#
-grep -r [A-Z,a-z] /opt/assets/               find file that contains text, when the others are empty. And also print the content
-
-r: recursive
+create an archive requires 3 steps
+  Archiving - pack those files and dir into a single file backup.tar
+  Compress the archive (makes smaller size of the original) backup.tar.gz
+  Copy where you would keep your backup
+  
+before extract always check the content and the paths  
+archive also store permissions and ownership info
 
 
 ================================================ TUNED
