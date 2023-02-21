@@ -193,6 +193,7 @@ sudo find /var/log/ -perm -g=w ! -perm /o=rw
 ! expr : True if ‘expr’ is false.
 not to be r or w. That means, if any of these two permissions, r or w match for others, the result has to be excluded
   
+  
 ================================================ CHMOD  - SETUID, SETGID, STICKY BIT
 
 
@@ -216,6 +217,7 @@ chmod go+rw
 
 
 =================================================================== HEAD, TAIL, TAC
+
 
   tac file.txt   -> will see bottom to top  inside the file which is small
   
@@ -270,16 +272,43 @@ sdiff -y file1 file2  (side by side)
 =================================================================== CUT
 
  cut -d ';' -f 2 testfile
- 
+ cut -d ' ' -f 1 file.txt    first column that appears on each line
+ d - delimiter
+ ' ' -> words are separated by space, ',' words separated by comma
+ f -> fields we want extract
  
 
 =================================================================== GREP 
 
 
 egrep -w '[A-Z][a-z]{2}' /etc/nsswitch.conf           starts with a capital letter and are then followed by exactly two lowercase letters  
+egrep '[0-9]{5}' textfile                             file there's a number that has 5 digits
+grep -c '^2' textfile                                 how many numbers begin with a number 2
+grep -ic '^SECTION' testfile                          how many lines begin with string Section
+grep -w man testfile                                  match the only word
+grep -o 'string' /path                                output it will show only the word
+grep '^start' file                                    begin with start
+grep man file                                         any word with man. Like man, manpath, manual
+grep 'man$' file                                      $ - end of the line. Any line in which man is the last character on the line.
+grep -r 'c.t' /etc                                    execute, cat, cut
+grep -wr 'c.t' /etc/                                  cat, cut, cpt
+grep '\.' file                                        to search for DOT in a file
+grep '/.*/' /etc/                                     to search anything with /bla/, / /, /path/hello
+
+to avoid to use \ and get confuse with . and so on. It is good practice to use grep -E or egrep
+
+egrep -r '0{3,}' /path/                              to find at least 3 zeros 
+egrep -r '0{3}' /path/                               exactly 3 zeros
+egrep -r '0{3,5}' /path/                             range of zeros
+
+ 
 
 
-================================================ TAR / STAR
+-c : count
+-i : ignore string case
+-w : exactly word
+-r : recursive search
+================================================================ TAR / STAR
  
  create an archive requires 3 steps
     Archiving - pack those files and dir into a single file backup.tar
