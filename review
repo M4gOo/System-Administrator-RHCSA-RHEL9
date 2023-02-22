@@ -631,7 +631,8 @@ last
 lastlog  (ssh will see an IP addr)
 
 
-Manage tuning profiles ==========================================================================================================
+=================================================================         Manage tuning profiles 
+
 tuned is a service that monitors your system and optimizes the performance under certain workloads
 like High throughput systems, low latency and power saving
 
@@ -720,10 +721,7 @@ dos = mbr
 can select swap space
 
 
-
-
-
-Configure and manage swap space =================================================
+====================================================         Configure and manage swap space
 
 swap area wher linux can temporarily move some data from the computer RAM
 when you open a program and it is just there doing nothin and you want to open a browser, even doesnt have enough memory, linux
@@ -736,8 +734,12 @@ to make a partition be a swap area
 sudo mkswap /dev/vdb3   (check first with the command lsblk) - this command format a partition as swap space
 sudo swapon --verbose /dev/vdb3
 
+in /etc/fstab 
+/dev/vdb2 swap swap defaults 0 0
+
 But if you reboot the system the partition wont be used as swap
 sudo swapoff /dev/vdb3   stop using the partition as swap
+
 create a  file with empty zeros
 sudo dd if=/dev/zero of=/swap bs=1M count=128 status=progress
 dd will copy the if file to of, count means to write 1 megabyte block 128 times. it will be 128Megabytes
@@ -746,11 +748,19 @@ make sure so set proper permissions
 sudo chmod 600 /swap
 
 then
-sudo  mkswap /swap
+sudo mkswap /swap
 sudo swapon --verbose /swap
 
 
-Manage and configure LVM storage ===================================================================================
+Increase the existing swap (i.e /swapfile) size by 1GB
+sudo dd if=/dev/zero of=/swapfile bs=1M count=1024 oflag=append conv=notrunc
+sudo swapoff /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+
+===========================================================      Manage and configure LVM storage 
+
 lvm = logical volume manager
 free spaces in multiple portions of disk or if we have multiple discs that we would like to combine together
 
@@ -762,44 +772,51 @@ it will show a list of commands
 
 sudo dnf install lvm2
 pv -  physical volumes
- sudo lvmdiskscan
+ sudo lvmdiskscan     OR           sudo pvs                         when pvcreate you can check the disks are LVM
  sudo pvcreate /dev/sdc /dev/sdd
- sudo pvs
  sudo vgcreate <type_any_name_for_groupname> /dev/sdc /dev/sdd
- sudo vgextend  <type_groupname> /dev/sde          to extend the volume group
- sudo vgs       list volumes groups
- sudo vgreduce  <type_groupname>   /dev/sde   to remove a physical volume
- sudo pvremove /dev/sde           to remove entirely from lvm
- sudo lvcreate --size 2G --name partition1  <type_groupname>         need to add a partition, need to add a logical volume 
+ sudo vgextend  <type_groupname> /dev/sde                           to extend the volume group
+ sudo vgs                                                           list volumes groups
+ sudo vgreduce  <type_groupname>   /dev/sde                         to remove a physical volume
+ sudo pvremove /dev/sde                                             to remove entirely from lvm
+ sudo lvcreate --size 2G --name partition1  <type_groupname>        need to add a partition, need to add a logical volume 
  sudo lvresize --extents 100%VG  my_volume/partition1               to grow the logical volume after partition the disk
- sudo lvresize --size 2G   my_volume/partition1               to shrink
- sudo lvdisplay             check the lv and pv
- sudo mkfs.xfs   /dev/<type_groupname>/partition1                to store files and dir on a logical volume we need a filesystem
- sudo lvresize --resizefs --size 3G <type_groupname>/partition1             to resize a logical volume with the filesystem, they CANNOT SHRINK
+ sudo lvresize --size 2G   my_volume/partition1                     to shrink
+ sudo lvdisplay                                                     check the lv and pv
+ sudo lvremove volume1/smalldata                                    to remove the partition
+ sudo mkfs.xfs   /dev/<type_groupname>/partition1                   to store files and dir on a logical volume we need a filesystem
+ 
+ sudo lvresize --resizefs --size 3G <type_groupname>/partition1     to resize a logical volume with the filesystem
+ sudo lvresize -L 1G  volume1/smalldata                             example of resize
+ 
+ sudo mkfs.xfs /dev/volume1/smalldata                               create a file system for a LV
+ sudo fsck /dev/volume1/smalldata     OR  lsblk -f                  check the file system for the partition
  
  
- Create and configure encrypted storage ===================================================================================
+ =================================================================       Create and configure encrypted storage
+ 
  
  plane mode - we need to open the device 
- sudo cryptsetup --verify-passphrase open --type plain /dev/vde mysecuredisk
+ sudo cryptsetup open --type plain /dev/vde mysecuredisk
  open is to open the device for reading encrypted data from it and writing encrypted data to it
  mysecuredisk is the name of the disk you want
- --verify-passphrase is to type twice the passwor,because the plane mode doesnt check if the password is not correct
+ --verify-passphrase is to type twice the password,because the plane mode doesnt check if the password is not correct
  
  it will be saved in /dev/mapper/mysecuredisk
  act like a disk, which you can mount, create file system 
  sudo mkfs.xfs /dev/mapper/mysecuredisk
- sudo mount /dev/mapper/mysecuredisk /mnt
+ sudo mount /dev/mapper/mysecuredisk /mnt            TO unmount -> sudo umount /mnt
  it is important to close otherwise can be readable in /dev/mapper
- sudo umount /mnt
  sudo cryptsetup close mysecuredisk
  
+ 
+  
  LUKS - need format the storage and open
  another way to encypt and easier. Format the disk or partition we intend to use with linux encryption
- sudo cryptsetup luksFormat /dev/vde
+ sudo cryptsetup luksFormat /dev/vde        /dev/vde is formatted to be used with LUKS encryption. /dev/vde should be mapped to an unencrypted device called secretdisk
+ sudo cryptsetup open /dev/vde mysecuredisk  
  sudo cryptsetup luksChangeKey /dev/vde      change the password the encryption key
  once formatted can open using
- sudo cryptsetup open /dev/vde mysecuredisk
  we dont need specify the type of encryption when we format a device with Luks that writes a very small block of data to the storage
  called header
  sudo mkfs.xfs /dev/mapper/mysecuredisk
