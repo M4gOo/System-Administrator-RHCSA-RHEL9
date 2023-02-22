@@ -864,6 +864,8 @@ pv -  physical volumes
  #
   cat /proc/mdstat             look the status of array
  
+ in /etc/fstab
+ /dev/md0 /raid xfs defaults 0 0
  
  
 ================================================================    Create, manage and diagnose advanced file system permissions 
@@ -882,7 +884,7 @@ pv -  physical volumes
  sudo setfacl --recursive --remove user:<username> dir/                 to remove ucl dir and subdir/files as well
 
 
-========================================================== Chattr, lsattr
+========================================================== chattr, lsattr
 
 cannot delete the file even the owner or root
 to only append to a file, this way you can not overwrite like
@@ -919,6 +921,8 @@ sudo vim /etc/fstab
  sudo edquta --group <group_name>
 
 
+Edit disk quotas for the user called john. Set a soft limit of 100 megabytes and hard limit of 500 megabytes on /mnt partition.
+sudo xfs_quota -x -c 'limit bsoft=100m bhard=500m john' /mnt/
 
 
 
