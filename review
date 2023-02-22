@@ -926,48 +926,170 @@ sudo xfs_quota -x -c 'limit bsoft=100m bhard=500m john' /mnt/
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
- 
- 
-
 =========================                Create and Configure File Systems                ======================================================
 
+----------------------------------------------------  mkfs
+centOS use xfs file system, but can use ext4
+
+sudo mkfs.xfs /dev/sdb1    
+sudo mkfs.ext4 /dev/sdb1
+
+sudo mkfs.xfs   - it will show many flags we can use
+xfs             - double TAB to check more utilities
+
+sudo mkfs.xfs -L "DataDisk" /dev/vdb          label DataDisk
+sudo tune2fs -l /dev/sdb2                     this is to change in the ext4 filesystem
+sudo mkfs.ext4 -N 2048 /dev/vdc               ext4 filesystem with a number of 2048 inodes on /dev/vdc
+man mkfs.ext4
+man mkfs.xfs
+
+/etc/fstab
+/swap_file none swap defaults 0 0             add swap after boot
+/swap_file swap swap defaults 0 0
 
 
-======================================================================== Create FileSystem
+===================================================================   Create, mount, unmount, and use vfat file systems
 
-mkfs.xfs block-device
+------------------------------------------------------- vfat   
+
+vfat virtual file allocation table
+is used primarily for compability reasons, every OS can read files from vfat file systems
+is used to share storage between windows and linux
+
+to change the partition type use
+sudo fdisk /dev/vdb       t for type; b for W95 FAT32
+sudo mkfs.vfat /dev/vdb1      up to 2GB in size
+sudo mkfs.vfat -F 32 /dev/vdb1     2GB or larger size, up to 16TB with 4096 byte per sector
+
+sudo mkdir /myvfat
+sudo mount /dev/vdb1 /myvfat/
+sudo vi /etc/fstab
+      /dev/vdb1 /myvfat vfat defaults 0 0
+sudo umount /myvfat/
 
 
-mount -t TYPE DEVICE_NAME DIRECTORY
--t option to specify the file system
+================================================================== Configure systems to mount file systems at or during boot
 
-
- It instructs the operating system that filesystem is ready to use and associate it with a particular point in the system's hierarchy. 
- Mounting will make files, directories and devices available to the users.
+It instructs the operating system that filesystem is ready to use and associate it with a particular point in the system's hierarchy. 
+Mounting will make files, directories and devices available to the users.
 The mount command is used to make a device or file system accessible to the system, and then to connect 
 its root directory to a mount point on the local file system.
 
-Mounting is the act of associating a storage device to a particular location in the directory tree. For example, when the system boots, a particular storage device (commonly called the root partition) is associated with the root of the directory tree, i.e., that storage device is mounted on / (the root directory).
 
-Let's say you now want to access files on a CD-ROM. You must mount the CD-ROM on a location in the directory tree (this may be done automatically when you insert the CD). Let's say the CD-ROM device is /dev/cdrom and the chosen mount point is /media/cdrom. The corresponding command is
+the files can be accesible we must first mount
+first look at a dir often used for temporarily mounting random filesystem
+  ls /mnt/
 
-mount /dev/cdrom /media/cdrom
-After that command is run, a file whose location on the CD-ROM is /dir/file is now accessible on your system as /media/cdrom/dir/file. When you've finished using the CD, you run the command umount /dev/cdrom or umount /media/cdrom (both will work; typical desktop environments will do this when you click on the “eject” or ”safely remove” button).
+to mount we use
+sudo mount /dev/vdb1 /mnt/
+
+with the file system mounted then we can create file on it
+sudo touch /mnt/testfile
+
+to see the block is mounted
+lsblk
+
+to unmount a file system use
+sudo umount /mnt/
+
+--------------------------------------------------------    /etc/fstab
+
+ The fstab file typically lists all available disks and disk partitions, and indicates 
+ how they are to be initialized or otherwise integrated into the overall system's file system
 
 
-======================================================================  STRATIS
+/dev/mapper/cs-root   /   xfs   defaults  0   0
+1 - tell linux to mount the file system contained in the partition
+2 - specify the mount point
+3 - filesystem type
+4 - mount options
+5 - tell the utility dump should back up the files (0 is disabled; 1 enabled) - it is not used nowadays
+6 - decide what to do when errors are detected  (0 filesystem shoud never be scanned for erros; 1 scan first for errors before - root filesystem
+; 2 scan after scan number 1 - other filesystems, like /dev/vdc (this filesystem should be checked on boot))
+
+man fstab
+
+sudo vim /etc/fstab
+/dev/vdb1/    /mybackups    xfs   defaults 0  2
+
+sudo systemctl daemon-reload
+
+mount swap partition when boot up
+sudo vim /etc/fstab
+/dev/mapper/cs-swap    none    swap   defaults 0  0
+/dev/vdb3   none      swap    defaults 0 0 
+
+
+you can use UUID, to avoid connect the storages in diferent connectors on motherboard, instead to use in fstab /dev/vdb1/
+you can check the uuid in
+sudo blkid /dev/vdb1
+
+
+
+=================================================================     Configure disk compression 
+
+Virtual Data Optimizer (VDO) is a block virtualization technology that provides transparent deduplication of data. 
+By eliminating redundant chunks of data, VDO can greatly reduce actual used disk capacity.
+
+virtual data optimizer - VDO
+helps with zero-block filtering; deduplication and compression
+
+zero-block filtering -look all the block and filters out block that contain only zeros (no data)
+
+deduplication - video check if data has been written to the disc already in another place
+
+compression - compress the data and packed together to save space on the disk
+
+
+sudo yum install vdo
+
+sudo systemctl enable --now vdo
+
+sudo vdo create --name=vdo_storage --device=/dev/vdb --vdoLogicalSize=10G
+
+sudo vdostats --human-readable
+
+sudo mkfs.xfs -K /dev/mapper/vdo_storage  
+
+sudo udevadm settle
+
+sudo vdostats --human-readable
+
+mount vdo devices
+
+sudo mkdir /mnt/myvdo
+
+sudo vi /etc/fstab
+      /dev/mapper/vdo_storage       /mnt/myvdo        xfs   _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service 0 0
+       _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service  -> mount options are required for all video devices to be mounted
+       at boot time, the service needs to be load before the device can be mounted again.
+
+df -h /mnt/myvdo
+
+-----------------------------------------------------------  saving space with VDO 
+
+Virtual Data Optimizer (VDO) is a block virtualization technology that provides transparent deduplication of data. 
+By eliminating redundant chunks of data, VDO can greatly reduce actual used disk capacity.
+
+
+rhel9  
+sudo pvcreate /dev/vdb
+sudo vgcreate vdo_volume /dev/vdb
+sudo lvcreate --type vdo -n vdo_storage -L 100%FREE -V 10G vdo_volume/vdo_pool1
+sudo mkfs.xfs -K /dev/vdo_volume/vdo_storage     OR     sudo mkfs.ext4 -E nodiscard /dev/vdo_volume/vdo_storage 
+
+
+mounting lvmvdo devices
+
+manlvmvdo
+sudo mkdir /mnt/myvdo
+sudo vi /etc/fstab
+                   /dev/vdo_volume/vdo_storage       /mnt/myvdo        xfs   defaults    0 0
+sudo mount -a
+df -h /mnt/myvdo
+
+
+=======================================================================   Manage layered storage 
 
 Stratis is a local storage management tool. Manages pools of physical storage, helps simplify storage management
 central component of Stratis is the storage pool, they are created from one or more disks or partitions, after created volumes can be
@@ -990,11 +1112,16 @@ sudo stratis blockdev
 
 create a filesystem
 sudo stratis fs create my-pool myfs1                  myfs1 is the filesystem create on top of the pool
+sudo stratis fs create developers devfs               one example to create fs on top of the developers pool
 sudo stratis fs
 
 sudo mkdir /mnt/mystratis
 sudo vi /etc/fstab 
             /dev/stratis/my-pool/myfs1  /mnt/mystratis      xfs   x-systemd.requires=stratisd.service  0   0
+            /dev/stratis/developers/devfs /mnt/devstorage xfs x-systemd.requires=stratisd.service 0 0
+
+/dev/stratis/developers/devfs         Can be seeing using the command sudo stratis fs
+
 sudo mount -a
 sudo cp /home/username/file /mnt/mystratis
 
@@ -1004,15 +1131,19 @@ sudo stratis pool
 
 filesystem snapshots
 sudo stratis fs snapshot my-pool myfs1 myfs1-snapshot
+sudo stratis fs snapshot developers devfs devfs-snapshot
 sudo stratis fs   to check the snapshot
 
 to recover from snapshot
 rename the current statis file system 
-sudo stratis fs rename my-pool myfs1 myfs1-old
+sudo stratis fs rename my-pool myfs1 myfs1-old         sudo stratis fs rename developers devfs devfs-bad (another example)
 next rename the snapshot to use the original filesystem name
 sudo stratis fs rename my-pool myfs1-snapshot myfs1
 sudo umount /mnt/mystratis
 sudo mount /mnt/mystratis
+
+
+
 
 
 
@@ -1085,70 +1216,11 @@ sudo yum -y module install container-tools:3.0 --skip-broken --allowerasing --no
 
 
 
-================================================================= /etc/fstab
- The fstab file typically lists all available disks and disk partitions, and indicates 
- how they are to be initialized or otherwise integrated into the overall system's file system
-
-
-===================================================== how to check the filesystem type of a logical volume
-lsblk -f
-file -L -s /dev/mapper/d2-vmStorage
-
-
-
-
-
-
-================================================================= RAID
-
- raid 0 - stripped, if we lose one disk all data will be lost
- raid 1 - redundant, mirror array, clone all data in all storages
- raid 5 - min 3 disk, has parity on each disk (used to rebuilt in lost of data), can lose 1 disc
- radi 6 - 4 discs, can lose 2 discs and still recovers data
- raid 10  - combination level 0 and 1
  
- sudo mdadm --create /dev/md0 --level=0 --raid-devices=3 /dev/vdc /dev/vdd /dev/vde
- sudo mkfs.ext4 /dev/md0
- sudo mdadm --stop /dev/md0    to stop or deactivate an array
- sudo mdadm --zero-superblock /dev/vdc /dev/vdd /dev/vde   to avoid the linux when bootup looking for arrays, if dont use this command linux will 
- built the array 
- sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/vdc /dev/vdd --spare-devices=1 /dev/vde      add spare disk in an array
- add/remove more disks on the array /dev/md0
- sudo mdadm --manage /dev/md0 --add /dev/vde 
- sudo mdadm --manage /dev/md0 --remove /dev/vde 
- cat /proc/mdstat             look the status of array
- 
- 
-in /etc/fstab
-/dev/md0 /raid xfs defaults 0 0
- 
- 
-================================================================ Setup user and group disk quotas for filesystems
 
-quotas is a simple way to limit how much storage space each user or group can use
+ 
 
-sudo dnf install quota
-sudo vim /etc/fstab
-      /dev/vdb1 /mybackups xfs ro,noexec 0 2
-      /dev/vdb1 /mybackups xfs defaults,usrquota,grpquota 0 2   ->add defaults,usrquota,grpquota
- then save the file and reboot
- sudo systemctl reboot
- sudo quotacheck --create-files --user --group /dev/vdb2       it will create to files in a filesystem aquota.group and aquota.user
- sudo quotaon /mnt    this is when you mount in /mnt
- 
- create a file with a specific size
- fallocate --length 100M /path/dir/100Mfile
- 
- to edit quotas to a user
- sudo edquota --user <username>
- sudo quota --user <username>    if the user use more than capacity, it will have a grace period wwith that the user wont be able to write any data
- sudo quota --edit-period        to edit the grace period, soft limit
- sudo edquta --group <group_name>
- 
- 
-====================================================================================== VDO
-Virtual Data Optimizer (VDO) is a block virtualization technology that provides transparent deduplication of data. 
-By eliminating redundant chunks of data, VDO can greatly reduce actual used disk capacity.
+
 
 
 
