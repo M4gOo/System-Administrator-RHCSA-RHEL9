@@ -299,8 +299,8 @@ grep -r 'c.t' /etc                                    execute, cat, cut
 grep -wr 'c.t' /etc/                                  cat, cut, cpt
 grep '\.' file                                        to search for DOT in a file
 grep '/.*/' /etc/                                     to search anything with /bla/, / /, /path/hello
-egrep 'disabled?'                                     will search for disabled, disable
-egrep 'disabled|enabled'                              match one thing or the other
+egrep 'disabled?' file                                will search for disabled, disable
+egrep 'disabled|enabled' file                         match one thing or the other
 
 to avoid to use \ and get confuse with . and so on. It is good practice to use grep -E or egrep
 
@@ -382,6 +382,78 @@ sudo shutdown -r +1 'Shceduled restart to do an offline-backup of our database' 
 sudo shutdown -c    to cancel shutdown
 
 
+===================================================  Boot or change system into different operating modes
+
+
+system's current default boot target can be basic.target, graphical.target , etc
+
+to check our default boot
+systemcl get-default
+graphical.target
+
+#
+systemctl get-default
+systemctl set-default
+ls -l /usr/lib/systemd/system/
+
+sudo systemctl set-default multi-user.target  
+sudo systemctl isolate graphical.target  (temporary gives a graphical prompt, after reboot back to the default you set to boot)
+sudo systemctl isolate emergency.target   (for troubleshooting, read permissions, few system are loaded). You must have root password
+sudo systemctl isolate rescue.target      (root permission, there will be more programs than emergency). You must have root password
+
+systemd targets
+Targets in systemd act as synchronization points during the start of your system.
+The purpose of target units is to group together various systemd units through a chain of dependencies.
+The graphical.target unit for starting a graphical session, starts system services such as the GNOME Display Manager 
+(gdm.service) or Accounts Service (accounts-daemon.service), 
+and also activates the multi-user.target unit.
+
+basic
+unit target covering basic boot-up
+
+rescue
+unit target that pulls in the base system and spawns a rescue shell
+
+multi-user
+unit target for setting up a multi-user system
+
+graphical
+unit target for setting up a graphical login screen
+
+emergency
+unit target that starts an emergency shell on the main console. provides the most minimal environment possible and allows you to repair your system even 
+in situations when the system is unable to enter rescue mode. In emergency mode, the system mounts the root file system only for reading, 
+does not attempt to mount any other local file systems, does not activate network interfaces, and only starts a few essential services.
+
+sysinit
+unit target that pulls in the services required for system initialization
+
+
+===========================================================  Interrupt the boot process in order to gain access to a system 
+
+When the PC is start, press down when you see the grub boot screen and chose one of the kernel and press E
+at the bottom type rd.break. When boot it will be in the emergency mode
+this command can help when you lost the root password on RHEL8
+mount -o remount rw /sysroot
+cd /sysroot
+chroot /sysroot
+passwd root
+touch /.autorelabel -hidden file in the root dir
+reboot
+exit
+
+on RHEL9
+When the PC is start, press down when you see the grub boot screen and chose one of the kernel and press E
+at the second line after r\o and before crashkernel
+change r\o to r\w
+ctrl + e - to go to end of line
+init=/bin/bash
+ctrl + x
+passwd (after reboot, in the terminal as root)
+touch /.autorelabel -hidden file in the root dir. this fix the SELinux config
+exec /sbin/init
+
+
 ===================================================================   Install, configure and troubleshoot bootloaders
 
 
@@ -416,70 +488,28 @@ grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg - this is only for EFI
 sudo systemctl reboot
 
 
-===================================================  Boot or change system into different operating modes
+========================================================================== Diagnose and manage processes
+
+man ps   -then type /EXAMPLES
+
+ps a is different than ps -a
+
+ps will show programs launched in our current terminal window or session
+
+ps aux -display all process in the machine. 
+        ax show all process
+        u list processes in a user oriented format (can see useful column like CPU and memory)
+        
+top
+ps <PID>
+ps u <PID>    cpu and memory
+ps -U <username>
+ps u -U <username>
+pgrep -a <process>
 
 
-system's current default boot target can be basic.target, graphical.target , etc
+------------------------------------------         niceness value
 
-to check our default boot
-systemcl get-default
-graphical.target
-
-sudo systemctl set-default multi-user.target  
-sudo systemctl isolate graphical.target  (temporary gives a graphical prompt, after reboot back to the default you set to boot)
-sudo systemctl isolate emergency.target   (for troubleshooting, read permissions, few system are loaded). You must have root password
-sudo systemctl isolate rescue.target      (root permission, there will be more programs than emergency). You must have root password
-
-
-
-
-
-
-
-
-
-
-
-
-
-================================================ TUNED
-Sysadmins can use the static profiles to define specific performance parameters or allow the system to switch profiles dynamically depending on the existing workload.
-A profile is a set of rules that defines certain system parameters such as disk settings, kernel parameters, network optimization settings, and many other aspects of the system.
-
-
-================================================ systemd targets
-Targets in systemd act as synchronization points during the start of your system.
-The purpose of target units is to group together various systemd units through a chain of dependencies.
-The graphical.target unit for starting a graphical session, starts system services such as the GNOME Display Manager (gdm.service) or Accounts Service (accounts-daemon.service), 
-and also activates the multi-user.target unit.
-
-#
-systemctl get-default
-systemctl set-default
-ls -l /usr/lib/systemd/system/
-
-basic
-unit target covering basic boot-up
-
-rescue
-unit target that pulls in the base system and spawns a rescue shell
-
-multi-user
-unit target for setting up a multi-user system
-
-graphical
-unit target for setting up a graphical login screen
-
-emergency
-unit target that starts an emergency shell on the main console. provides the most minimal environment possible and allows you to repair your system even 
-in situations when the system is unable to enter rescue mode. In emergency mode, the system mounts the root file system only for reading, 
-does not attempt to mount any other local file systems, does not activate network interfaces, and only starts a few essential services.
-
-sysinit
-unit target that pulls in the services required for system initialization
-
-
-=============================================== niceness value
 Niceness value is a number attached to processes in *nix systems   
 is used to decide how much CPU time is allocated to it.
 used to change the priority of a process, which, in effect, determines the urgency with which it is executed in the system. 
@@ -496,12 +526,151 @@ The renice command sets the priority of an already running process.
  ps -l
  ps -le | grep <service>
  top
+ ps lax
  
  #
  sudo renice -n <-20 to 19>  -p <PID>
  nice -nice_value command-arguments
  sudo renice -n 5 -u <username>       modify the priority of all processes owned by a group
  sudo renice -n 5 -g <groupname>      modify the priority of all processes owned by a user
+
+nice -n 11 <process>    
+
+regular user can only assign nice number between 0 to 19
+
+ps l    will show the nice value in the column (NI)
+
+to change the nice number when the process is up
+sudo renice <nice_value> <PID>
+
+-----------------------------------------------------------  to give signals to the programs - SIGHUP SIGKILL
+
+#
+sudo kill -SIGHUP <pid>
+
+The SIGHUP signal is used by some utilities as a way to notify the process to do something, such as re-read its configuration file. 
+The SIGHUP signal is also sent to a process if the remote connection is lost or hangs up. 
+The SIGKILL signal is used to abort a process, and the SIGSTOP signal is used to pause a process.
+
+list of signals 
+kill -L
+
+
+------------------------------------------------------  background and foreground process
+
+ctrl + Z -> background process. the process will be frozen
+fg        -> bring back to foreground
+
+
+to run in back ground use the &
+sleep 300&
+
+check commands in the background  
+jobs  
+when you use the & and wants bring back use
+jobs command to see the programs are running and also the number then
+fg <select_the_number>
+
+if the job is stopped with ctrl+z  use the jobs command to check the number and then use
+bg <select_the_number>
+
+
+------------------------------------------------------ LSOF
+
+what files or dir resources using right now
+for example to see which files and dir bash process is currently using
+lsof
+ls - list
+of- open files
+
+sudo lsof -p <PID>
+
+lsof command is mainly used to retrieve information about files that are opened by various processes. 
+Open files in a system can be disk files, network sockets, named pipes and devices.
+The lsof command stands for LiSt Open Files and shows open files and which process uses them
+
+#
+lsof -p <PID>
+lsof /proc
+lsof -u admin
+lsof -i TCP:22
+
+
+============================================================================== Locate and analyze system log files 
+
+
+log daemon rsyslog is the popular in Linux that stores all logs in /var/log
+
+ls /var/log/
+
+grep -r 'ssh' /var/log/
+
+system logs
+/var/log/messages
+/var/log/
+
+tail -F /var/log/secure   (you can watch the log waiting for inputs; liveview)
+
+journalctl              ( > you can use to navigate)
+journalctl /bin/sudo
+journalctl -u sshd.service
+journalctl -e                 (go to end to the journalctl)
+journalctl -F                 (liveview)
+journalctl -p err             (use journalctl -p to list those using 2 TAB -> (err, alert, crit, debug, emerge, info, notice, warning, ...))
+journalctl -S 02:00                     -S for specify time
+journalctl -S 01:00 -U 02:00            logs started in 01:00 to 02:00
+journalctl -S  '2021-11-16 12:04:55'
+sudo journalctl -p info -g '^c'               Analyse the info priority logs through journalctl that begin with letter c
+journalctl logs are reset after reboot/power off, to save create /var/log/journal/
+
+
+to see who is logged in the system
+last     
+lastlog  (ssh will see an IP addr)
+
+
+Manage tuning profiles ==========================================================================================================
+tuned is a service that monitors your system and optimizes the performance under certain workloads
+like High throughput systems, low latency and power saving
+
+when installed it will automatically selects what it believes is the best profile for youyr system
+if the High throughput is selected in a VM the virtual guest profile would get selected
+
+Sysadmins can use the static profiles to define specific performance parameters or allow the system to switch profiles dynamically 
+depending on the existing workload.
+A profile is a set of rules that defines certain system parameters such as disk settings, kernel parameters, network optimization settings, 
+and many other aspects of the system.
+
+
+sudo yum install tuned
+sudo systemctl enable --now tuned
+tuned-adm --help
+tuned-adm active                show the active profile
+tuned-adm verify
+tuned-adm list
+tuned-adm profile balanced
+tuned-adm profile_info
+tuned-adm recommend
+tuned-adm auto_profile
+tuned-adm profile_mode
+tuned profiles are located in /usr/lib/tuned   
+/etc/tuned      main configuration custom profiles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ============================================== swap 
