@@ -1,0 +1,11 @@
+
+Shell variables (is case sensitive) to assigned a value, which can be number, character or a string
+Value assignment with "=" sign. No space permitted on both side of = sign when initializing variables.
+  Variable1=Bee
+  Variable2=:'this is a STRINGGGG!!'
+  
+Variables can be assigned with the value of a command output. This is referred to as substitution. 
+Substitution can be done by encapsulating the command with `` (back-ticks) or with $()
+
+$(ls /home/bob/assets/)
+when the script runs, it will run the command inside the $() parenthesis and capture its output.
