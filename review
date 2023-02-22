@@ -1,4 +1,4 @@
-
+  
   ======================================             Essential Tools                    ===================================================================
 
 
@@ -1161,9 +1161,10 @@ crontab -e
   
 crontab -l   - to see user logged in cronjobs
 
-to edit as sudo just add usdo at the front
-sudo crontab -l   
-sudo crontab -e
+to edit as sudo just add sudo at the front
+sudo crontab -l       list
+sudo crontab -e       edit
+30 21 * * * /usr/bin/touch test_passed
 
 to add with different user
 sudo crontab -e -u <username>
@@ -1190,18 +1191,26 @@ using anacron we dont care the time the job is going to run, just want to run da
 to add a job need to edit the file
 sudo vim /etc/anacrontab
 
+run once every 10 days
+have 5 minutes of delay
+the job id should be db_cleanup
+command to run is: /usr/bin/touch /root/anacron_created_this
+
+10 5 db_cleanup /usr/bin/touch /root/anacron_created_this
+
+
 can use anacron -T  to test the job
 
 sudo vim /etc/anacrontab
 
-to run the jobs right now
-sudo anacron -n
+to run the jobs right now, to rerun all jobs, regardless of when they were last executed
+sudo anacron -n -f
 
-check the logs
+check the logs, analyse to see if anacron jobs have successfully ran
 sudo grep anacron /var/log/cron
 
 
-Scheduling jobs with at ------------------------------
+------------------------------------------------------   Scheduling jobs with at 
 just specify the time
 
 at 15:00
@@ -1212,13 +1221,19 @@ at 'December 01 2020'
 at '1:30 December 01 2020'
 at 'now + 30 minutes'     in 30 minutes from now
 
-atq   to see the jobs
+atq               to see the jobs, command to see the jobs that are scheduled to run in at utility
 at -c <job_id>    to see what the jobs does
 
 atrm <job_id>     to remove the job
 
 
-Manage the startup process and services =============================================================================
+sing root user, schedule below given command to run at 15:30 August 20 2024 by using at utility:
+/usr/bin/touch atscheduler
+Switch to the root user using sudo -i command, then execute command at '15:30 August 20 2024'
+Add /usr/bin/touch atscheduler line, enter,   then save it by pressing CTRL+D
+
+
+============================================================        Manage the startup process and services 
 
 units - services, socket, device, timer
 units tells the init system all it needs to know about how it should manage the entire life cycle of certain app
@@ -1234,9 +1249,14 @@ sudo systemctl edit --full sshd.service
 
 when change the config use 
 sudo systemctl restart sshd.service
-but if a user is using that service may interrupt their work temporarily, better way is to use (not all servicxe can use reload)
+but if a user is using that service may interrupt their work temporarily, better way is to use (not all service can use reload)
 sudo systemctl reload sshd.service
 sudo systemctl reload-or-restart sshd.service
+daemon-reload is a reload for systemd, while reload is a reload for a specific service
+
+mask a service
+When you mask a service, it cannot be started manually. In other words, masking a service renders the service permanently unusable until it's unmasked.
+A masked service is one whose unit file is a symlink to /dev/null . This makes it "impossible" to load the service, even if it is required by another, enabled service.
 
 sometimes services start even there are disabled and stopped
 to force brute stop
@@ -1246,8 +1266,10 @@ sudo systemctl unmask atd.service
 to list services available on the system
 sudo systemctl list-units --type service --all
 
+systemctl is-enabled httpd          command to check the service is enable/disable
 
-Install and update software packages from Red Hat Network, a remote repository, or from the local file system=========================================
+
+=========================================  Install and update software packages from Red Hat Network, a remote repository, or from the local file system
 
 package manager - dnf, yum
 
@@ -1261,7 +1283,7 @@ sudo yum repolist --all
 sudo subscription-manager repos --enable <repo.rpms>
 sudo yum-config-manager --enable <repo.rpms>
 
-if we dont fid the repo we want and want add other repo
+if we dont find the repo we want and want add other repo
 use the yum conf manager
 first install this utilities
 sudo yum install yum-utils    this contains yum manager
@@ -1270,7 +1292,7 @@ sudo yum-config-manager --add-repo <IP/Repo.repo>       add the repo local
     with that will create /etc/yum.repos.d/<repo>.repo
 
 
-sudo viu /etc/yum.repos.d/<repo>.repo
+sudo vi  /etc/yum.repos.d/<repo>.repo
 [base]    ->name of the repo
 name=CentOS-$releasever - Base      -> long name for the repo
 mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra
@@ -1278,6 +1300,18 @@ mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo
 enabled = 1         -> 1 means available for use 
 gpgcheck=1          -> check the validity of the package using gpg keys
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7     ->where is the gpg located
+
+Create a yum repo file located at /etc/yum.repos.d/kodekloud.repo as per details given below:
+short name: KodeKloud
+long name: KodeKloud - $basearch
+baseurl: https://repos.kodekloud.com/linux/$releasever/$basearch/development
+Also make sure it is set to be enabled
+
+sudo vi /etc/yum.repos.d/kodekloud.repo           - this looks like /etc/yum.repos.d/CentOS-Stream-BaseOS.repo
+[KodeKloud]
+name=KodeKloud - $basearch
+baseurl=https://repos.kodekloud.com/linux/$releasever/$basearch/development
+enabled=1
 
 
 yum can also used to install and uninstall individual packages from repo
@@ -1293,9 +1327,9 @@ sudo yum reinstall <package>
  
 sudo yum remove <package>
 
-to install packages in a certain grop
+to install packages in a certain group
 sudo yum group list
-sudo yum group list --hidden
+sudo yum group list --hidden               display all of the possible package groups, including those that are hidden
 sudo yum group install '<groupname>'
 
 yum can install software from rpm packages
@@ -1312,11 +1346,7 @@ update and upgrade packages
 sudo yum check-upgrade  check which package needs an update
 sudo yum update     to update all packages to the latest version
 
-
-
-
-=================================         WORKING WITH PACKAGES MODULES STREAM                       ==============================================
-=================================================================== modules   
+--------------------------------------------------------------------- WORKING WITH PACKAGES MODULES STREAM   
 
 stream allow to designate multiple versions of software packages to group together as modules
 give greater flexibility and compatibility options
@@ -1324,6 +1354,7 @@ module is a set of packages that normally get installed together
 
 available modules
 sudo yum module list
+sudo yum module list <service>
 
 install
 sudo yum module  install nodejs
@@ -1336,11 +1367,11 @@ sudo yum install module nodejs:14/development
 to change the module 
 sudo yum module reset nodejs
 sudo yum module  install nodejs:16/development
+sudo yum module install php:8.0/minimal -y                                install the version 8.0 of the php module using the minimal profile
 
 Reset the module stream for the container-tools package as below:
 sudo yum -y module reset container-tools
 Then use yum to install version 3.0 of the container-tools package with below command:
-
 
 sudo yum -y module install container-tools:3.0 --skip-broken --allowerasing --nobest
 
