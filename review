@@ -1145,12 +1145,10 @@ sudo mount /mnt/mystratis
 
 
 
-
-
 ====================================              Deploy, Configure, and Maintain Systems                ================================================
 
 
-================================================================== CRONTAB  
+----------------------------------------------------------------------   CRONTAB  
 
 cat /etc/crontab 
   can use  ',' this it will run multiple times like 15min and 45minutes -> 15,45
@@ -1183,6 +1181,139 @@ check the logs
 sudo cat /var/log/cron
 
 to send an email to user change the MAILTO=root
+
+
+---------------------------------------------------------   Scheduling jobs with anacron 
+
+using anacron we dont care the time the job is going to run, just want to run daily, hourly,...
+
+to add a job need to edit the file
+sudo vim /etc/anacrontab
+
+can use anacron -T  to test the job
+
+sudo vim /etc/anacrontab
+
+to run the jobs right now
+sudo anacron -n
+
+check the logs
+sudo grep anacron /var/log/cron
+
+
+Scheduling jobs with at ------------------------------
+just specify the time
+
+at 15:00
+at> /usr/bin/touch  file
+ctrl +d to save the job
+
+at 'December 01 2020'
+at '1:30 December 01 2020'
+at 'now + 30 minutes'     in 30 minutes from now
+
+atq   to see the jobs
+at -c <job_id>    to see what the jobs does
+
+atrm <job_id>     to remove the job
+
+
+Manage the startup process and services =============================================================================
+
+units - services, socket, device, timer
+units tells the init system all it needs to know about how it should manage the entire life cycle of certain app
+
+man systemd.service
+
+systemctl cat sshd.service
+execstart
+execreload
+those command tells the init which command should run
+
+sudo systemctl edit --full sshd.service
+
+when change the config use 
+sudo systemctl restart sshd.service
+but if a user is using that service may interrupt their work temporarily, better way is to use (not all servicxe can use reload)
+sudo systemctl reload sshd.service
+sudo systemctl reload-or-restart sshd.service
+
+sometimes services start even there are disabled and stopped
+to force brute stop
+sudo systemctl mask atd.service    when you mask a service when you enable it wont work, need unmask
+sudo systemctl unmask atd.service
+
+to list services available on the system
+sudo systemctl list-units --type service --all
+
+
+Install and update software packages from Red Hat Network, a remote repository, or from the local file system=========================================
+
+package manager - dnf, yum
+
+list of which repo are currently enabled on the server/host
+sudo yum repolist
+sudo yum repolist -v    get a list of online repo, that your system is currently using 
+
+sometimes the default repo dont include what we are looking for 
+to list the optionals repo
+sudo yum repolist --all
+sudo subscription-manager repos --enable <repo.rpms>
+sudo yum-config-manager --enable <repo.rpms>
+
+if we dont fid the repo we want and want add other repo
+use the yum conf manager
+first install this utilities
+sudo yum install yum-utils    this contains yum manager
+sudo yum-config-manager --add-repo <website.repo>       add the repo online
+sudo yum-config-manager --add-repo <IP/Repo.repo>       add the repo local
+    with that will create /etc/yum.repos.d/<repo>.repo
+
+
+sudo viu /etc/yum.repos.d/<repo>.repo
+[base]    ->name of the repo
+name=CentOS-$releasever - Base      -> long name for the repo
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra
+#baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/      ->tells where the repo is located, can be local or  in the internet
+enabled = 1         -> 1 means available for use 
+gpgcheck=1          -> check the validity of the package using gpg keys
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7     ->where is the gpg located
+
+
+yum can also used to install and uninstall individual packages from repo
+for that we need to know the name of the package, if you dont know can use yum to look for it
+ex.: sudo yum search web server
+sudo yum search 'web server'
+
+sudo yum info <package>
+
+sudo yum install <package>
+
+sudo yum reinstall <package>
+ 
+sudo yum remove <package>
+
+to install packages in a certain grop
+sudo yum group list
+sudo yum group list --hidden
+sudo yum group install '<groupname>'
+
+yum can install software from rpm packages
+sudo wget https://package.rpm
+sudo yum install <./package.rpm>
+sudo yum remove <package_name>
+
+sometimes packages pull in dependencies which are ohte components that they need to run correctly
+when remove the package  some of those dependencies might be left behind
+to make sure that remove automatically all dependencies after removed the package
+sudo yum autoremove
+
+update and upgrade packages
+sudo yum check-upgrade  check which package needs an update
+sudo yum update     to update all packages to the latest version
+
+
+
 
 =================================         WORKING WITH PACKAGES MODULES STREAM                       ==============================================
 =================================================================== modules   
@@ -1246,195 +1377,6 @@ getenforce
  
 
 
-
-
-
-
-
-Run the below command for default route information and save it to the file /home/bob/routes.txt:
-
-
-ip route >> /home/bob/route.txt
-
-
-
-To determine the PID for the sshd.service with below command:
-
-
-systemctl status sshd.service
-
-To get SELinux context label for the sshd process as below:
-
-ps Z <PID>
-
-
-
-Using an editor like vi edit the file /home/bob/context.txt and copy the line under LABEL from the previous command. Example as below:
-
-
-system_u:system_r:sshd_t:s0-s0:c0.c1023
-
-
-
-
-Determine the current SELinux mode on the system as save it to /home/bob/mode.txt:
-
-
-getenforce > /home/bob/mode.txt
-
-
-
-
-Determine the SELinux file context for the file at /home/bob/mystery as below:
-
-
-ls -Z /home/bob/mystery
-
-Save the file context label into /home/bob/file_context.txt using an editor like vi. For example, the context is similar to below text:
-
-
-unconfined_u:object_r:user_home_t:s0
-
-
-
-
-podman run -d --name my_web -p 1026:80 -v /home/bob/kodekloud:/usr/share/nginx/html:Z docker.io/library/nginx
-podman run -d --name my_web -p 1026:80 -v /home/bob/kodekloud:/usr/share/nginx/html:Z docker.io/library/nginx
-
-
-
-skopeo sync --src docker --dest dir docker.io/nginx:latest /home/bob/nginx
-With Skopeo, you can inspect images on a remote registry without having to download the entire image with all its layers, 
-making it a lightweight and modular solution for working with container images across different formats
-
-
-
-
-tyyr
-grep -r [A-Z,a-z] /opt/assets/
-
-
-#!/bin/bash
-echo "Exiting with code 150."
-exit 150
-
-
-#!/bin/bash
-if [ -f "/opt/assets2/asset75" ]
-then
-  echo "File exists. Making a copy."
-  mkdir /home/bob/backups/
-  cp /opt/assets2/asset75 /home/bob/backups/
-else
-  echo "File not found."
-fi
-
-
-#!/bin/bash
-for file in $(ls /opt/assets3/)
-  do
-    echo Read file $file. >> /home/bob/read_log.txt
-  done
-  
-  
-  /dev/md0 /raid xfs defaults,usrquota,grpquota 0 0
-
-
-
-
-
-Create a single partition on /dev/vde that uses the entire available disk space and set the partition type vfat file system as below:
-
-
-sudo fdisk /dev/vde
-
-
-Follow the below instructions after running the command:
-
-
-Choose n for new
-
-Choose p for primary, and use the entire disk space available.
-
-Choose t for type for the partition.
-
-Choose Lto list all codes and choose b for W95 FAT32.
-
-Choose w to write the changes and exit.
-
-
-
-
-Format the partition /dev/vde1 with a 32-bit vfat filesystem with below command:
-
-
-sudo mkfs.vfat -F 32 /dev/vde1
-
-
-Create a mount point at /vfat/ as below:
-
-
-sudo mkdir /vfat/
-
-
-Using an editor such as vi, edit /etc/fstab and add an entry as follow:
-
-
-/dev/vde1 /vfat vfat defaults 0 0
-
-
-Mount the filesystem to the /vfat/ as below:
-
-
-sudo mount -a
-
-
-
-
-/dev/stratis/web_storage/web_storage1 /mnt/web_storage xfs x-systemd.requires=stratisd.service 0 0
-
-
-/dev/mapper/compressed /mnt/compressed xfs _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service 0 0
-
-
-
-sudo ip route del 10.0.0.101
-
-
-
-
-Using an editor like vi write the below line in /home/bob/grubcommand.txt file:
-
-
-autorelabel=1
-
-
-
-
-Which command would you use to restore the default SELinux file contexts to all files in the hypothetical directory /home/bob/context?
-
-Write your answer in the file /home/bob/restore.txt.
-
-info_outline
-Solution
-Using an editor like vi save the below command in /home/bob/restore.txt file:
-
-
-restorecon -R /home/bob/context/
-or 
-restorecon -r /home/bob/context/
-
-
-
-
-Create the appropriate directory and any necessary parent directories to store rootless systemd service files for the user bob.
-
-info_outline
-Solution
-Using below command create the appropriate directory to store rootless systemd service files for the user bob :
-
-
-mkdir -p ~/.config/systemd/user/
 
 
 
