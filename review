@@ -1798,23 +1798,107 @@ Finally save the changes
 
 
 
+=========================================          Manage Security                    =========================================
+
+---------------------------------------------- configuring SSH servers and clients
+
+configuration file /etc/ssh/sshd_config (sshd -> the D means daemon) man sshd_config /etc/ssh/ssh_config (this is the config file for client, no D)
+
+/etc/ssh/sshd_config can change the port number can change the AddressFamily, this can change for ipv4, ipv6 or both 
+(look at man page and search for Family) can change ListernAddress, so you can specify a IP addr to listen can change PermitRootLogin, 
+this case you can login as a root using ssh service can change the PasswordAuthentication, this case choosen no, only ssh keys it will be 
+possible to login can change the x11forwarding - start a remote app and forwarding to you local machine to interact
+
+For example disable passwordauthentication global, but if you want do an exemption for an user add below 
+PasswordAuthentication Match User PasswordAuthentication yes
+
+After change need to reload to apply the new changes sudo systemctl reload sshd.service
+
+For the client we can add a file under ~/.ssh/config, change the permission chmod 600 config inside this file
+we can add host with informations Host centos Hostname Port 22 User
+
+then you can use only ssh centos to access the host/server
+
+To use ssh keys, generate keys in the client 
+#
+ssh-keygen
+
+then copy the public key to the server 
+#
+ssh-copy-id username@IP
+
+to remove fingerprint from a specific server saved in the known host 
+#
+ssh-keygen -R
+
+when you login using ssh, the client has some default config file 
+/etc/ss/ssh_config this is not a good practice to make change in this file because 
+future upgrade of the ssh client it might overwrite the changes, 
+better way is to modify in /etc/ssh/ssh_config.d/<name_of_conf_file> then you can add new port, for example
+
+Edit the system-wide configuration of the SSH client and turn on X11 forwarding
+sudo vi /etc/ssh/ssh_config
+Uncomment below given line or add it if doesn't exist:
+ForwardX11 yes
+
+Squid proxy daemon. Add a src type acl and name it vpn. The IP you should use in this acl is 203.0.110.5. 
+Now add a new rule that tells the proxy server to allow access to the acl named vpn.
+sudo vi /etc/squid/squid.conf
+acl vpn src 203.0.110.5
+Add below given line in the same file before http_access deny all
+http_access allow vpn
+
+ SSH server and configure it to use only IPv4 IP address family
+ AddressFamily inet
+ 
+Squid proxy daemon. Now add a new rule that allow http access to the external
+sudo vi /etc/squid/squid.conf
+Add below given line in this file after http_access allow localhost line:
+http_access allow external  
+
+Squid proxy daemon , add an acl and http access rule to block facebook.com
+acl facebook dstdomain .facebook.com
+And add below given line after http_access allow localhost line:
+http_access deny facebook
+# Adapt localnet in the ACL section to list your (internal) IP networks
+# from where browsing should be allowed
+http_access allow localnet
+http_access allow localhost
+http_access deny facebook
 
 
+======================================================================  List and Identify SELinux file and process contexts 
 
 
+linux kernel can be easily extended with so-called modules, one of them is SELinux that add variant advanced capabilities of restricting access 
+SELinux is enable by defaut by centos
 
+ls -Z drwxr-xr-x. devops devops unconfined_u:object_r:user_home_t:s0 Desktop
 
+unconfined_u:object_r:user_home_t:s0 ->string is called SElabel or SElinux context 
+unconfined_u - user 
+object_r - role 
+user_home_t - type 
+s0 - level
 
+only certain users can enter certains roles and certain types lets authorized users and processes do their job, 
+by grating the permissions they need authorized users and processes are allowed to take only a limited set of actions everything else is denied
 
+ps axZ
 
+to see the security context assigned to the current user. What got applied to our user when we logged in you can use: id -Z
 
+when we log in the user we log in as is automatically map to an SELinux user 
+To see this mapping is done sudo semanage login -l sudo semanage user -l - > group
+Identify the SELinux Roles for xguest_u SELinux
+sudo semanage user -l
 
+to see the SELinux is actively restricting actions getenforce the output it must be 
+Enforcing if is Disabled is not doing anything if it is Permissive means it is allowing everything and locking actions that
+should have been restricted instead of denying
 
-
-
-
-
-=============================                  SELinux                   ==============================================================
+Change the SELinux context of /var/index.html file to httpd_sys_content_t
+sudo chcon -t httpd_sys_content_t /var/index.html
 
 SELinux context label for the sshd process
 #
@@ -1829,15 +1913,225 @@ current SELinux mode on the system
 #
 getenforce
 
-
- SELinux file context for the file at /home/user
- ls -Z /home/user
- 
+Temporarily change the SELinux status to Permissive on this system
+sudo setenforce 0
 
 
+===========================================================  Change kernel runtime parameters, persistent and non-persistent 
+
+
+kernel runtime parameters is what the linux kernel does its job internally kernel deals with low level stop like allocating memory, 
+handling network traffic and so on. Most of those settings involve those types of things. 
+To see all kernel runtime parameters currently in use sudo sysctl -a
+
+to change the values, for example ipv6. sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1 this change is not persistent
+
+to make a change persistent /etc/sysctl.d/*.conf 
+sudo vi /etc/sysctl.conf
+
+to immediately set up the changes use sudo sysctl -p /etc/sysctl.d/<swap-less.conf>   OR sudo systcl -p
+
+Turn on kernel.modules_disabled kernel runtime parameter, so that loading new kernel modules will be disabled
+sudo sysctl -w kernel.modules_disabled=1
+
+Adjust the value of this kernel runtime parameter, vm.swappiness, to 10.
+After you set this to 10, also make the change persistent so that it will be auto-set to this value on the next reboot.
+sudo vi /etc/sysctl.conf
+Add below given code in this file and save it:
+vm.swappiness=10
+Apply the changes:
+sudo sysctl -p
+
+
+ ===================================================================   Restore default file contexts
+
+
+Using booleans values to modify settings of boot time, stop the boot process
+
+can add enforcing=0 ; this cause the system to boot into permissive mode for SELinux
+
+Which of the following GRUB command line options would cause a Linux system to boot with SELinux disabled
+selinux=0
+If a system is booted with the GRUB command line option selinux=0, 
+the next time the system is booted without this command line option, the system will force an autorelabel
+
+selinux=0 ; the kernel wont load anything to SELinux and the next time the system gets booted without that parameter 
+it is going to force an auto relabel of the file system to get all the file context
+
+autorelabel=1 ; force an auto relabel
+
+Using the correct command, create the correct file to trigger an SELinux autorelabel on the next boot.
+sudo touch /.autorelabel
+
+There was a problem starting the httpd service. Use the correct commands to investigate the issue and determine if there is an SELinux-related problem. 
+If there is an SELinux-related problem, use the correct commands to set the correct SELinux policy settings 
+to allow httpd to start correctly. Lastly, start the httpd service.
+
+Run below command to switch to the root user:
+sudo -i 
+Look into the logs:
+journalctl -xe |grep httpd
+in the logs I found some Permission denied
+ # ausearch -c 'httpd' --raw | audit2allow -M my-httpd
+ # semodule -X 300 -i my-httpd.pp
+ I run those commands as root
+ ausearch -c 'httpd' --raw | audit2allow -M my-httpd      Create a policy module for httpd to run on the port specified in the httpd config file
+ semodule -X 300 -i my-httpd.pp                           Load the policy module
+ systemctl start httpd.service
+
+
+We changed the httpd document root to /kodekloud and after that there was a problem 
+accessing a web page served by the httpd service, and you suspect it may be due to SELinux file contexts. 
+Use the correct commands to investigate why the web page is not working, and restore the correct SELinux file contexts if there is an issue with them.
+You can try to access the web page using curl localhost:88/kodekloud.html command and you must get KodeKloud in the output.
+Switch to the root user:
+sudo -i
+
+Look for SELinux-related error messages:
+grep "httpd" /var/log/messages | less
+
+Verify the SELinux file contexts for the files in the document root directory.
+ls -laZ /kodekloud/
+
+Set the appropriate context for all files in the /kodekloud/ directory:
+semanage fcontext -a -t httpd_sys_content_t "/kodekloud(/.*)?"
+
+Restore the correct contexts:
+restorecon -R /kodekloud/
 
 
 
+===========================================         Manage Containers     ===============================================================
+
+
+RHEL8 doesnt have any officil uspport for Docker, we can replace to other tool podman
+sudo dnf install docker
+it will install podman-docker
+we can use docker commands as normal, but it will be podman behind the scene
+
+/etc/containers/registries.conf
+comment the lines unqualified-search-registries
+create a new line with: unqualified-search-registries=["docker.io"] -> this sets the default software repo of containers to docker.io
+
+to avoid a message pop up after using docker command
+sudo touch /etc/containers/nodocker
+
+docker search nginx
+docker pull docker.io/library/nginx    OR docker pull nginx
+
+#to check images
+docker images
+
+#delete image
+docker rmi nginx
+docker rmi <image_id>
+
+a non official image need to use a full path
+
+Create a container.
+docker run -d <image>
+docker run -d nginx
+docker run -d docker.io/library/nginx
+docker run -d <image_id>
+
+-d: --detach
+
+docker run -d <image> --name <container_name>
+
+docker run -d <image> --name <container_name> -p 8080:80
+port mapping fo the container, someone connect at port 8080 it will be redirected to port 80 of the container
+
+to check  use netcat at port 8080
+nc localhost 8080
+GET /
+
+check containers running
+docker ps
+
+check containers exited
+docker ps -all
+
+to stop a container
+docker stop <container_name-OR-containerID>
+
+to delete a container
+docker rm <container_name-OR-containerID>
+
+to start a container stopped/exited
+docker start <container_name-OR-containerID>
+
+
+==================================================  Perform container management using commands such as podman and skopeo
+
+man skopeo
+man skopeo-copy
+
+
+Skopeo is a CLI utility that performs various operations on coontainer images/repo
+
+sudo yum install skopeo
+
+like podman, skopeo can be used to inspect repo
+unlike podman skopeo can inspect without pulling the image
+
+skopeo inspect docker://registry.fedoraproject.org/fedora:latest
+
+can be used also to inspect containers
+skopeo inspect --config docker://registry.fedoraproject.org/fedora:latest | jq
+
+can be used to copy images between different storage mechanisms, like container Registries
+skopeo copy docker://quay.io/build/stable docker://registry.enterprise.com/build
+first addr is the remote repo
+second addr is the registry inside of the enterprise
+
+skopeo copy oci:busy_boxocilayout:latest dir:emptydir
+
+delete image
+skopeo delete docker://localhost:5000/imagename
+
+syncing registries
+skopeo sync --src docker --dest dir registry.company.com/busybox /media/usb
+
+
+
+============================== Configure a container to start automatically as a systemd service and attach persistent storage
+
+to run docker as user (not root) from boot
+
+to switch module screen
+first reset
+sudo yum module reset container-tools
+
+then install the version you want
+sudo yum module install container-tools:3.0
+
+need create a dir under usser home dir
+mkdir -p ~/.config/systemd/user
+
+
+create a persistent storage to use in the container
+mkdir -p ~/container_storage
+
+create a container
+podman run -d --name container_service -p 1025:8080 -v ~/container_storage:/var/www/html:Z registry.access.redhat.com/rhscl/httpd-24-rhel7
+
+:Z - SELinux
+
+podman ps -a
+
+under  ~/.config/systemd/user
+generate systemd files 
+podman generate systemd --name container_service --files --new 
+
+to make sure user can launch systemd, need to enable login setting for the user
+loginctl enable-linger
+systemctl --user daemon-reload
+
+systemctl --user enable --now container-container_service.service
+sudo systemctl reboot
+curl localhost:1025/file.html
+
+podman ps -a
 
 
 
