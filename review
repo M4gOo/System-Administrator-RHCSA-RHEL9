@@ -1377,9 +1377,261 @@ sudo yum -y module install container-tools:3.0 --skip-broken --allowerasing --no
 
 
 
-
+====================================       Configure networking and hostname resolution statically or dynamically          =====================================
  
 
+
+if the host need to access the internet, it will need a gateway and DNS.
+Host wants to access google, it will ask DNS resolver what is the IP addr for google, then
+DNS gives the IP-google so the host can connect to the google. Now the host can talk to the gateway
+like I want this data to reach to IP-google, then the gateway sends it out from our network
+to another network until reach the destination
+
+dynamically  settings are from a service like DHCP
+manually we need to set up the IP
+
+first look for the name of the network
+ip link show      OR      ip l
+output it will be sometime like
+enp0s3:....
+
+different network interface, with more info
+ip addresses show    OR    ip a
+enp0s3:....
+inet IPv4
+
+network cards that use wire start with letter E, wirelless with W 
+
+IPv4 - 32bits
+IPv6 - 128bits
+
+routing table
+ip route show     OR    ip r
+ip addr via default gateway
+the output it will something like
+default via 192.168.1.1 dev enp0s3 ...
+the default getway it will be what is show above
+
+Identify the default gateway on this system below.               The gateway it will be 172.25.0.1
+ip route
+default via 172.25.0.1 dev eth1 
+172.25.0.0/24 dev eth1 proto kernel scope link src 172.25.0.69 
+192.15.56.0/24 dev eth0 proto kernel scope link src 192.15.56.9 
+192.168.122.0/24 dev virbr0 proto kernel scope link src 192.168.122.1 linkdown
+
+add an extra IP to eth1 interface on this system: 10.0.0.50/24
+sudo ip a add 10.0.0.50/24 dev eth1
+
+to see the DNS that the system is currently using
+/etc/resolv.conf
+the output it will something like
+nameserver 192.168.1.1
+
+nameserver it will be always a valid DNS resolver, it is normal see two or more listed here,
+those are for backups
+
+Configure static resolution so that example.com hostname resolves to IP address 8.8.8.8
+static DNS
+sudo /etc/hosts
+
+
+centOS it will configure waht is inside this file
+/etc/sysconfig/network-scripts/
+inside the file you see the different network adapter, choose one and it will show
+BOOTPROTO=dhcp
+this means it is auto configured
+for static change dhcp for none
+ in RH distros a program called network manager is the default or managing anything.
+ 
+ 2 usefull tools network manager has
+
+ nmtui - network manager text user interface
+ usually is installed by default, if not use dnf package
+ sudo nmtui
+ it will show another window wher eyou can configure the network inteface
+ configure the DNS, Gateway, IPv4 + subnet if you choose manually
+ to apply the configuration reboot or
+ sudo nmcli device reapply enps03
+ 
+ 
+ 
+==============================================================    Configure network services to start automatically at boot 
+ 
+ if the network manager is not working it wont have ips, gateways and so on
+ check the network manager, mus be enabled
+ systemctl status NetworkManager.service
+ 
+ to install
+ dnf install NetworkManager
+ 
+ 
+ another way to enable nmcli at boot is 
+ nmcli connection show  (take note of the name connection)
+ sudo nmcli connection modify <name=enp0s3> auto connect yes
+
+
+
+==============================================================   Start, stop, and check the status of network services
+SS  - modern tool
+Netstat
+ 
+list of all incoming open ports on this system
+sudo ss -tulnp | grep LISTEN 
+sudo netstat -tulpn | grep LISTEN
+ 
+How do we see what processes on our system are listening for incoming network connections, on the TCP and UDP protocols?
+sudo ss -tunlp
+
+sudo ss -tunlp  
+-l : listening means ready to accept an incoming connection
+-t : tcp connections
+-u : udp connections
+-n: numeric values, we get port number
+-p: processes is envolved, with p flag needs sudo priv
+
+ss -ltun    without p it will show the service name instead of port number
+
+the output will have some 
+Netid  State    Recv-Q   Send-Q     Local Address:Port      Peer Address:Port  Process                                                                        
+udp    UNCONN   0        0          127.0.0.1:323             0.0.0.0:*      users:(("chronyd",pid=684,fd=13))                                     
+udp    UNCONN   0        0                0.0.0.0:22            0.0.0.0:*      users:(("ssh",pid=1249,fd=7))                                                                              
+udp    UNCONN   0        0                   [::]:53198             [::]:*      users:(("avahi-daemon",pid=921,fd=15))                                        
+tcp    LISTEN   0        128                [::1]:631               [::]:*      users:(("cupsd",pid=1092,fd=6))    
+
+127.0.0.1:323  - the program is listning for incoming connections from the system itself, but no from other computers
+0.0.0.0:22  - it will accept connections from any external IP addr
+[::]:53198 - this means same as 0.0.0.0, but listening for connections from IPv6
+[::1]:631 - this means same as 127.0.0.1, but listening for connections from IPv6
+
+Find out what process is listening for incoming connections on port 22
+#
+sudo ss -tulnp | grep :22
+
+in this table you can see the PID, with that we can check the pid and the files that are open by this process
+ps  <pid>
+sudo lsof -p <pid>
+
+
+
+====================================================================   Implement packet filtering 
+
+
+with a firewall added to the system will filter out what network packets are allowed to come into our system and even what network packets are 
+allowed to go out
+
+red hat has firewalld
+the firewall manager puts every network interface in zones, each zones has own rules
+zone drop is very restrictive and blocks all incoming connections
+zone trusted - all connections are accepted, for example in a office you ccepted all those incoming connections
+
+the default zone is public, every incoming connection is blocked, except  what we allow
+check the zone 
+firewall-cmd --get-default-zone
+
+change the zone
+firewall-cmd --set-default-zone=public
+
+to see current firewall rules
+sudo firewall-cmd --list-all
+ the output it will show the cockpit, where you can use a command to check the port are listening for the service cockpit
+sudo firewall-cmd --info-service=cockpit 
+ the output it will show the cockpit servie allow incoming connections to port example 9595 through a tcp protocol
+ 
+to allow traffic can be both
+sudo firewall-cmd --add-service=http   OR    sudo firewall-cmd --add-port=80/tcp
+
+then if you check the list, it will add a new rule in front of the cockpit
+sudo firewall-cmd --list-all
+
+to remove
+sudo firewall-cmd --remove-service=http    OR    sudo firewall-cmd --remove-port=80/tcp
+
+instead to block all incoming traffic, can use different rule based on where the traffic is coming from
+sudo firewall-cmd --add-source=10/11/12/0/24 --zone=trusted
+
+check active zones
+firewall-cmd --get-active-zones
+
+Allow all traffic that is coming from any IP in this network range: 10.11.12.0 to 10.11.12.255 (i.e 10.11.12.0/24), 
+add the required rule in the trusted zone and the rule must be permanent.
+#
+sudo firewall-cmd --add-source=10.11.12.0/24 --zone=trusted --permanent
+
+remove filter based on ip addr
+sudo firewall-cmd --remove-source=10.11.12.0/24 --zone=trusted
+
+all the rules set above are no permanent if reboot the rules will be lost, to keep permanent does those commands below
+sudo firewall-cmd --add-port=123/tcp                                                                              add
+sudo firewall-cmd --list-all                                                                                      check
+sudo firewall-cmd --runtime-to-permanent       OR       sudo firewall-cmd --add-port=123/tcp --permanent          permanent
+
+
+===================================================================   Statically route IP traffic 
+
+
+it is good to specify the IP of your won machine
+sudo ip route add 192.168.0.0/24 via 10.11.12.100 dev enp0s3   dev-device name; enp0s3 is the name of interface
+sudo ip route add default via 10.0.0.100         gateway, if you you want to rech at 1.2.3.8 routing table is consulted and if no specific route is found
+then this data packet iis sent to the default route which is 10.0.0.100
+
+Temporarily route all traffic that must reach the 192.168.0.* network through the device that has the IP 172.28.128.100
+sudo ip route add 192.168.0.0/24 via 172.28.128.100
+ip route
+192.168.0.0/24 via 172.28.128.100 dev eth1 
+permanently route all traffic
+sudo nmcli connection modify eth1 +ipv4.routes "192.168.0.0/24 172.28.128.100"
+sudo nmcli device reapply eth1
+
+add an extra IP to eth1 interface on this system: 10.0.0.50/24
+sudo ip a add 10.0.0.50/24 dev eth1
+Re-apply network settings
+sudo nmcli device reapply eth1
+
+
+to delete
+sudo ip route del 192.168.0.0/24
+sudo ip route del via 10.0.0.100
+
+those routes added this way are temporary, to make permanent
+nmcli connection show
+nmcli connection modify <enp0s3> +ipv4.routes "192.168.0.0/24 10.0.0.100" 
+this means if you want to reach to 192.168.0.0/24 route all traffic through the device 10.0.0.100
+sudo nmcli device reapply <enp0s3>
+
+to confirm
+ip route show
+
+to remove
+home nmcli connection modify <enp0s3> -ipv4.routes "192.168.0.0/24 10.0.0.100"    use the - (minus)
+
+you can use the tool 
+sudo nmtui
+sudo nmcli device reapply <enp0s3>
+
+
+=========================================================================  Configure time service clients 
+
+keep the clock accurate
+chrony daemon 
+
+to see it is enable
+systemctl status chronyd.service
+
+run this command to check the system clock is synchronized
+timedatectl
+
+timedatectl list-timezones 
+timedatectl list-timezones | grep America 
+
+if is not enable by default first check if the time zone is set correctly
+sudo timedatectl set-timezone America/New_York          to see all available zones timedatectl list-timezones
+sudo dnf install chrony
+sudo sysstemctl start chronyd.service
+sudo sysstemctl enable chronyd.service
+then check the ntp is enable and system clock is synch using the command
+timedatectl
+in case is not enable
+sudo systemctl set-ntp true
  
 
 
