@@ -1634,6 +1634,181 @@ in case is not enable
 sudo systemctl set-ntp true
  
 
+Using timedatectl configure RTC (real-time clock) to maintain the RTC in local time.
+RTC is a battery-powered computer clock that keeps track of the time even when the system is turned off.
+sudo timedatectl set-local-rtc 1
+
+
+
+==========================================        Manage Users and Groups     ======================================================
+
+
+Create, delete, and modify local user accounts ===========================================================================
+
+sudo useradd <username>
+it will automatically create user and group with the username, also a shell and a home dir
+sudo useradd --shell /bin/othershell --home-dir /home/otherdirectory/ john
+
+useradd --defaults   OR  useradd -D
+
+another defaults configurations can be seen in
+cat /etc/login.defs
+
+setup a password
+sudo passwd <username>
+
+delete acc and group. Home dir it will remain
+sudo userdel <username>
+
+delete acc and the home dir
+sudo userdel --remove john   OR      sudo userdel -r john
+
+delete a groupd
+sudo groupdel <groupname>
+
+to choose id for the user
+sudo useradd --uid 1100 <username>
+
+to check the id numbers and home dir
+ls -ln /home
+
+id
+check group, userid and so on
+
+create system account
+sudo useradd --system <systemname>
+those numbers are smaller than 1000
+usually daemon use system accs
+
+with want to change conf after create user
+sudo usermod --home /home/otherdir --move-home john   OR    sudo usermod -d /home/otherdir -n john
+sudo usermod --login <new_username> <old_username>    OR    sudo usermod -l <new_username> <old_username>
+sudo usermod --shell /home/otherdir <username>        OR    sudo usermod -s /home/otherdir <username>
+
+disable the acc. Lock the user account
+sudo usermod --lock <username>    OR sudo usermod -L <username>       
+username cannot login even using the password, but can login using ssh if was set up before lock
+to avoid that set up a expire date
+sudo usermod --expiredate 2020-12-20 <username>     if you want to set up now, just choose a date in the past
+to remove expiry date 
+sudo usermod --expiredate "" <username> 
+
+to set up an expiration date for password. This command set expired password and the user are force to immediately change it the next time logs in
+sudo chage --lastday 0 <username>
+
+to cancel expiration date for password
+sudo chage --lastday -1 <username>
+
+to set up a date for user change the password
+sudo chage --maxdays 30 <username>
+
+set up for password never expiry
+sudo chage --maxdays -1 <username>
+
+to see the list for password expires
+sudo chage --list <username>
+
+User gets a warning at least 2 days before the password expires
+sudo chage -W 2 <username>
+
+
+Create, delete, and modify local groups and group memberships ===========================================================================
+
+sudo groupadd developers
+
+add user to a group
+sudo gpasswd --add <usrname> <developers>
+
+to see which group the user belongs to
+groups <username>
+
+delete a user to a group
+sudo gpasswd --delete <username> <developers>
+
+change the primary group of the user
+sudo usermod -g <developers> <username>     OR   sudo usermod --gid <developers> <username>
+the capital G flag is to change the secondary group
+
+group named cricket and set its GID to 9875
+sudo groupadd -g 9875 cricket 
+
+to rename the group
+sudo groupmod --new-name <nem_name> <old_name>
+
+to delete a grooup
+sudo groupdel <groupname>
+
+
+Manage access to the root account  ==========================================================================================================
+
+login as a root, when the user has sudo priv
+sudo --login   OR  sudo -i
+
+when the user doesnt have sudo priv, but knows root password
+su -  
+
+some system they have root locked, means we cannot login with root acc only with the password
+we can login using sudo -i, but not su -
+also can login using ssh private key
+
+to unlock use
+sudo passwd root   OR   sudo passwd --unlock root
+
+to lock root acc, avoid using password
+sudo passwd --lock root
+
+change the root password
+sudo passwd
+
+
+
+Configure PAM ============================================================================================================================
+
+PAM - Pluggable authentication module
+allows a Linux system administrator to configure methods to authenticate users.
+
+plugable authentication module
+this gives us flexibility about how we want certain utilities to perform authentication on our system
+
+best way is to -> man pam.conf
+manuals for all pam modules -> man pam (press TAB twice)
+
+/etc/pam.d/ -> this is the file that defines the plugable auth modules that should be used by the su, for example
+there will see alot utilities, to edit use vi, then you just need uncomment to add an extra ayth module
+
+for the su utility so that this utility only accepts the requests from users that are part of the wheel group
+sudo vi /etc/pam.d/su
+Uncomment below given line:
+#auth           required        pam_wheel.so use_uid
+
+su utility so that the requests from the users that are the member of the wheel group should be accepted immediately, without asking for any password
+sudo vi /etc/pam.d/su
+Uncomment below given line:
+#auth           sufficient      pam_wheel.so trust use_uid
+
+Restrict the root access to SSH service via PAM
+sudo vi /etc/pam.d/sshd
+Add below given line at the end of the file and save it:
+auth    required       pam_listfile.so onerr=succeed  item=user  sense=deny  file=/etc/ssh/deniedusers
+Now create /etc/ssh/deniedusers file
+sudo vi /etc/ssh/deniedusers
+Add root user in the file, so its content should look like this:
+root
+Finally save the changes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
