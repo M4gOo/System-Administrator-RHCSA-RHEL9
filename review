@@ -2017,7 +2017,8 @@ to avoid a message pop up after using docker command
 sudo touch /etc/containers/nodocker
 
 docker search nginx
-docker pull docker.io/library/nginx    OR docker pull nginx
+docker pull docker.io/library/nginx    OR docker pull nginx             
+sudo podman pull docker.io/library/nginx                                
 
 #to check images
 docker images
@@ -2056,12 +2057,22 @@ docker stop <container_name-OR-containerID>
 
 to delete a container
 docker rm <container_name-OR-containerID>
+sudo podman rmi IMAGED_ID -f 
+sudo podman rmi IMAGED_ID 
 
 to start a container stopped/exited
 docker start <container_name-OR-containerID>
 
+Remove all containers (including running, stopped containers)
+sudo podman stop <container_name-OR-containerID>
+sudo podman rm <container-id>
+
+podman container based on the nginx image. detach from this container's. map port 1234 on the host to port 80 on the container. name this new container as website.
+sudo podman run -d -p 1234:80 --name website nginx
+
 
 ==================================================  Perform container management using commands such as podman and skopeo
+
 
 man skopeo
 man skopeo-copy
@@ -2119,19 +2130,38 @@ podman run -d --name container_service -p 1025:8080 -v ~/container_storage:/var/
 
 podman ps -a
 
+Create the correct directory for storing systemd service files for the current user bob. Make sure to create any necessary parent directories.
+mkdir -p ~/.config/systemd/user
 under  ~/.config/systemd/user
 generate systemd files 
 podman generate systemd --name container_service --files --new 
 
+Use podman to create a rootless systemd service for the kodekloud container. Make sure the service file is stored in the correct directory.
+cd ~/.config/systemd/user
+sudo podman generate systemd --name kodekloud --files --new
+
+Using the correct commands, make sure the current user is configured to launch rootless systemd services,
+and that systemd is aware of this change in the current session.
+Next, make sure the kodekloud container service is set to launch as a rootless systemd service at boot.
+loginctl enable-linger bob
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+systemctl --user daemon-reload
+systemctl --user enable container-kodekloud.service --now
+
 to make sure user can launch systemd, need to enable login setting for the user
 loginctl enable-linger
 systemctl --user daemon-reload
+
+systemd commands is used so that system is aware of new changes in the unit files?
+sudo systemctl daemon-reload
 
 systemctl --user enable --now container-container_service.service
 sudo systemctl reboot
 curl localhost:1025/file.html
 
 podman ps -a
+
+
 
 
 
