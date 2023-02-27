@@ -71,3 +71,229 @@ Mount the kodekloud_files filesystem to the mount point you created with below c
 sudo mount -a
 
 
+
+
+Write a shell script named exit_test.sh and save it in the directory /home/bob/. The script should echo Exiting with code 150. and set the exit code to 150.
+Make your script executable.
+
+#!/bin/bash
+echo "Exiting with code 150."
+exit 150
+
+
+Write a shell script named file_check.sh and save it in the directory /home/bob/. The script should check if the file /opt/assets/asset75 exists.
+If the file exists, the script should echo File exists. Making a copy. It should then create the directory /home/bob/backups/ and copy the file /opt/assets/asset75 to the directory /home/bob/backups/. If the file is not found, the script should echo File not found.. Also make your script executable and run it.
+#!/bin/bash
+if [ -f "/opt/assets2/asset75" ]
+then
+  echo "File exists. Making a copy."
+  mkdir /home/bob/backups/
+  cp /opt/assets2/asset75 /home/bob/backups/
+else
+  echo "File not found."
+fi
+
+Write a shell script named read_log.sh and save it in the directory /home/bob/.
+The script should list the contents of /opt/assets3/ and for every entry, it should echo Read file $file. where $file is the name of a file from the list of files in /opt/assets3/. Each time this echo statement runs, it should append the output to a file located at /home/bob/read_log.txt.
+
+#!/bin/bash
+
+for file in $(ls /opt/assets3/)
+do
+    echo "Read file $file." >> /home/bob/read_log.txt
+done
+
+
+
+
+
+
+
+One of the files in the directory /opt/assets/ contains text, and the others are empty. Locate the file that contains text, and write its full file path in the file /home/bob/magicfile.txt.
+
+info_outline
+Solution
+Locate the file that contain text with below command:
+
+
+grep -r [A-Z,a-z] /opt/assets/
+
+
+Using a text editor such as vi, edit the file /home/bob/magicfile.txt to add the full file path of the file you found using above command, example as below:
+
+
+/opt/assets/asset150
+
+
+
+
+Q10
+
+Format the partition /dev/vde1 with a 32-bit vfat filesystem with below command:
+
+
+sudo mkfs.vfat -F 32 /dev/vde1
+
+
+Create a mount point at /vfat/ as below:
+
+
+sudo mkdir /vfat/
+
+
+Using an editor such as vi, edit /etc/fstab and add an entry as follow:
+
+
+/dev/vde1 /vfat vfat defaults 0 0
+
+
+Mount the filesystem to the /vfat/ as below:
+
+
+sudo mount -a
+
+
+
+
+/dev/stratis/web_storage/web_storage1 /mnt/web_storage xfs x-systemd.requires=stratisd.service 0 0
+
+
+/dev/mapper/compressed /mnt/compressed xfs _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service 0 0
+
+
+
+
+Delete the gateway of 10.0.0.101 for eth1 interface.
+
+info_outline
+Solution
+Run the below command.
+
+
+sudo ip route del 10.0.0.101
+
+
+
+Which command would you use to restore the default SELinux file contexts to all files in the hypothetical directory /home/bob/context?
+
+Write your answer in the file /home/bob/restore.txt.
+Using an editor like vi save the below command in /home/bob/restore.txt file:
+
+
+restorecon -R /home/bob/context/
+or 
+restorecon -r /home/bob/context/
+
+
+
+
+Create the appropriate directory and any necessary parent directories to store rootless systemd service files for the user bob.
+Using below command create the appropriate directory to store rootless systemd service files for the user bob :
+mkdir -p ~/.config/systemd/user/
+
+
+
+Write a script named conditional.sh and save it in the /home/bob/ directory. The script should check if the file /opt/nojoy exists. If it exists, the script should copy the file to /home/bob/nojoy. Otherwise, the script should echo File not found. and direct that output to the file /home/bob/nojoy overwriting any contents that are in the file. Make your script executable and run it.
+
+
+
+
+Using the correct command or combination of commands, find all of the current open regular files in use by the sshd process, and save the list of complete file paths to /home/bob/sshdfiles.txt with one entry per line. This list should only include regular files, not directories, sockets, or any other type.
+sudo lsof | grep sshd |  grep -i reg | sed 's/.* //g' > /home/bob/sshdfiles.txt
+
+
+
+Create an ext4 filesystem on the partition you have created on /dev/vdd. Take all necessary steps to enable user and group quotas on this file system, including installing the necessary software package(s).
+Create a mount point at /mnt/shared/. Add an entry to /etc/fstab to mount this filesystem at boot time to this mount point, remembering to include the options for user and group quotas. Lastly, mount the file system you have created to the mount point at /mnt/shared/.
+Install the quota package using yum with below command:
+
+
+sudo yum -y install quota
+
+Create an ext4 filesystem on the partition on /dev/vdd1.
+
+
+sudo mkfs.ext4 /dev/vdd1
+
+Using an editor such as vi, edit /etc/fstab and add an entry like this: /dev/vdd1 /mnt/shared ext4 defaults,usrquota,grpquota 0 0.
+
+Create the mount directory /mnt/shared and mount with below commands:
+
+
+sudo mkdir /mnt/shared/
+sudo mount -a
+
+
+Include the options for user and group quotas with below command:
+
+
+sudo quotacheck --create-files --user --group /dev/vdd1
+sudo quotaon /mnt/shared/
+
+
+nstall the packages using yum command and start/enable the service as below:
+
+
+sudo yum -y install stratisd stratis-cli
+sudo systemctl enable --now stratisd.service
+
+Create a pool named web_team with below command:
+
+
+sudo stratis pool create web_team /dev/vde
+
+Create a filesystem named web_fs with below command:
+
+
+sudo stratis fs create web_team web_storage
+
+Create a mount point at /mnt/web_storage with below command:
+
+
+sudo mkdir /mnt/web_storage
+
+Using an editor such as vi, edit /etc/fstab and add the following line:
+
+
+/dev/stratis/web_team/web_storage /mnt/web_storage xfs x-systemd.requires=stratisd.service 0 0
+
+Mount your Stratis storage solution to /mnt/web_storage/ with below command:
+
+
+sudo mount -a
+
+
+
+
+Using an editor such as vi, edit the file /etc/yum.repos.d/kodekloud.repo and populate it with the following information:
+
+
+[KodeKloud]
+name=KodeKloud YUM repository
+baseurl=https://download.docker.com/linux/centos/$releasever/$basearch/stable
+gpgkey=https://download.docker.com/linux/centos/gpg
+enabled=1
+
+
+
+Using yum, install the chrony service, start it, and enable it at boot time.
+
+info_outline
+Solution
+Install chrony package using yum with below command:
+
+
+sudo yum -y install chrony
+
+Start and enable chrony service as below:
+
+
+sudo systemctl start chronyd.service
+sudo systemctl enable chronyd.service
+
+
+Use the passwd utility to set the password for the user simon to expired using below command:
+
+
+sudo passwd -e simon
+
