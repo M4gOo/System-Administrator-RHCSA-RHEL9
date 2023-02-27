@@ -873,6 +873,7 @@ pv -  physical volumes
  ACLs (Access Control Lists) defines specific permissions for two or more users/groups
  
  sudo setfacl --modify user:<username>:rw file.txt
+ sudo setfacl -m group:Mac:--- /var/fstab             group Mac wont have any permissions
  
  when you use the command ls -l will see a + mark at the end
  to check tha acl in the file
