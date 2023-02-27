@@ -1609,7 +1609,13 @@ sudo nmtui
 sudo nmcli device reapply <enp0s3>
 
 
-=========================================================================  Configure time service clients 
+=========================================================================  Configure time service clients  - NTP (Network Time Protocol)
+
+sudo yum install chrony
+sudo vi /etc/chrony.conf    server <ip> iburst    and comment  #pool 2.centos.pool.ntp.org iburst
+systemctl restart chronyd
+chronyc sources -v 
+sudo systemctl set-ntp true
 
 keep the clock accurate
 chrony daemon 
