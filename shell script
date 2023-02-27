@@ -9,3 +9,65 @@ Substitution can be done by encapsulating the command with `` (back-ticks) or wi
 
 $(ls /home/bob/assets/)
 when the script runs, it will run the command inside the $() parenthesis and capture its output.
+
+
+#!/bin/bash
+for name in $(ls /home/bob/assets/)
+do
+  echo "Cleaning file $name" >> /home/bob/clean.log
+  rm -rf /home/bob/assets/$name
+done
+
+
+
+
+Create an XFS filesystem on /dev/volume1/storage with below command:
+
+
+sudo mkfs.xfs /dev/volume1/storage
+
+Create a mount point at /storage as below:
+
+
+sudo mkdir /storage/
+
+Using an editor such as vi, edit /etc/fstab and add a line:
+
+
+/dev/volume1/storage /storage xfs defaults 0 0
+
+Mount the file system you have created with below command:
+
+
+sudo mount -a
+
+
+
+
+
+Create a new Stratis pool named kodekloud on /dev/vdd as below:
+
+
+sudo stratis pool create kodekloud /dev/vdd
+
+Create a new Stratis filesystem on the kodekloud pool, and name this filesystem kodekloud_files with below command:
+
+
+sudo stratis fs create kodekloud kodekloud_files
+
+With below command, create a new mount point at /kodekloud/ for this Stratis filesystem:
+
+
+sudo mkdir /kodekloud/
+
+Using an editor such as vi, edit /etc/fstab and add a line:
+
+
+/dev/stratis/kodekloud/kodekloud_files /kodekloud xfs x-systemd-requires=stratisd.service 0 0
+
+Mount the kodekloud_files filesystem to the mount point you created with below command:
+
+
+sudo mount -a
+
+
