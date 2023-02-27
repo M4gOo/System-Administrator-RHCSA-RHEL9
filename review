@@ -218,7 +218,7 @@ a - all (u, g, and o)
 sudo chmod g+rw
 sudo chmod u-w
 chmod go+rw 
-
+sudo chmod g+s     ensure that for all future files within /directory the group owner will be the same as set in /directory
 
 =================================================================== HEAD, TAIL, TAC
 
