@@ -121,14 +121,14 @@ sudo ip route del 10.0.0.101
 
 
 Which command would you use to restore the default SELinux file contexts to all files in the hypothetical directory /home/bob/context?
-
-Write your answer in the file /home/bob/restore.txt.
+write your answer in the file /home/bob/restore.txt.
 Using an editor like vi save the below command in /home/bob/restore.txt file:
-
-
 restorecon -R /home/bob/context/
 or 
 restorecon -r /home/bob/context/
+
+
+
 
 
 
