@@ -1473,6 +1473,8 @@ for static change dhcp for none
  sudo nmcli device reapply enps03
  
  
+ --------------------- 2 ways to configure
+ 
  Configure sets
  ipv4 192.168.122.10
  subnet mask: 255.255.255.0
@@ -1480,6 +1482,13 @@ for static change dhcp for none
  dns server: 192.168.100.1
  interface name: enp1s0
  
+1 - 
+nmtui. Edit connection and fill up the gap, dont forget to actived 
+2 - 
+nmcli connection add type ethernet con-name eth0 ifname enp1s0 ipv4.addresses 192.168.122.11/24 ipv4.gateway 192.168.122.1 ipv4.dns
+192.168.100.1 method manual connection.autoconnect yes
+3-
+
  
 ==============================================================    Configure network services to start automatically at boot 
  
@@ -1607,6 +1616,7 @@ ip route
 permanently route all traffic
 sudo nmcli connection modify eth1 +ipv4.routes "192.168.0.0/24 172.28.128.100"
 sudo nmcli device reapply eth1
+
 
 add an extra IP to eth1 interface on this system: 10.0.0.50/24
 sudo ip a add 10.0.0.50/24 dev eth1
