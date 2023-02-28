@@ -686,6 +686,18 @@ it is good to leave at least 1G free for bootloader in case needs to be install 
 #
 sudo fdisk --list /dev/sda
 
+sudo fdisk -l  /dev/vde
+Disk /dev/vde: 1 GiB, 1073741824 bytes, 2097152 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xc67b0eb1
+
+Device     Boot Start     End Sectors  Size Id Type
+/dev/vde1        2048 2097151 2095104 1023M  b W95 FAT32
+
+
 #
 You need to run the command for every partition, the defaults it will change for each partition (the utility will give the defaul option)
 Create 3 primary partitions on /dev/vdb
