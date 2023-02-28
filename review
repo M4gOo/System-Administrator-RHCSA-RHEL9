@@ -597,6 +597,8 @@ lsof /proc
 lsof -u admin
 lsof -i TCP:22
 
+sudo lsof | grep sshd |  grep -i reg | sed 's/.* //g' > /home/bob/sshdfiles.txt
+
 
 ============================================================================== Locate and analyze system log files 
 
