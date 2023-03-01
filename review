@@ -1776,6 +1776,14 @@ sudo usermod --expiredate 2020-12-20 <username>     if you want to set up now, j
 to remove expiry date 
 sudo usermod --expiredate "" <username> 
 
+password for all new users in domain.com should expire after 20 days
+vi /etc/login.defs
+PASS_MAX_DAYS 20
+
+check the user acc regarding expiration
+#
+sudo chage -l <username>
+
 to set up an expiration date for password. This command set expired password and the user are force to immediately change it the next time logs in
 sudo chage --lastday 0 <username>
 
