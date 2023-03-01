@@ -722,6 +722,9 @@ First sector (2048-2097151, default 2048):  <just-leave-it-default-and-press-ent
 Last sector, +sectors or +size{K,M,G,T,P} (2048-2097151, default 2097151): +10M
 Command (m for help): w
 
+#
+partprobe /dev/vdb
+
 to check use 
 lsblk
 vdb    253:16   0   1G  0 disk 
