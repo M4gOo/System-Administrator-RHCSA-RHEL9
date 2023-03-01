@@ -1360,7 +1360,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7     ->where is the gpg locat
 
 Create a yum repo file located at /etc/yum.repos.d/kodekloud.repo as per details given below:
 short name: KodeKloud
-long name: KodeKloud - $basearch
+long name: KodeKloud -
 baseurl: https://repos.kodekloud.com/linux/$releasever/$basearch/development
 Also make sure it is set to be enabled
 
@@ -1368,6 +1368,19 @@ sudo vi /etc/yum.repos.d/kodekloud.repo           - this looks like /etc/yum.rep
 [KodeKloud]
 name=KodeKloud - $basearch
 baseurl=https://repos.kodekloud.com/linux/$releasever/$basearch/development
+enabled=1
+
+need to add a file vi /etc/yum.repos.d/local.repo
+[baseos]
+name=BaseOS
+baseurl=http://example.com
+gpgcheck=0
+enabled=1
+
+[appstream]
+name=AppStream
+baseurl=http://example.com
+gpgcheck=0
 enabled=1
 
 
