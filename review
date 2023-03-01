@@ -796,7 +796,31 @@ sudo swapoff -v /swapfile
 Remove the swap file entry in /etc/fstab
 sudo rm /swapfile
 
+----------------------------- swap partition with fdisk
 
+fdisk /dev/vdb
+n
+default
+default
++size
+
+change the type for swap partition
+t
+default
+L            # usually is 82 linux swap
+82
+w
+partprobe /dev/vdb     #partprobe is a program that informs the operating system kernel of partition table changes.
+
+mkswap /dev/vdb1
+
+/etc/fstab
+
+/dev/vdb1 swap swap defaults 0 0 
+
+swapon -a
+
+free -m    #to verify the total swap size
 ===========================================================      Manage and configure LVM storage 
 
 lvm = logical volume manager
