@@ -903,6 +903,11 @@ pv -  physical volumes
  sudo setfacl --recursive --remove user:<username> dir/                 to remove ucl dir and subdir/files as well
 
 
+set permissions for user which all new creating files will be -r-------- and dir dr-x------ as default permission
+vi .bash_profile
+#after fi type
+umask 277
+
 ========================================================== chattr, lsattr
 
 cannot delete the file even the owner or root
