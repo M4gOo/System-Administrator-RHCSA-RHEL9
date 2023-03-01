@@ -1935,14 +1935,36 @@ ps axZ
 
 to see the security context assigned to the current user. What got applied to our user when we logged in you can use: id -Z
 
+dnf install -y policycoreutils*
+dnf provides semanage             can see the packages
+
 when we log in the user we log in as is automatically map to an SELinux user 
 To see this mapping is done sudo semanage login -l sudo semanage user -l - > group
 Identify the SELinux Roles for xguest_u SELinux
 sudo semanage user -l
 
+to check the ports
+sudo semanage port -l
+semanage port -l | grep http
+
 to see the SELinux is actively restricting actions getenforce the output it must be 
 Enforcing if is Disabled is not doing anything if it is Permissive means it is allowing everything and locking actions that
 should have been restricted instead of denying
+
+
+Example 
+Configure SELinux for webcontent configured in port 80 at /var/www/html. Make content accessible
+1- install http and enable
+2 - dnf install -y policycoreutils*
+3 - semanage port -l | grep http      #save the output http_port_t
+4 - semanage port -a -t http_port_t -p tcp 82
+5 - firewall-cmd --permanent --add-port=82/tcp
+6 - firewall-cmd reload
+7 - firewall-cmd --list-all    #verify the rules
+8 - vi /etc/httpd/conf/httpd.conf    #search for Listen and change the port number to 82
+9 - sudo systemctl restart httpd
+10 - curl http://<IP>:82
+
 
 Change the SELinux context of /var/index.html file to httpd_sys_content_t
 sudo chcon -t httpd_sys_content_t /var/index.html
