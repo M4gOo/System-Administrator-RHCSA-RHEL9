@@ -987,6 +987,33 @@ sudo vi /etc/fstab
 sudo umount /myvfat/
 
 
+================================================================= Autofs
+
+autofs service can mount/unmount file systems automatically (on-demand), which saves system resources. /etc/fstab even you dont mount the system must keep
+resources in case you want mount. That is not ideal.
+
+sudo yum -y install autofs
+systemctl start autofs
+vi /etc/auto.master
+
+mount automatically NFS on host example at /automount directory
+<IP>:/public & <IP>:.private
+public NFS should have read only access for all users
+private NFS should have read and write access for all users
+both shares should get automatically unmounted if not in use for 30seconds
+
+1- yum install -y nfs*
+2 - yum install -y autofs
+3 - mkdir -p /automount/private
+4 - mkdir -p /automount/public
+5 - sudo vi /etc/auto.master    #end of the file add /automount /etc/automount.txt --timeout=30
+6 - sudo vi /etc/automount      public -ro,sync <IP>:/public    private -rw,sync <IP>:/private
+7 - sudo showmount -e <IP>      # need to enable rpcbind clinet before to use this command
+8 - systemctl enable autofs
+9 - systemctl enable rpcbind
+10 - df -h
+
+
 ================================================================== Configure systems to mount file systems at or during boot
 
 It instructs the operating system that filesystem is ready to use and associate it with a particular point in the system's hierarchy. 
