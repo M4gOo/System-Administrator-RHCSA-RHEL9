@@ -831,6 +831,8 @@ check some commands can type
 vg in the terminal
 pv
 it will show a list of commands
+PE - physical extend
+
 
 sudo dnf install lvm2
 pv -  physical volumes
@@ -855,6 +857,20 @@ pv -  physical volumes
  sudo fsck /dev/volume1/smalldata     OR  lsblk -f                  check the file system for the partition
  
  
+ /etc/fstab
+ /dev/volumegroupname/logicalvolume /mountpoint defaults 0 0
+ 
+ lvextend -r -L +2G /dev/volumegroupname/logicalvolume    # to extend, but make sure the volume group has this size to extend
+ vgextend volumegroupname /dev/vdc
+ 
+ L - you know the size
+ l - %, extends number
+ 
+ extend PE
+ vgcreate -s 8M volumegroupname /dev/vdc
+ 
+  lvcreate -l 10 -n logicalvolumename /dev/volumegroupname
+  
  =================================================================       Create and configure encrypted storage
  
  
