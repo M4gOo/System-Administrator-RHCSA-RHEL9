@@ -1686,7 +1686,7 @@ sudo nmcli device reapply <enp0s3>
 sudo yum install chrony
 sudo vi /etc/chrony.conf    server <ip> iburst    and comment  #pool 2.centos.pool.ntp.org iburst
 systemctl restart chronyd
-chronyc sources -v 
+chronyc sources -v  
 sudo systemctl set-ntp true
 
 keep the clock accurate
