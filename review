@@ -1229,6 +1229,10 @@ sudo cat /var/log/cron
 
 to send an email to user change the MAILTO=root
 
+to deny user to do cronjob
+/etc/cron.deny      #ype the name user in the file and save
+to verify login with the user and try to use the command crontab -e
+
 
 ---------------------------------------------------------   Scheduling jobs with anacron 
 
