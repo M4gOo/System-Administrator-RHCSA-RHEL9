@@ -79,7 +79,7 @@ then
 sudo systemctl restart NetworkManager
 reboot
 
-can use sudo nmtui     #if doesnt have the package install using sudo yum -y install NetworkManager
+can use sudo nmtui     #if doesnt have the package install using sudo yum -y install NetworkManager-tui*
 
 
 ==================================================== APROPOS 
