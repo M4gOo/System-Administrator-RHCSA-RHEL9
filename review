@@ -1037,7 +1037,13 @@ sudo vi /etc/fstab
 sudo umount /myvfat/
 
 
-================================================================= Autofs
+================================================================= Autofs    NFS
+
+in the server create a directory which can be shared with other hosts when connected to the server, if you wnat to share more files
+just add in that directory, then it will be visible for other hosts using NFS.
+NFS shared dir are not permanently connected
+the automounter is configured on the client machine
+NFS shares are available to all users
 
 autofs service can mount/unmount file systems automatically (on-demand), which saves system resources. /etc/fstab even you dont mount the system must keep
 resources in case you want mount. That is not ideal.
@@ -1058,10 +1064,41 @@ both shares should get automatically unmounted if not in use for 30seconds
 4 - mkdir -p /automount/public
 5 - sudo vi /etc/auto.master    #end of the file add /automount /etc/automount.txt --timeout=30
 6 - sudo vi /etc/automount      public -ro,sync <IP>:/public    private -rw,sync <IP>:/private
-7 - sudo showmount -e <IP>      # need to enable rpcbind clinet before to use this command
+7 - sudo showmount -e <IP>      # need to enable rpcbind client before to use this command
 8 - systemctl enable autofs
 9 - systemctl enable rpcbind
 10 - df -h
+
+----------------- EXAMPLE 
+##in the server##
+yum install nfs*
+mkdir /share
+touch /share/file1 /share/file2
+chmod 777 /share
+vi /etc/exports
+  /share <IPhost1> <IPhost2>(ro,sync) 
+exportfs -avr
+firewall-cmd --add-service=(nfs.mountd.rpc-bind) --permanent
+firewall-cmd --reload
+
+##for the client/host##
+yum install nfs-utils 
+yum install autofs
+showmount -e <IPserver>    #check which nfs volume is available 
+vi /etc/auto.master
+    comment #/misc /etc/auto.misc
+    add     /auto_mount /etc/auto.misc --timeout=30    (you dont need to specify the timeout if you dont want)
+vi /etc/auto.misc 
+    add     access   -rw,soft,intr    <IPserver>:/share
+systemctl enable autofs --now
+ls /    # verify the auto_mount
+    
+
+
+
+
+
+
 
 
 ================================================================== Configure systems to mount file systems at or during boot
