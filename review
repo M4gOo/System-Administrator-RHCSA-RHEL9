@@ -1249,7 +1249,7 @@ sudo mount /mnt/mystratis
 cat /etc/crontab 
   can use  ',' this it will run multiple times like 15min and 45minutes -> 15,45
   can use '-', set hours to 2-4 2am,3am,4am
-  can use '/', to specifies steps, every 4hours it will run
+  can use '/', to specifies steps, every 4hours it will run. */3 * * * * ->execute every 3min
   Minute(0-59) Hour(0-23) Day_of_month(1-31) Month(1-12) Day_of_week(0-6) [Sunday=0 or 7] or sun,mon,tue,wed,thu,fri,sat
   
 check the service is running in the machine
