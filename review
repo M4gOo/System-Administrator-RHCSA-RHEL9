@@ -2056,6 +2056,8 @@ http_access deny facebook
 linux kernel can be easily extended with so-called modules, one of them is SELinux that add variant advanced capabilities of restricting access 
 SELinux is enable by defaut by centos
 
+collections of rules go on which process have access to which file directly or port
+
 ls -Z drwxr-xr-x. devops devops unconfined_u:object_r:user_home_t:s0 Desktop
 
 unconfined_u:object_r:user_home_t:s0 ->string is called SElabel or SElinux context 
@@ -2071,7 +2073,7 @@ ps axZ
 
 to see the security context assigned to the current user. What got applied to our user when we logged in you can use: id -Z
 
-dnf install -y policycoreutils*
+dnf install -y policycoreutils*    this is to install SEMANAGE
 dnf provides semanage             can see the packages
 
 when we log in the user we log in as is automatically map to an SELinux user 
@@ -2102,8 +2104,37 @@ Configure SELinux for webcontent configured in port 80 at /var/www/html. Make co
 10 - curl http://<IP>:82
 
 
+collections of rules go on which process have access to which file directly or port
+
+dnf install -y policycoreutils*
+
 Change the SELinux context of /var/index.html file to httpd_sys_content_t
-sudo chcon -t httpd_sys_content_t /var/index.html
+sudo chcon -t httpd_sys_content_t /var/index.html            #Temporary Changes: chcon
+semanage fcontext -a -t  httpd_sys_content_t "/var(/.*)?"
+
+sudo semanage fcontext --list | grep http                     # list all the context
+
+Set the appropriate context for all files in the /kodekloud/ directory:
+semanage fcontext -a -t httpd_sys_content_t "/kodekloud(/.*)?"
+restorecon -Rv /kodekloud                             #restorecon utility apply the context changes
+
+Temporarily change the SELinux status to Permissive on this system
+sudo setenforce 0 (permissive) it wont restrict but it will report/monitoring
+sudo setenforce 1 (enforcing)  it will restrict the access
+
+# to keep persistent vi /etc/selinux/config or /etc/sysconfig/selinux 
+SELINUX=Permissive   (edit this line)
+
+Restore the correct contexts:
+restorecon -R /kodekloud/
+
+change booleans           # in doubt do sudo semanage boolean --help
+sudo semanage boolean -l | grep httpd_enable
+sudo semanage boolean -m httpd_enable_homedirs -1
+
+to make persistent change   - setsebool boolean_name on/off
+setsebool -P httpd_can_network_connect_db on
+
 
 SELinux context label for the sshd process
 #
@@ -2119,11 +2150,12 @@ current SELinux mode on the system
 getenforce
 
 Temporarily change the SELinux status to Permissive on this system
-sudo setenforce 0
-sudo setenforce 1 (enforcing)
+sudo setenforce 0 (permissive) it wont restrict but it will report
+sudo setenforce 1 (enforcing)  it will restrict the access
 
 # to keep persistent vi /etc/selinux/config
 SELINUX=Permissive   (edit this line)
+
 
 ===========================================================  Change kernel runtime parameters, persistent and non-persistent 
 
