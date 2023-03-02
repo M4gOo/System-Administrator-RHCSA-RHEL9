@@ -1095,12 +1095,6 @@ ls /    # verify the auto_mount
     
 
 
-
-
-
-
-
-
 ================================================================== Configure systems to mount file systems at or during boot
 
 It instructs the operating system that filesystem is ready to use and associate it with a particular point in the system's hierarchy. 
