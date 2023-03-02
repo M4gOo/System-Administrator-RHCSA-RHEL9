@@ -1748,6 +1748,36 @@ sudo nmtui
 sudo nmcli device reapply <enp0s3>
 
 
+-----------------------  ################### Important
+
+To create a connection is good to use nmcli, to edit it will be easier to use nmtui (for nmcli it will be nmcli con mod)
+
+Parameters
+con-name    #connection name
+type
+ifname      #interface name
+autoconnect
+ip4
+gw4
+
+nmcli con show                                              #view the connections
+nmcli con show eth0                                         #show all the parameters
+
+nmcli con add con-name <connection-name> type <ethernet> ifname <ens160> ipv4 <IP/MASK> gw4 <IP>
+
+nmcli con up <connection-name>
+
+autoconnect    #after reboot it will autoconnect with the interface you set up
+nmcli con mod <connection-name> connection.autoconnect yes
+    
+nmcli con mod <connection-name> ipv4.addresses <newIP/MASK>
+
+#to add DNS need to use nmcli con mod
+nmcli con mod <connection-name> ipv4.dns <IP>
+
+# to assign more IP to a connection
+nmcli con mod <connection-name> +ipv4.addresses <IP/MASK>
+
 =========================================================================  Configure time service clients  - NTP (Network Time Protocol)
 
 sudo yum install chrony
