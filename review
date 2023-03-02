@@ -2022,6 +2022,8 @@ Finally save the changes
 
 ---------------------------------------------- configuring SSH servers and clients
 
+yum install openssh-server   #install in both machines
+
 configuration file /etc/ssh/sshd_config (sshd -> the D means daemon) man sshd_config /etc/ssh/ssh_config (this is the config file for client, no D)
 
 /etc/ssh/sshd_config can change the port number can change the AddressFamily, this can change for ipv4, ipv6 or both 
