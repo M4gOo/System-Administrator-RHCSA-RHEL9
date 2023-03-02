@@ -1137,7 +1137,7 @@ deduplication - video check if data has been written to the disc already in anot
 compression - compress the data and packed together to save space on the disk
 
 
-sudo yum install vdo
+yum install vdo kmod-kvdo
 
 sudo systemctl enable --now vdo
 
