@@ -2104,6 +2104,7 @@ Configure SELinux for webcontent configured in port 80 at /var/www/html. Make co
 10 - curl http://<IP>:82
 
 
+-----------------
 collections of rules go on which process have access to which file directly or port
 
 dnf install -y policycoreutils*
@@ -2133,8 +2134,42 @@ sudo semanage boolean -l | grep httpd_enable
 sudo semanage boolean -m httpd_enable_homedirs -1
 
 to make persistent change   - setsebool boolean_name on/off
+sudo semanage boolean -l | grep httpd
 setsebool -P httpd_can_network_connect_db on
 
+
+----------- examples
+
+dnf install -y policycoreutils*
+
+1 - ensure httpd is able to access the user home dir   # need to change the boolean
+setsebool -P httpd_enable_homedirs on
+
+2- system not able to connect to httpd service port 82.     # need to change the port, check firewall as well
+semanage port -l | grep http
+semanage port -a -t http_port_t -p tcp 82
+
+3 - ensure the httpd service is able to access and host files grom the /test directory    # change the context
+check the context in 
+    ls /var/www/html/index.html
+    curl localhost/index.html   # verify it is working
+mkdir /test
+touch /test/index.html
+check the context in 
+     ls -lZ /test
+semanage fcontext -a -t http_sys_content_t "/test(/.*)?"   
+restorecon -Rv /test
+ls -lZ /test
+
+vi /etc/httpd/conf/httpd.conf
+DocumentRoot "/test"
+<Directory "test">
+
+systemctl restart httpd
+
+curl localhost/index.html
+
+-------------------------------------------------------------------------------------------------
 
 SELinux context label for the sshd process
 #
