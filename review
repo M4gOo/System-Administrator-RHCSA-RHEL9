@@ -1252,6 +1252,10 @@ cat /etc/crontab
   can use '/', to specifies steps, every 4hours it will run
   Minute(0-59) Hour(0-23) Day_of_month(1-31) Month(1-12) Day_of_week(0-6) [Sunday=0 or 7] or sun,mon,tue,wed,thu,fri,sat
   
+check the service is running in the machine
+service cron status
+service cron start
+
 crontab -e 
   edit he table of youyr current user
   
