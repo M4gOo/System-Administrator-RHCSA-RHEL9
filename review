@@ -841,7 +841,7 @@ pv -  physical volumes
  sudo vgcreate <type_any_name_for_groupname> /dev/sdc /dev/sdd
  sudo vgextend  <type_groupname> /dev/sde                           to extend the volume group
  sudo vgs                                                           list volumes groups
- sudo vgreduce  <type_groupname>   /dev/sde                         to remove a physical volume
+ sudo vgreduce  <type_groupname>   /dev/sde                         to remove a physical volume from the volum group
  sudo pvremove /dev/sde                                             to remove entirely from lvm
  sudo lvcreate --size 2G --name partition1  <type_groupname>        need to add a partition, need to add a logical volume 
  sudo lvresize --extents 100%VG  my_volume/partition1               to grow the logical volume after partition the disk
