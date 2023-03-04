@@ -609,6 +609,14 @@ sudo lsof | grep sshd |  grep -i reg | sed 's/.* //g' > /home/bob/sshdfiles.txt
 ============================================================================== Locate and analyze system log files 
 
 
+make journalctl persistent
+sudo mkdir /var/log/journal
+Edit the file /etc/systemd/journald.conf
+[Journal]
+Storage=persistent
+Next, restart the systemd-journald
+systemctl restart systemd-journald
+
 log daemon rsyslog is the popular in Linux that stores all logs in /var/log
 
 ls /var/log/
