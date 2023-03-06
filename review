@@ -122,13 +122,25 @@ chmod go+rw
  
  
  
+------------------------------- partition, swap, lv
+extend the lv, lv1 by 2GB lvextend -r -L +2G /dev/vd1/lv1
+
+create a lv named lv2 with 10 extend. The size of each extend is 8MB (PE)
+sudo lvcreate -l 10 -n LV2 /dev/VG2
+
+to remove 
+lvchange -an /dev/vd1/lv1
+lvremove /dev/vd1/lv1
+ 
+ Swap
+ https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/managing_storage_devices/getting-started-with-swap_managing-storage-devices
  
  
+ -------------------------- stratis
+ sudo yum -y install stratisd stratis-cli
+ systemctl start stratisd
  
- 
- 
- 
- 
+ /dev/stratis/poolname/filesystem /mountpoint xfs defaults,x-systemd.requires=stratisd.service 0 0
  
  
  
