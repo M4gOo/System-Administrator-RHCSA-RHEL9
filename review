@@ -1,5 +1,60 @@
   
-  ======================================             Essential Tools                    ===================================================================
+ --------------------
+ 
+ https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/assembly_configuring-and-managing-network-access_configuring-basic-system-settings
+ 
+ 
+ command find, tar, star, chmod
+ 
+
+ 
+ ------------------ umask
+[ ~]$ umask
+0002
+[ ~]$ umask -S
+u=rwx,g=rwx,o=rx
+ 
+
+---------------------------- umask
+
+ To determine whether you are executing a command in a login or a non-login shell, use the echo $0 command.
+ non-login shell. bash
+ login shell.     -bash
+ 
+
+To display the default bash umask for the non-login shell, use:
+grep umask /etc/bashrc
+You can change the default umask for a specific user by modifying the .bashrc for that user.
+echo 'umask octal_value' >> /home/username/.bashrc
+
+To display the default bash umask for the login shell, use
+grep "UMASK" /etc/login.defs
+The default umask for the login shell is set in the /etc/login.defs configuration file.
+You can change the default bash umask for the ROOT user by modifying the /etc/login.defs file.
+
+umask octal_value. The umask is only valid for the current shell session.
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ======================================             Essential Tools                    ===================================================================
 
 
 save all command output (both errors/warnings and normal output
