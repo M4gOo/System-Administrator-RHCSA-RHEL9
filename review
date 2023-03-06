@@ -147,6 +147,9 @@ chmod go+rw
  
 ------------------------------- partition, swap, lv
 
+make sure so set proper permissions
+sudo chmod 600 /swap
+
 partprobe afterwards to make the kernel aware of the new partition configuration
 
 extend the lv, lv1 by 2GB lvextend -r -L +2G /dev/vd1/lv1
@@ -280,11 +283,23 @@ SELINUX=Permissive   (edit this line)
 
 
 --------------------------- containers
-
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/building_running_and_managing_containers/assembly_working-with-container-images_building-running-and-managing-containers
 ------------- examples
 sudo dnf install docker
 yum install podman @container-tools
+install podman podman-docker ?
 
+podman container run hello-world
+
+podman search apache | less to look at the images in the repository
+
+registry.redhat.io (requires authentication)
+registry.access.redhat.com (requires no authentication)
+registry.connect.redhat.com (holds Red Hat Partner Connect program images)
+
+/etc/containers/registries.conf   Can find the registry in the conf file
+
+Pulling images from registries
 podman login registry.redhat.io
 username: bob
 password: pass
@@ -325,7 +340,24 @@ systemctl --user daemon-reload
 systemctl --user start New-container.service
 systemctl --user enable New-container.service
 
- 
+
+
+-------------------------- autofs
+
+##for the client/host##
+yum install nfs-utils 
+yum install autofs
+
+
+showmount -e <IPserver>    the output will be /share IPserver #check which nfs volume is available 
+vi /etc/auto.master
+    comment #/misc /etc/auto.misc
+    add     /auto_mount /etc/auto.misc --timeout=30    (you dont need to specify the timeout if you dont want) I chose the /auto_mount (it will be created automatically)
+vi /etc/auto.misc          # default map /etc/auto.misc
+    add     access   -rw,soft,intr    <IPserver>:/share
+systemctl enable autofs --now
+ls /    # verify the auto_mount
+ cd /auto_mount
  
  ======================================             Essential Tools                    ===================================================================
 
