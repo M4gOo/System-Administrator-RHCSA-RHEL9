@@ -1,10 +1,11 @@
   
+ 
  --------------------
  
  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/assembly_configuring-and-managing-network-access_configuring-basic-system-settings
+ https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/considerations_in_adopting_rhel_9/ref_repositories_considerations-in-adopting-rhel-9
  
- 
- command find, tar, star, chmod
+ command find, tar, star, chmod, manage users and groups, 
  
 
  
@@ -14,9 +15,6 @@
 [ ~]$ umask -S
 u=rwx,g=rwx,o=rx
  
-
----------------------------- umask
-
  To determine whether you are executing a command in a login or a non-login shell, use the echo $0 command.
  non-login shell. bash
  login shell.     -bash
@@ -35,10 +33,92 @@ You can change the default bash umask for the ROOT user by modifying the /etc/lo
 umask octal_value. The umask is only valid for the current shell session.
 
 
+--------------------------------- Repositories
+
+ Red Hat Enterprise Linux 9 is distributed through two main repositories:
+
+BaseOS
+AppStream
+Both repositories are required for a basic RHEL installation, and are available with all RHEL subscriptions.
+ 
+ sudo vi /etc/yum.repos.d/local.repo
+ 
+ [BaseOS]
+ name=baseOS
+ baseurl=http://rhgls.domain14.example.com/BaseOS
+ gpgcheck=0
+ enabled=1
+ 
+ [AppStream]
+ name=appstream
+ baseurl=http://rhgls.domain14.example.com/AppStream
+ gpgcheck=0
+ enabled=1
  
  
+ --------------------------------------------tuned
+ 
+ yum install tuned
+ tuned-adm list
+ tuned-adm active
+ tuned-adm profile <profile_name>
+ tuned-adm recommend
+ tuned-adm off
+ tuned-adm active
  
  
+ --------------------------------------------- NTP
+ chrony is an implementation of the Network Time Protocol (NTP)
+ 
+ chrony consists of chronyd, a daemon that runs in user space
+ chronyc a command line program which can be used to monitor the performance of chronyd and to change various operating parameters when it is running.
+ 
+ dnf install chrony
+ 
+ Changes made using chronyc are not permanent, they will be lost after a chronyd restart. 
+ For permanent changes, modify /etc/chrony.conf
+ 
+ server ntp.lab.int_OR_IP iburst
+ 
+ After applying the configuration changes, restart the chronyd service
+ 
+ chronyc sources -v    displays information about the current time sources
+ 
+ timedatectl
+ timedatectl set-ntp true
+ 
+ 
+ configure server need to add the ip
+ server ntp.lab.int iburst
+allow 192.168.0.0/24
+
+and add entries in the firewall
+sudo firewall-cmd --add-service=ntp --permanent
+sudo firewall-cmd --reload
+ 
+ 
+------------------------------------------------ ACL
+getfacl
+setfacl -m u:user:rw- file.txt
+setfacl -m g:group:rw- file.txt
+-m : to add or modify ACL
+
+
+----------------------------- setuid,setgid,stickybit
+[S ; s (with x)] SETUID -  makes an executable run with the privileges of the owner of the file.  
+[S ; s (with x)]SETGID -  makes an executable run with the privileges of the group of the file.
+[T ; t (with x)] STICKY BIT - This permission does not affect individual files. At the directory level, it restricts file deletion. 
+                              Only the owner (and root) of a file can remove the file within that directory.
+ 
+sudo chmod g+s     ensure that for all future files within /directory the group owner will be the same as set in /directory
+sudo chmod g+rw
+sudo chmod u-w
+chmod go+rw 
+ 
+ setuid Command will be run with owner rights instead of the rights of the executer
+ chmod u+s /root
+ set gid ensure that for all future files within /directory the group owner will be the same as set in /directory
+ sudo chmod g+s
  
  
  
