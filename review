@@ -5,9 +5,32 @@
  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/assembly_configuring-and-managing-network-access_configuring-basic-system-settings
  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/considerations_in_adopting_rhel_9/ref_repositories_considerations-in-adopting-rhel-9
  
- command find, tar, star, chmod, manage users and groups, 
+ command find, tar, star, chmod, manage users and groups, grep, cron, reset passwd, passwd
  
+sudo systemctl status crond
 
+You can also use extended regular expressions with the command-line parameter -E. For example, to search for a pattern that contains the word Port followed by numbers, use this regular expression:
+
+$ grep -E "Port [1-9]+" /etc/ssh/sshd_config
+Port 22
+
+Use option -i for a case-insensitive search.
+Use option -v to invert the search and display lines that do not match the pattern.
+Use option -w to search for entire words only instead of patterns in the middle of other words.
+Use option --color for colored output, making it easier to spot the matched pattern.
+
+
+reset password
+e
+linux line go to the end with End button, or ctrl+E 
+write rd.break
+ctrl+X
+mount -o remount,rw /sysroot
+chroot /sysroot
+sh-4.4# passwd 
+touch ./autorelabel           Enable the SELinux relabeling process on the next system boot
+exit    Exit the chroot environment
+exit    Exit the switch_root prompt
  
  ------------------ umask
 [ ~]$ umask
@@ -123,6 +146,9 @@ chmod go+rw
  
  
 ------------------------------- partition, swap, lv
+
+partprobe afterwards to make the kernel aware of the new partition configuration
+
 extend the lv, lv1 by 2GB lvextend -r -L +2G /dev/vd1/lv1
 
 create a lv named lv2 with 10 extend. The size of each extend is 8MB (PE)
@@ -143,9 +169,116 @@ lvremove /dev/vd1/lv1
  /dev/stratis/poolname/filesystem /mountpoint xfs defaults,x-systemd.requires=stratisd.service 0 0
  
  
+ ------------------- vdo
+ create vdo V1 size 50Gb mount /V1
  
+ sudo yum -y install kmod-kvdo 
+ sudo yum -y install vdo
  
- 
+ yum install vdo kmod-kvdo
+
+sudo systemctl enable --now vdo
+
+sudo vdo create --name=vdo_storage --device=/dev/vdb --vdoLogicalSize=10G
+
+vdo list
+
+sudo vdostats --human-readable
+
+sudo mkfs.xfs -K /dev/mapper/vdo_storage
+sudo mkfs.xfs /dev/mapper/vdo_storage  
+
+/etc/fstab
+/dev/mapper/VDO1 /vdo1 auto defaults,x-systemd.requires=vdo.service 0 0
+
+mount -a
+
+sudo udevadm settle
+
+sudo vdostats --human-readable
+
+mount vdo devices
+
+sudo mkdir /mnt/myvdo
+
+sudo vi /etc/fstab
+      /dev/mapper/vdo_storage       /mnt/myvdo        xfs   _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service 0 0
+       _netdev,x-systemd.device-timeout=0,x-systemd.requires=vdo.service  -> mount options are required for all video devices to be mounted
+       at boot time, the service needs to be load before the device can be mounted again.
+
+df -h /mnt/myvdo
+
+
+
+------------------------- nmcli
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/assembly_configuring-and-managing-network-access_configuring-basic-system-settings
+nmcli con show
+nmcli device status
+
+
+sudo nmcli con add con-name "Default1" type ethernet ifname ensl60 ipv4 129.187.345.1/24 gw4 129.187.345.0
+nmcli con show
+nmclli con up "Default1"
+nmcli con mod "Default1" connection.autoconnect yes
+
+to change the ipaddr
+nmcli con mod Default1 ipv4.addresses 192.168.12.34/24
+
+nmcli con mod Default1 ipv4.dns 172.123.456.32
+
+add more ip to the interface
+nmcli con mod Default1 +ipv4.addresses 192.168.12.88/24
+
+
+hostnamctl
+/etc/hostname
+
+
+------------------------------------semanage
+
+dnf install -y policycoreutils*
+
+1 - ensure httpd is able to access the user home dir   # need to change the boolean
+setsebool -P httpd_enable_homedirs on
+
+2- system not able to connect to httpd service port 82.     # need to change the port, check firewall as well
+semanage port -l | grep http
+semanage port -a -t http_port_t -p tcp 82
+firewall-cmd --permanent --add-port=82/tcp
+6 - firewall-cmd reload
+7 - firewall-cmd --list-all    #verify the rules
+
+3 - ensure the httpd service is able to access and host files grom the /test directory    # change the context
+check the context in 
+    ls /var/www/html/index.html
+    curl localhost/index.html   # verify it is working
+mkdir /test
+touch /test/index.html
+check the context in 
+     ls -lZ /test
+
+vi /etc/httpd/conf/httpd.conf
+DocumentRoot "/test"
+<Directory "test">
+
+systemctl restart httpd
+
+semanage fcontext -a -t http_sys_content_t "/test(/.*)?"   
+restorecon -Rv /test
+ls -lZ /test
+
+curl localhost/index.html
+
+
+to make persistent change   - setsebool boolean_name on/off
+sudo semanage boolean -l | grep httpd
+setsebool -P httpd_can_network_connect_db on
+getsebool
+
+to keep persistent vi /etc/selinux/config  or /etc/sysconfig/selinux
+SELINUX=Permissive   (edit this line)
+
+
  
  
  ======================================             Essential Tools                    ===================================================================
