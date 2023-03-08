@@ -259,6 +259,7 @@ setsebool -P httpd_enable_homedirs on
 2- system not able to connect to httpd service port 82.     # need to change the port, check firewall as well
 semanage port -l | grep http
 semanage port -a -t http_port_t -p tcp 82
+semanage port -l | grep http_port_t    #to check if it worked adding port 82 the output should give: http_port_t   tcp   82, 80, 81, 443, 488, 8008, 8009, 8443, 9000
 firewall-cmd --permanent --add-port=82/tcp
 6 - firewall-cmd reload
 7 - firewall-cmd --list-all    #verify the rules
@@ -365,6 +366,7 @@ systemctl --user enable New-container.service
 ##for the client/host##
 yum install nfs-utils 
 yum install autofs
+yum install nfs4-acl-tools
 
 
 showmount -e <IPserver>    the output will be /share IPserver #check which nfs volume is available 
