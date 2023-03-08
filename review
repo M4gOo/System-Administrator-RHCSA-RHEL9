@@ -364,9 +364,9 @@ systemctl --user enable New-container.service
 -------------------------- autofs
 
 ##for the client/host##
-yum install nfs-utils 
+yum install nfs-utils + yum install nfs4-acl-tools = yum -y install nfs*
 yum install autofs
-yum install nfs4-acl-tools
+
 
 
 showmount -e <IPserver>    the output will be /share IPserver #check which nfs volume is available 
@@ -378,6 +378,22 @@ vi /etc/auto.misc          # default map /etc/auto.misc
 systemctl enable autofs --now
 ls /    # verify the auto_mount
  cd /auto_mount
+ 
+ 
+ 
+ 
+ mount NFS shares at /automount, 192.168.1.25:/public and 192.168.1.25:/private
+ 
+mkdir -p /automount/public
+mkdir -p /automount/private
+vi /etc/auto.master. below the +auto.master type /automount /etc/automount.txt
+vi /etc/automount.txt
+    public  -ro,sync  192.168.1.25:/public
+    private -rw,sync  192.168.1.25:/private
+
+showmount -e 192.168.1.25
+    
+    
  
  ======================================             Essential Tools                    ===================================================================
 
