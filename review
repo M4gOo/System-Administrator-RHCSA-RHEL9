@@ -63,7 +63,10 @@ umask octal_value. The umask is only valid for the current shell session.
 BaseOS
 AppStream
 Both repositories are required for a basic RHEL installation, and are available with all RHEL subscriptions.
- 
+
+check repo list
+dnf repolist all
+
  sudo vi /etc/yum.repos.d/local.repo
  
  [BaseOS]
@@ -77,6 +80,9 @@ Both repositories are required for a basic RHEL installation, and are available 
  baseurl=http://rhgls.domain14.example.com/AppStream
  gpgcheck=0
  enabled=1
+ 
+ dnf clean all   # update subscription management repo
+dnf repolist all
  
  
  --------------------------------------------tuned
@@ -217,6 +223,7 @@ df -h /mnt/myvdo
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/assembly_configuring-and-managing-network-access_configuring-basic-system-settings
 nmcli con show
 nmcli device status
+nmcli con show "System eth0"
 
 
 sudo nmcli con add con-name "Default1" type ethernet ifname ensl60 ipv4 129.187.345.1/24 gw4 129.187.345.0
@@ -231,6 +238,11 @@ nmcli con mod Default1 ipv4.dns 172.123.456.32
 
 add more ip to the interface
 nmcli con mod Default1 +ipv4.addresses 192.168.12.88/24
+
+ip a
+nmcli con mod "System eth0" ipv4.addresses 192.168.55.150/24 ipv4.gateway 192.168.55.1 ipv4.dns 8.8.8.8 ipv4.method static
+ping 192.168.55.1
+
 
 
 hostnamctl
@@ -250,6 +262,12 @@ semanage port -a -t http_port_t -p tcp 82
 firewall-cmd --permanent --add-port=82/tcp
 6 - firewall-cmd reload
 7 - firewall-cmd --list-all    #verify the rules
+check the conf file for http ### vi /etc/httpd/conf/httpd.conf
+#Supplement Configuration and check the configurations
+also go to Listen and change the port number
+sudo systemctl daemon-reload 
+systemctl restart httpd
+
 
 3 - ensure the httpd service is able to access and host files grom the /test directory    # change the context
 check the context in 
