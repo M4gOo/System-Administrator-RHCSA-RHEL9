@@ -6,6 +6,8 @@
  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/considerations_in_adopting_rhel_9/ref_repositories_considerations-in-adopting-rhel-9
  
  command find, tar, star, chmod, manage users and groups, grep, cron, reset passwd, passwd
+ when says need read and write permissions for a directory. you need to add the execution as well, otherwise it wont be able a user, or user in a group
+ to read and write, so for directories it is important to add x. Ex.: sudo chmod 770 /admin/vip/
  
 sudo systemctl status crond
 
