@@ -104,6 +104,8 @@ dnf repolist all
  chrony consists of chronyd, a daemon that runs in user space
  chronyc a command line program which can be used to monitor the performance of chronyd and to change various operating parameters when it is running.
  
+ system synchronous as 172.24.40.10
+  
  dnf install chrony
  
  Changes made using chronyc are not permanent, they will be lost after a chronyd restart. 
@@ -374,7 +376,7 @@ systemctl --user enable New-container.service
 yum install nfs-utils + yum install nfs4-acl-tools = yum -y install nfs*
 yum install autofs
 
-
+The autofs mount point, /auto_mount
 
 showmount -e <IPserver>    the output will be /share IPserver #check which nfs volume is available 
 vi /etc/auto.master
