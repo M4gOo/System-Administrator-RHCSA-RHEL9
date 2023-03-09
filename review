@@ -30,7 +30,7 @@ ctrl+X
 mount -o remount,rw /sysroot
 chroot /sysroot
 sh-4.4# passwd 
-touch ./autorelabel           Enable the SELinux relabeling process on the next system boot
+touch /.autorelabel           Enable the SELinux relabeling process on the next system boot
 exit    Exit the chroot environment
 exit    Exit the switch_root prompt
  
