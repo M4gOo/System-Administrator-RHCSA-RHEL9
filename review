@@ -1192,6 +1192,7 @@ sudo chmod 600 /swap
 then
 sudo mkswap /swap
 sudo swapon --verbose /swap
+free     #to check swap area size
 
 
 Increase the existing swap (i.e /swapfile) size by 1GB
