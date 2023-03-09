@@ -120,8 +120,8 @@ dnf repolist all
  gpgcheck=0
  enabled=1
  
- dnf clean all   # update subscription management repo
-dnf repolist all
+dnf/yum clean all   # update subscription management repo
+dnf/yum repolist    # to check the repolist
  
  
  --------------------------------------------tuned
@@ -282,7 +282,8 @@ add more ip to the interface
 nmcli con mod Default1 +ipv4.addresses 192.168.12.88/24
 
 ip a
-nmcli con mod "System eth0" ipv4.addresses 192.168.55.150/24 ipv4.gateway 192.168.55.1 ipv4.dns 8.8.8.8 ipv4.method manual
+nmcli con mod "System eth0" ipv4.addresses 192.168.55.150/24 ipv4.gateway 192.168.55.1 ipv4.dns 8.8.8.8 ipv4.method manual connection.autoconnect yes
+nmcli con up eth0
 ping 192.168.55.1
 
 
@@ -293,6 +294,15 @@ IPv4 configuration method.  If 'auto' is specified then the appropriate automati
 
 hostnamctl
 /etc/hostname
+
+
+------------------------------firewall-cmd
+
+block accessing your system from 184.25.0.0/24
+
+ firewall-cmd --permanent --add-source=184.25.0.0/24 --zone=block
+ firewall-cmd --reload
+ firewall-cmg --zone=block --list-all      #verify firewall rule
 
 
 ------------------------------------semanage
