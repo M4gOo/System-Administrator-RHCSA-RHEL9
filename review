@@ -34,6 +34,43 @@ touch ./autorelabel           Enable the SELinux relabeling process on the next 
 exit    Exit the chroot environment
 exit    Exit the switch_root prompt
  
+ 
+ 
+ ------------------- update KERNEL
+ 
+  yum install kernel-<version>-<revision>.<arch>     #yum install kernel-5.14.0-70.5.1.el9_0.x86_64
+ 
+ rpm -ivh [kernel.rpm]
+ grep ^id /boot/loader/entries/*
+ grub2-set-default <ID>
+ 
+ 
+ another way
+
+# grubby --default-kernel   or      uname -r
+/boot/vmlinuz-5.14.0-70.30.1.el9_0.x86_64
+5.14.0-70.30.1.el9_0.x86_64
+
+Show installed kernel list ( You can count 0,1,.. from the top of the title line)
+
+# grubby --info=ALL | grep title
+title="Red Hat Enterprise Linux (5.14.0-70.30.1.el9_0.x86_64) 9.0 (Plow)"    <---0
+title="Red Hat Enterprise Linux (5.14.0-70.13.1.el9_0.x86_64) 9.0 (Plow)"    <---1
+
+3. Set the default kernel
+Raw
+# grub2-set-default 1  
+
+4. Confirmation after the change
+# grubby --default-kernel
+/boot/vmlinuz-5.14.0-70.13.1.el9_0.x86_64
+
+5. reboot the system
+Raw
+# reboot
+
+
+
  ------------------ umask
 [ ~]$ umask
 0002
