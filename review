@@ -1232,7 +1232,7 @@ mkswap /dev/vdb1
 
 swapon -a
 
-free -m    #to verify the total swap size
+free -m    #to verify the total swap size 
 ===========================================================      Manage and configure LVM storage 
 
 lvm = logical volume manager
