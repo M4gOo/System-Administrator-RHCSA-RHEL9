@@ -204,7 +204,13 @@ extend the lv, lv1 by 2GB lvextend -r -L +2G /dev/vd1/lv1
 create a lv named lv2 with 10 extend. The size of each extend is 8MB (PE)
 sudo lvcreate -l 10 -n LV2 /dev/VG2
 
-to remove 
+to remove a volume group and logical volume
+check the fstab and delete the line associate with logical volume
+umount 
+lvremove /dev/datavg/datalv
+vgremove datavg
+
+
 lvchange -an /dev/vd1/lv1
 lvremove /dev/vd1/lv1
  
