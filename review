@@ -761,6 +761,7 @@ grep man file                                         any word with man. Like ma
 grep 'man$' file                                      $ - end of the line. Any line in which man is the last character on the line.
 grep -r 'c.t' /etc                                    execute, cat, cut
 grep -wr 'c.t' /etc/                                  cat, cut, cpt
+grep -v '^#' /etc/ssh/ssh_config                      uncommented lines
 grep '\.' file                                        to search for DOT in a file
 grep '/.*/' /etc/                                     to search anything with /bla/, / /, /path/hello
 egrep 'disabled?' file                                will search for disabled, disable
