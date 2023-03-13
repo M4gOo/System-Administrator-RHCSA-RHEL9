@@ -38,6 +38,9 @@ exit    Exit the switch_root prompt
  
  ------------------- update KERNEL
  
+ list available kernels
+ yum --showduplicates list available kernel
+ 
   yum install kernel-<version>-<revision>.<arch>     #yum install kernel-5.14.0-70.5.1.el9_0.x86_64
  
  rpm -ivh [kernel.rpm]
