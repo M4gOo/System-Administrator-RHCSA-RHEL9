@@ -1078,6 +1078,7 @@ Edit the file /etc/systemd/journald.conf
 Storage=persistent
 Next, restart the systemd-journald
 systemctl restart systemd-journald
+journalctl --flush
 
 log daemon rsyslog is the popular in Linux that stores all logs in /var/log
 
