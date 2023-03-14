@@ -360,7 +360,7 @@ curl localhost/index.html
 to make persistent change   - setsebool boolean_name on/off
 sudo semanage boolean -l | grep httpd
 setsebool -P httpd_can_network_connect_db on
-getsebool
+getsebool -a
 
 to keep persistent vi /etc/selinux/config  or /etc/sysconfig/selinux
 SELINUX=Permissive   (edit this line)
