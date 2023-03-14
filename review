@@ -1470,6 +1470,10 @@ sudo xfs_quota -x -c 'limit bsoft=100m bhard=500m john' /mnt/
 =========================                Create and Configure File Systems                ======================================================
 
 ----------------------------------------------------  mkfs
+
+install the packages
+sudo yum -y install dosfstools
+
 centOS use xfs file system, but can use ext4
 
 sudo mkfs.xfs /dev/sdb1    
