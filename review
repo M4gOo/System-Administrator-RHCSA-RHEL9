@@ -1476,8 +1476,8 @@ sudo yum -y install dosfstools
 
 centOS use xfs file system, but can use ext4
 
-sudo mkfs.xfs /dev/sdb1    
-sudo mkfs.ext4 /dev/sdb1
+sudo mkfs.xfs /dev/sdb1    (-K)
+sudo mkfs.ext4 /dev/sdb1   (-E)
 
 sudo mkfs.xfs   - it will show many flags we can use
 xfs             - double TAB to check more utilities
@@ -1492,6 +1492,9 @@ man mkfs.xfs
 /swap_file none swap defaults 0 0             add swap after boot
 /swap_file swap swap defaults 0 0
 
+#to make a label for fs
+e2label /dev/vdb2 MYEXT2
+xfs_admin -L MYXFS /dev/vdb1 
 
 ===================================================================   Create, mount, unmount, and use vfat file systems
 
