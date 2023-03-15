@@ -471,6 +471,61 @@ vi /etc/automount.txt
 showmount -e 192.168.1.25
     
     
+
+================================NFS
+# server
+sudo yum update
+sudo yum -y install nfs-utils*
+mkdir -p /srv/nfs/
+groupadd nfs_group
+usermod -aG nfs_group admin
+chown nobody:nfs_group /srv/nfs
+chmod g+sw /srv/nfs
+
+vi /etc/exports
+/srv/nfs <IP/24>(sync,rw)
+
+sudo firewall-cmd --permanent --add-service nfs
+sudo firewall-cmd --reload
+
+systemctl enable --now nfs-server
+
+#host
+sudo yum update
+sudo yum -y install nfs-utils*
+mkdir -p /mnt/nfs
+groupadd nfs_group
+usermod -aG nfs_group admin
+
+mount -t nfs appserver2:/srv/nfs /mnt/nfs    #to umount umount /mnt/nfs
+
+vi /etc/fstab
+appserver2.labnet:/srv/nfs /mnt/nfs nfs defaults 0 0 
+mount -v | grep nfs  #verify the mount
+
+
+================================AUTOFS
+#host
+sudo yum -y install autofs
+systemctl enable autofs --now
+
+---For direct map
+vi /etc/auto.master
+comment #/misc /etc/auto.misc and #/net -hosts
+at the end type
+/- /etc/auto.direct 
+
+vi /etc/auto.direct
+/mnt/nfs  -fstype=nfs4  appserver2:/srv/nfs
+
+systemctl restart autofs
+
+---For indirect map
+/mnt/nfs /etc/auto.indirect
+vi /etc/auto.indirect
+server -fstype=nfs4  appserver2:/srv/nfs
+systemctl restart autofs    
+    
  
  ======================================             Essential Tools                    ===================================================================
 
