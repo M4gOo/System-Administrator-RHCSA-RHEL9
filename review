@@ -996,6 +996,7 @@ exec /sbin/init
 
 On a system booting through legacy BIOS mode, what file would you edit before generating a new grub configuration file
 /etc/default/grub
+remove selinux=0 and enforcing=0
 
 what command would you use to generate the new grub configuration file
 grub2-mkconfig -o /boot/grub2/grub.cfg
