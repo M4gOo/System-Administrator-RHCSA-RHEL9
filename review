@@ -421,7 +421,12 @@ ssh <username>@localhost
 podman pull image docker.io/library/httpd
 podman run -d --name New -p 8085:80 docker.io/library/httpd
 mkdir -p ~/.config/systemd/user
+
+cd ~/.config/systemd/user
+podman generate systemd New --files --new 
+OR
 podman generate systemd New > ~/.config/systemd/user/New-container.service
+
 systemctl --user daemon-reload
 systemctl --user start New-container.service
 vi  ~/.config/systemd/user/New-container.service
