@@ -2400,6 +2400,9 @@ check the user acc regarding expiration
 #
 sudo chage -l <username>
 
+to easy calculate
+date -d +15days
+
 to set up an expiration date for password. This command set expired password and the user are force to immediately change it the next time logs in
 sudo chage --lastday 0 <username>
 
