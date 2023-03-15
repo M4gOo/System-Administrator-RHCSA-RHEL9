@@ -373,7 +373,9 @@ sudo dnf install docker
 yum install podman @container-tools
 install podman podman-docker ?
 
-podman container run hello-world
+podman search ubi   # search for images in the registries
+
+podman container run hello-world    #check is running
 
 podman search apache | less to look at the images in the repository
 
@@ -385,8 +387,13 @@ registry.connect.redhat.com (holds Red Hat Partner Connect program images)
 
 Pulling images from registries
 podman login registry.redhat.io
+skopeo login registry.redhat.io
 username: bob
 password: pass
+
+skopeo inspect docker://registry.redhat.io/ubi9/httpd
+expose
+
 
 podman search httpd    # this is to search the image
 
@@ -2863,6 +2870,7 @@ sudo podman run -d -p 1234:80 --name website nginx
 ------------- examples
 sudo dnf install docker
 yum install podman @container-tools
+yum install @"Container Management"
 
 podman login registry.redhat.io
 username: bob
