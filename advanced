@@ -408,9 +408,75 @@ chmod go+rw
 sudo chmod g+s     ensure that for all future files within /directory the group owner will be the same as set in /directory
 
 
+----------------------------------------------------------------------   CRONTAB  
+
+cat /etc/crontab 
+  can use  ',' this it will run multiple times like 15min and 45minutes -> 15,45
+  can use '-', set hours to 2-4 2am,3am,4am
+  can use '/', to specifies steps, every 4hours it will run. */3 * * * * ->execute every 3min
+  Minute(0-59) Hour(0-23) Day_of_month(1-31) Month(1-12) Day_of_week(0-6) [Sunday=0 or 7] or sun,mon,tue,wed,thu,fri,sat
+  
+check the service is running in the machine
+service cron status
+service cron start
+
+crontab -e 
+  edit he table of your current user
+  
+crontab -l   - to see user logged in cronjobs
+
+to edit as sudo just add sudo at the front
+sudo crontab -l       list
+sudo crontab -e       edit
+30 21 * * * /usr/bin/touch test_passed
+
+to add with different user
+sudo crontab -e -u <username>
+
+to remove cronjob
+crontab -r
+sudo crontab -r -u <username>
+
+to run a sheel script in a cronjob dont add extension
+makes executable
+sudo chmod +rx /etc/cron.hourly/shellscript
+if want run hourly (/etc/cron.hourly) just move to this dir, using sudo 
+
+check the logs
+sudo cat /var/log/cron
+
+to send an email to user change the MAILTO=root
+
+to deny user to do cronjob
+/etc/cron.deny      #ype the name user in the file and save
+to verify login with the user and try to use the command crontab -e
 
 
+------------------------------------------------------   Scheduling jobs with at 
+dnf install -y at
+systemctl enable --now atd
 
+
+just specify the time
+
+at 15:00
+at> /usr/bin/touch  file
+ctrl +d to save the job
+
+at 'December 01 2020'
+at '1:30 December 01 2020'
+at 'now + 30 minutes'     in 30 minutes from now
+
+atq               to see the jobs, command to see the jobs that are scheduled to run in at utility
+at -c <job_id>    to see what the jobs does
+
+atrm <job_id>     to remove the job
+
+
+sing root user, schedule below given command to run at 15:30 August 20 2024 by using at utility:
+/usr/bin/touch atscheduler
+Switch to the root user using sudo -i command, then execute command at '15:30 August 20 2024'
+Add /usr/bin/touch atscheduler line, enter,   then save it by pressing CTRL+D
 
 
 
