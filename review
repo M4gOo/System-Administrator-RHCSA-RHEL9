@@ -1,5 +1,14 @@
   
  
+ find package
+ mkfs.vfat
+ 
+ dny provides */mkfs.vfat
+ 
+ 
+ verify cronjob
+ do something with 2min to check 
+ 
  --------------------
  
  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/assembly_configuring-and-managing-network-access_configuring-basic-system-settings
