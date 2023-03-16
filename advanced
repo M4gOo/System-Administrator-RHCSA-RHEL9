@@ -224,6 +224,39 @@ mount | tail -5
 where you'll see the mounts that have been created by autofs.
 
 
+================================================== UMASK
+[ ~]$ umask
+0002
+[ ~]$ umask -S
+u=rwx,g=rwx,o=rx
+ 
+ To determine whether you are executing a command in a login or a non-login shell, use the echo $0 command.
+ non-login shell. bash
+ login shell.     -bash
+ 
+
+To display the default bash umask for the non-login shell, use:
+grep umask /etc/bashrc
+You can change the default umask for a specific user by modifying the .bashrc for that user.
+echo 'umask octal_value' >> /home/username/.bashrc
+
+To display the default bash umask for the login shell, use
+grep "UMASK" /etc/login.defs
+The default umask for the login shell is set in the /etc/login.defs configuration file.
+You can change the default bash umask for the ROOT user by modifying the /etc/login.defs file.
+
+umask octal_value. The umask is only valid for the current shell session.
+
+
+================================================== /etc/login.defs
+
+Can edit the expiration configuration
+
+==================================================  /etc/security/pwquality.conf
+ Set password policies to require a minimum of 8 characters
+uncomment
+minlen = 8
+
 
 
 
