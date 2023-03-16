@@ -9,6 +9,51 @@
  verify cronjob
  do something with 2min to check 
  
+ 
+ mkdir mydb
+ podman unshare chown 27:27 mydb
+ -e MYSQL_ROOT_PASSWORD=password
+ 
+ both servers
+ vi /etc/hosts
+IP-server2 server2.example.com server2
+IP-server1 server1.example.com server1
+ 
+ 
+ #Automount
+---SERVER1
+sudo yum -y install nfs-utils autofs
+sudo yum -y install firewalld*
+mkdir -p /homes/{user1,user2}
+vi /etc/exports
+/homes *(rw,no_root_squash)
+systemctl enable nfs-server --now
+systemctl enable firewalld --now
+firewall-cmd --add-service=nfs --permanent
+firewall-cmd --add-service=rpc-bind --permanent
+firewall-cmd --add-service=mountd --permanent
+firewall-cmd --reload
+
+vi /etc/hosts
+IP-server2 server2.example.com server2
+IP-server1 server1.example.com server1
+
+
+----SERVER2
+
+vi /etc/hosts
+IP-server2 server2.example.com server2
+IP-server1 server1.example.com server1
+sudo yum -y install nfs-utils autofs
+showmount -e server2
+vi /etc/auto.master
+/homes/   /etc/auto.homes
+vi /etc/auto.homes
+* 		-rw 		server2:/homes/&
+systemctl enable --now autofs
+cd /homes/user1
+cd /homes/user2
+ 
  --------------------
  
  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/assembly_configuring-and-managing-network-access_configuring-basic-system-settings
