@@ -5,6 +5,17 @@
 ===================================== Network Manager
  https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/assembly_configuring-and-managing-network-access_configuring-basic-system-settings
 
+sudo yum -y install NetworkManager
+systemctl enable NetworkManager --now
+
+-------------------------nmtui
+
+ip a
+
+Just check which IP they have and add the IP is down
+Make sure to change the hostname 
+Make sure to activate the connection
+
 ------------------------- nmcli
 
 ip a
@@ -29,7 +40,7 @@ nmcli con mod Default1 ipv4.addresses 192.168.12.34/24
 #add DNS
 nmcli con mod Default1 ipv4.dns 172.123.456.32
 
-add more ip to the interface
+#add more ip to the interface
 nmcli con mod Default1 +ipv4.addresses 192.168.12.88/24
 
 
@@ -37,6 +48,66 @@ nmcli con mod Default1 +ipv4.addresses 192.168.12.88/24
 
 cat /etc/hostname
 hostnamectl set-default <hostname>
+
+------------------------ /etc/hosts
+add the new ip address in all servers
+IPserver1 server.example.com server1
+
+
+==================================== Recover ROOT Password from boot
+
+hold shift OR F8 
+select Rescue mode
+press E
+in the line linux... at the end type init=/bin/bash
+Ctrl + X
+mount -o remount,rw /
+passwd <password_2x>
+touch /.autorelabel
+reboot  OR exec /usr/lib/systemd/systemd
+
+#if keep in a loop need to troubleshooting and remove the /.autorelabel at the end
+
+
+================================ Boot interface
+
+systemctl get-default
+
+systemctl set-default
+
+#check list for set-default
+ls -l /usr/lib/systemd/system/ 
+
+
+=================================================== SSH
+
+-----------------------root ssh
+yum -y install sshd
+systemctl enable sshd.service --now
+vi /etc/sshd/sshd_config
+  PermitRootLogin yes
+systemctl restart sshd.service 
+
+----------------------ssh root key pair
+vi /etc/sshd/sshd_config
+    PubkeyAuthentication yes  
+ssh-keygen
+cd ~/.ssh
+ssh-copy-id root@server2:/root/.ssh
+The plublic key it will be in ~/.ssh/authorized_keys
+
+ssh-keygen
+cd ~/.ssh
+ssh-copy-id root@server1:/root/.ssh
+
+
+
+
+
+
+
+
+
 
 
 
