@@ -47,12 +47,12 @@ nmcli con mod Default1 +ipv4.addresses 192.168.12.88/24
 -------------------------- hostname
 
 cat /etc/hostname
-hostnamectl set-default <hostname>
+hostnamectl set-hostname server1.example.com
 
 ------------------------ /etc/hosts
 add the new ip address in all servers
 IPserver1 server.example.com server1
-
+IPserver2 server2.example.com server2
 
 ==================================== Recover ROOT Password from boot
 
@@ -101,10 +101,127 @@ cd ~/.ssh
 ssh-copy-id root@server1:/root/.ssh
 
 
+====================================== Repository
+
+Red Hat Enterprise Linux 9 is distributed through two main repositories:
+
+BaseOS
+AppStream
+Both repositories are required for a basic RHEL installation, and are available with all RHEL subscriptions.
+
+check repo list
+dnf repolist all
+
+ sudo vi /etc/yum.repos.d/local.repo
+ 
+ [BaseOS]
+ name=baseOS
+ baseurl=http://rhgls.domain14.example.com/BaseOS  OR   http://<IPrepo>/repo/BaseOS/
+ gpgcheck=0
+ enabled=1
+ 
+ [AppStream]
+ name=appstream
+ baseurl=http://rhgls.domain14.example.com/AppStream  OR   http://<IPrepo>/repo/AppStream/
+ gpgcheck=0
+ enabled=1
+ 
+dnf/yum clean all   # update subscription management repo
+dnf/yum repo list   #verify
+
+=========================================== NFS   AUTOFS
+
+server1 create /hosts/user1 and user2
+server2 it will be the client to access those files
+
+Server1
+yum -y install firewalld autofs nfs-utils
+mkdir -p /hosts/{user1,user2}
+vi /etc/exports
+   /hosts *(rw,no_root_squash)
+systemctl enable --now nfs-server
+systemctl enable firewalld --now
+sudo firewall-cmd --add-service=nfs --permanent
+sudo firewall-cmd --add-service=mountd --permanent
+sudo firewall-cmd --add-service=rpc-bind --permanent
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all
+
+vi /etc/hosts
+add the new ip address in all servers
+IPserver1 server1.example.com server1
+IPserver2 server2.example.com server2
 
 
+Server2
+yum -y install autofs nfs-utils
+showmount -e <IPserver1>
+vi /etc/auto.master
+   /hosts   /etc/auto.hosts
+vi /etc/auto.hosts
+   *  -rw  <IPserver1>:/hosts/&
+systemctl enable autofs --now
+cd /hosts/user1
 
 
+=================================== NFS ======== AUTOMOUNT
+
+
+------------------ NFS server
+dnf install -y nfs-utils
+
+In NFS you'll need to share something. Let's create a dummy user homedirectory structure which can be shared next: 
+mkdir -p /users/nfs/{lisa,linda,anna}
+
+ tell NFS to share the directory containing these user home directories. To do so, it needs a file /etc/exports 
+ that contains the name of the directory to share, including some access permissions: 
+ echo "/users *(rw,no_root_squash)" > /etc/exports
+
+Enable and verify the NFS server
+systemctl enable --now nfs-server
+
+The showmount command provides an easy way to test NFS server access. 
+In this case it's super-easy, as the NFS server isn't even running remotely. 
+That's why you don't have to configure any firewall either. Use the following command to verify the NFS shares are available: 
+
+showmount -e localhost
+Export list for localhost:
+/users *
+
+You'll see that the directory /users is exported, which means that it's time to take care of automount setup.
+
+To use automount, you need to install the autofs service.
+As autofs doesn't really have any configuration yet, it doesn't make much sense to start it at this point already
+dnf install -y autofs
+
+
+Create the automount configuration
+The automount configuration is stored in two files. 
+The /etc/auto.master file is used to identify the directory that automount will manage, as well as the file that is used for further configuration.
+
+to add a line to the auto.master file: 
+echo "/home/nfs  /etc/auto.nfs" >> /etc/auto.master   
+   
+   
+You need wildcards to refer to any directory, and to refer to the matching part on the NFS server, you need an ampersand. 
+So to create the automount configuration, use 
+echo "*   -rw   localhost:/users/nfs/&" > /etc/auto.nfs
+
+This completes the configuration, so it's time to start and enable the autofs service: 
+systemctl enable --now autofs
+
+Verify the mounts
+ls -al /home/nfs
+
+In the previous step you've seen that the /home/nfs directory didn't contain any subdirectories. That is expected, because autofs will only become active when one of the subdirectories is actually accessed. 
+For a home directory, that would happen automatically when the user is logging in. Use the following to simulate this: 
+cd /home/nfs/linda
+
+Type pwd to verify that you are indeed in the directory /home/nfs/linda, which has now been automounted for you.
+
+To understand a bit more about all that is happening in the background, use 
+mount | tail -5 
+where you'll see the mounts that have been created by autofs.
 
 
 
@@ -201,64 +318,7 @@ semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
 restorecon -Rv /web
 
 
-=================================== NFS ======== AUTOMOUNT
 
-
------------------- NFS server
-dnf install -y nfs-utils
-
-In NFS you'll need to share something. Let's create a dummy user homedirectory structure which can be shared next: 
-mkdir -p /users/nfs/{lisa,linda,anna}
-
- tell NFS to share the directory containing these user home directories. To do so, it needs a file /etc/exports 
- that contains the name of the directory to share, including some access permissions: 
- echo "/users *(rw,no_root_squash)" > /etc/exports
-
-Enable and verify the NFS server
-systemctl enable --now nfs-server
-
-The showmount command provides an easy way to test NFS server access. 
-In this case it's super-easy, as the NFS server isn't even running remotely. 
-That's why you don't have to configure any firewall either. Use the following command to verify the NFS shares are available: 
-
-showmount -e localhost
-Export list for localhost:
-/users *
-
-You'll see that the directory /users is exported, which means that it's time to take care of automount setup.
-
-To use automount, you need to install the autofs service.
-As autofs doesn't really have any configuration yet, it doesn't make much sense to start it at this point already
-dnf install -y autofs
-
-
-Create the automount configuration
-The automount configuration is stored in two files. 
-The /etc/auto.master file is used to identify the directory that automount will manage, as well as the file that is used for further configuration.
-
-to add a line to the auto.master file: 
-echo "/home/nfs  /etc/auto.nfs" >> /etc/auto.master   
-   
-   
-You need wildcards to refer to any directory, and to refer to the matching part on the NFS server, you need an ampersand. 
-So to create the automount configuration, use 
-echo "*   -rw   localhost:/users/nfs/&" > /etc/auto.nfs
-
-This completes the configuration, so it's time to start and enable the autofs service: 
-systemctl enable --now autofs
-
-Verify the mounts
-ls -al /home/nfs
-
-In the previous step you've seen that the /home/nfs directory didn't contain any subdirectories. That is expected, because autofs will only become active when one of the subdirectories is actually accessed. 
-For a home directory, that would happen automatically when the user is logging in. Use the following to simulate this: 
-cd /home/nfs/linda
-
-Type pwd to verify that you are indeed in the directory /home/nfs/linda, which has now been automounted for you.
-
-To understand a bit more about all that is happening in the background, use 
-mount | tail -5 
-where you'll see the mounts that have been created by autofs.
 
 
 
