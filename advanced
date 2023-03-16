@@ -37,7 +37,58 @@ This allows users who are not logged in to run long-running services.
   podman ps                                                     #verify the container
   
   
-   
+================================== Permissions
+
+chmod 770 /path/{dir1,dir2}
+
+you can only delete the file if you are the owner of the file, or the owner of the directory that contains the file.
+when there is a stickybit!
+
+
+================================== Managing Processes , NICE, RENICE
+
+type & in the end
+jobs command for check process in the background
+fg <number> bring back the process to foreground
+ctrl+z to pause the process 
+bg to continue processes paused
+
+----- Change process priority
+start a process with different priprity
+nice -n -8 dd if=/dev/zero of=/dev/null &
+
+
+======================================= Check package
+
+dnf provides */killall
+
+
+========================================== SELinux
+
+a package that is needed to do decent SELinux troubleshooting
+yum -y install setroubleshoot-server
+
+------------------Managing SELinux File Context
+
+vi /etc/httpd/conf/httpd.conf
+change DocumentRoot
+<Directory>
+
+SELinux messages are written with the audit label AVC: 
+grep AVC /var/log/audit/audit.log | grep index.html
+
+In some cases it's also useful to see if sealert has generated output. 
+You'll find that in journalctl output: journalctl | grep sealert
+
+ls -Z /var/www
+ls -Z /web
+semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
+restorecon -Rv /web
+
+
+
+
+
    
    
    
