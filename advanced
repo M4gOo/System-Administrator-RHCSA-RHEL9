@@ -164,6 +164,20 @@ systemctl enable autofs --now
 cd /hosts/user1
 
 
+------------------------ NFS
+On both servers persistently mount /export/dba_files from the server 192.168.0.2 under /mnt/dba_files
+vi /etc/fstab
+192.168.0.2:/export/dba_files /mnt/dba_files nfs defaults 0 0 
+mount -a
+chown manny:dba_staff /mnt/dba_files
+chmod 2770 /mnt/dba_files
+chmod +t /mnt/dba_files
+
+Ensure manny is the user owner and dba_staff is the group owner. Ensure the groupID is applied to newly created files. 
+
+Ensure users can only delete files they have created. Ensure only members of the dba_staff group can access the directory.
+
+
 ================================================== UMASK
 [ ~]$ umask
 0002
@@ -207,6 +221,197 @@ Cmnd_Alias MESSAGES = /bin/tail -f /var/log/messages
 
 
 Enable superuser privileges
+dba_managers: everything
+dba_admin: SOFTWARE, SERVICES, PROCESSES
+dba_intern: MESSAGES
+
+
+uncomment 
+Cmnd_Alias SOFTWARE = /bin/rpm, /usr/bin/up2date, /usr/bin/yum
+Cmnd_Alias SERVICES = /sbin/service, /sbin/chkconfig, /usr/bin/systemctl start....
+Cmnd_Alias PROCESSES = /bin/nice, /bin/kill, /usr/bin/kill, /usr/bin/killall
+
+<user> <hosts> (<run as>) <command>
+%dba_managers ALL=(ALL) ALL
+%dba_admin ALL=SOFTWARE, SERVICES, PROCESSES
+%dba_intern ALL=MESSAGES
+
+
+================================================================ TAR / STAR
+ 
+ create an archive requires 3 steps
+    Archiving - pack those files and dir into a single file backup.tar
+    Compress the archive (makes smaller size of the original) backup.tar.gz
+    Copy where you would keep your backup
+  
+before extract always check the content and the paths  
+archive also store permissions and ownership info
+ 
+ best way to use this utility is using tar --help
+ 
+ #
+ 
+ tar rf archive.tar file1    add a file to tar archive
+ tar cf archive.tar Pictures/  create a tar file with entirely directory content to archive
+ tar cf archive.tar /home/user/Pictures/  the content it be save with the path /home/user/Pictures/
+ tar xf archive.tar -C /tmp/      it will extract in the path given
+ sudo tar xf archive.tar -C /tmp/      it will extract in the path given and the ownership and permission it will be preserved
+ star -zc -f=/home/bob/backup.star.gz ~/files
+ 
+ z - gzip
+ bz - bzip
+ c - create
+ f= - file
+ t - list content in .start.gz              star -t -f=backup.star.gz
+ 
+ tar cfj /home/bob/asset_backup.tar.bz2 --absolute-names /opt/assets/
+
+create an archive requires 3 steps
+  Archiving - pack those files and dir into a single file backup.tar
+  Compress the archive (makes smaller size of the original) backup.tar.gz
+  Copy where you would keep your backup
+  
+before extract always check the content and the paths  
+archive also store permissions and ownership info
+
+
+=================================================== SOFT LINKS
+ 
+ 
+ soft link points to a path, like a shortcut
+ 
+ ln -s /home/user/Pictures/picture.jpg /home/user/Desktop/pictures_shortcut.jpg
+ ln -s /tmp /home/bob/link_to_tmp
+ 
+ when you list ls -l it will show the " L " at the beginning like:  lrwx------
+ 
+ can use the command below to check the path link
+ readlink pictures_shortcut.jpg
+ 
+ if someone does change can break the link and it will be show in red when listed. to tackle that use relative paths to direct to the file 
+ and not the file itself, because if someone delete it wont work the link
+ 
+ can soft link files, directories, can be in different file systems
+
+
+===================================================   HARD LINKS   - INODE 
+
+A "hard link" is a directory entry that points to the same data on disk as a directory entry somewhere else.
+
+stat /home/user/picture.jpg
+it will show the inode. Inode remember all the pieces are store and keeps track like permissions, when modified, etc
+links. usually you have one link which it will link the absolute path file to the inode
+
+in case for example another user want to see the picture, you dont need copy and paste. This saves resource storage
+
+ln path_to_target_file path_to_link_file
+path_to_target_file - file you want to link
+path_to_link_file - name of the new directory you want the pictures be copied
+
+ln /home/user/Pictures/picture.jpg /home/new_user/Pictures/picture.jpg
+ln /tmp/hlink /home/bob/hlink
+
+if the user delete his file the new user still can have access to the pictures
+
+limitations
+  only for files, not directories
+  only link on the same file system
+  make sure has right permissions, the example above we might add the user and new_user to the same group ( useradd -a -G family user ,  useradd -a -G family new_user)
+
+Verify Hard links
+Use the ls -i command to view the inode number. Files that are hard-linked together share the same inode number. 
+
+
+================================================================= FIND
+
+
+#
+find /opt/assets/ -type f -exec grep -Iq . {} \; -print        find file that contains text, when the others are empty
+#
+find /opt/assets -type f -perm 2664 -exec cp -p {} /home/bob/specialfiles/ \;
+
+
+SUID - 4
+SGID - 2
+Sticky bit - 1
+-exec <command> {} \;
+      find will execute <command> and will substitute {} with the filename(s) found. 
+      with ; a single <command> for each file is executed 
+      escaped here as \; to prevent the shell from interpreting it
+
+{} \; : executing the commands for each found result
+{} + : executing the command once with all results argument like this -> ls file1.txt file2.txt file3.txt  
+
+
+find /path -name file.txt
+find /path -iname file.txt              -case sensitive
+find -mmin        modified minute (modified means creation or editing a file) Modified means when the contens have been modified
+find -mmin 5      5 min ago (if now is 11:00 it will find files in 10:55)
+find -mmin -5     5 min ago (if now is 11:00 it will find files BETWEEN 10:55 until 11:00)
+find -mmin +5     list files before 5 min ago (if now is 11:00 it will find files from 10:55 to the infinite 10:45, 10:30, 9:30, etc)  
+find -mtime 0     search for files per days or past-24hours periods
+0 past 24 hours
+1 24h to 48h
+  
+created
+find -cmin -5   created last 5 minutes
+  
+find / -type f -perm -u+s            Find all setuid files
+find / -type f -size +3M             files larger than 3MB
+find -size
+c bytes
+k kilobytes
+M megabytes
+G gigabytes
+  
+find -size 512k       = 512
+find -size +512k      > 512
+find -size -512k      < 512
+                            
+sudo find /usr -type f -size +5M -size -10M           Find all files between 5mb and 10mb in the /usr directory
+             
+find -perm 664       exactly perm
+find -perm -664       find bearly perm  
+find -perm -u=rw,g=rw,o=r       find bearly perm                          
+find -perm /664       find files with any of these perm                          
+                             
+find -name "f*" -size 512k          AND operator                     
+find -name "f*" -o -size 512k       OR operator  
+find -not -name "f*"                NOT operator
+ 
+Find files/directories under /var/log/ directory that the group can write to, but others cannot read or write to
+sudo find /var/log/ -perm -g=w ! -perm /o=rw                          
+! expr : True if ‘expr’ is false.
+not to be r or w. That means, if any of these two permissions, r or w match for others, the result has to be excluded
+  
+  
+================================================ CHMOD  - SETUID, SETGID, STICKY BIT
+
+
+[S ; s (with x)] SETUID -  makes an executable run with the privileges of the owner of the file
+[S ; s (with x)]SETGID -  makes an executable run with the privileges of the group of the file.
+[T ; t (with x)] STICKY BIT - This permission does not affect individual files. At the directory level, it restricts file deletion. 
+                              Only the owner (and root) of a file can remove the file within that directory.
+
+4 - r
+2 - w
+1 - x
+
+u - user (owner)
+g - group
+o - other 
+a - all (u, g, and o)
+
+sudo chmod g+rw
+sudo chmod u-w
+chmod go+rw 
+sudo chmod g+s     ensure that for all future files within /directory the group owner will be the same as set in /directory
+
+
+
+
+
+
 
 
 
