@@ -1,0 +1,43 @@
+
+============================== Containers
+
+sudo yum -y install @container-tools
+
+
+------------------ Auto-starting Rootless Containers
+1 - need a non-root user acc
+  useradd <username>
+  passwd <username>
+
+2- enable linger
+What is enable linger?
+If enabled for a specific user, a user manager is spawned for the user at boot and kept around after logouts. 
+This allows users who are not logged in to run long-running services.
+
+  loginctl enable-linger <username>
+  loginctl show-user linda        # verify Linger=yes
+
+3 - Need to ssh to the user. It needs to be a real login, su doesn't work.
+  ssh <username>@localhost
+  
+4 - Create a container
+  podman run -d --name mynginx -p 8081:80 docker.io/library/nginx
+
+5 - Generate a systemd unit file to autostart the container
+   mkdir -p ~/.config/systemd/user
+   cd ~/.config/systemd/user
+   podman generate systemd --name mynginx --files
+   cat container-mynginx.service          #check the content
+   systemctl --user daemon-reload
+   
+6 - automatically start the user container on boot
+  podman stop mynginx
+  systemctl --user enable --now container-mynginx.service
+  systemctl --user enable --now container-mynginx.service       # verify
+  podman ps                                                     #verify the container
+  
+  
+   
+   
+   
+   
