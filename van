@@ -1,2 +1,30 @@
 
-chvt2
+create new tty and select another tty
+sudo chvt 2
+
+see who is looged in, check other tty
+who OR w
+
+good options for man
+man -a passwd
+man 5 passwd
+man man
+man 5 intro
+man -k OR apropos   (sudo mandb)
+man -k user | grep 8    (it will list many option one of them it will be useradd)
+
+vim tutor
+
+merge command to one terminal. close and open the terminal again
+history -w
+
+echo '$PATH' OR  echo /$PATH
+$PATH
+echo "$PATH"
+/home/user:...
+
+findmnt   mounted
+lsblk     not mounted
+
+grep -Rl root *
+
