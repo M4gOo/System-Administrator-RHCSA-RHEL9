@@ -27,4 +27,36 @@ specific user for umask
  can be set in /etc/login.defs
  
  
+RHEL9 slaac support (ipv6) 
+radvd  #need to be installed
 
+/etc/hosts
+/etc/resolv.conf
+/etc/nsswitch.conf
+
+/etc/NetworkManager/system-connection      #configuration is stored
+sudo yum -y install NetworkManager
+systemctl enable NetworkManager --now
+
+good to use nmtui in the exam rather than nmcli
+make sure to check automatically connect and available to all users
+make sure to deactivated and active again
+add the ip and hostname to /etc/hosts
+
+rpm -qa show all packages currently installed
+rpm -qf /bin/ls
+
+better to use DNF
+
+dnf repolist           #check the repo list available
+dnf provides */mkfs.vfat
+rpm -qp --scripts httpd-...        # search for packages /etc/yum.repos.d/AppStream/Packages
+dnf search all seinfo
+dnf updatte kernel - update the old kernel and keep the old kernel as a backup
+
+subscription-manager register     (you need be online)
+user: <email_registered_in_redhatDeveloper>
+subscription-manager attach     #to be registered
+
+
+killall <type-process-name>
