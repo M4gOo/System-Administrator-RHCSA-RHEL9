@@ -478,7 +478,80 @@ sing root user, schedule below given command to run at 15:30 August 20 2024 by u
 Switch to the root user using sudo -i command, then execute command at '15:30 August 20 2024'
 Add /usr/bin/touch atscheduler line, enter,   then save it by pressing CTRL+D
 
+ 
+  
+================================== Permissions
 
+chmod 770 /path/{dir1,dir2}
+
+you can only delete the file if you are the owner of the file, or the owner of the directory that contains the file.
+when there is a stickybit!
+
+
+================================= Managing users and groups
+The main file used when users are created is /etc/login.defs. In this file many - but not all - default settings are defined for new user accounts.
+
+================================== Managing Processes , NICE, RENICE
+
+type & in the end
+jobs command for check process in the background
+fg <number> bring back the process to foreground
+ctrl+z to pause the process 
+bg to continue processes paused
+
+----- Change process priority
+start a process with different priprity
+nice -n -8 dd if=/dev/zero of=/dev/null &
+
+
+======================================= Check package
+
+dnf provides */killall
+
+
+========================================== SELinux
+
+a package that is needed to do decent SELinux troubleshooting
+yum -y install setroubleshoot-server    OR yum -y install setrouble*
+dnf install -y policycore* setrouble*                                    #best way
+
+
+---------------------------------- troubleshooting HTTP
+check status http
+install setrouble* and then check the messages in (/var/log/messages)
+
+------------------Managing SELinux File Context
+
+vi /etc/httpd/conf/httpd.conf
+change DocumentRoot
+<Directory>
+
+SELinux messages are written with the audit label AVC: 
+grep AVC /var/log/audit/audit.log | grep index.html
+
+In some cases it's also useful to see if sealert has generated output. 
+You'll find that in journalctl output: journalctl | grep sealert
+
+ls -Z /var/www
+ls -Z /web
+semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"         # man semanage fcontext (good to check the syntax)
+restorecon -Rv /web
+
+
+-------------------- Managing SELinux Port
+
+system not able to connect to httpd service port 82.     # need to change the port, check firewall as well
+semanage port -l | grep http
+semanage port -a -t http_port_t -p tcp 82
+semanage port -l | grep http_port_t    #to check if it worked adding port 82 the output should give: http_port_t   tcp   82, 80, 81, 443, 488, 8008, 8009, 8443, 9000
+firewall-cmd --permanent --add-port=82/tcp
+6 - firewall-cmd reload
+7 - firewall-cmd --list-all    #verify the rules
+check the conf file for http ### vi /etc/httpd/conf/httpd.conf
+#Supplement Configuration and check the configurations
+also go to Listen and change the port number
+sudo systemctl daemon-reload 
+systemctl restart httpd
 
 
 ============================== Containers
@@ -517,64 +590,6 @@ This allows users who are not logged in to run long-running services.
   systemctl --user enable --now container-mynginx.service
   systemctl --user status container-mynginx.service       # verify
   podman ps                                                     #verify the container
-  
-  
-================================== Permissions
-
-chmod 770 /path/{dir1,dir2}
-
-you can only delete the file if you are the owner of the file, or the owner of the directory that contains the file.
-when there is a stickybit!
-
-
-================================= Managing users and groups
-The main file used when users are created is /etc/login.defs. In this file many - but not all - default settings are defined for new user accounts.
-
-================================== Managing Processes , NICE, RENICE
-
-type & in the end
-jobs command for check process in the background
-fg <number> bring back the process to foreground
-ctrl+z to pause the process 
-bg to continue processes paused
-
------ Change process priority
-start a process with different priprity
-nice -n -8 dd if=/dev/zero of=/dev/null &
-
-
-======================================= Check package
-
-dnf provides */killall
-
-
-========================================== SELinux
-
-a package that is needed to do decent SELinux troubleshooting
-yum -y install setroubleshoot-server
-
-------------------Managing SELinux File Context
-
-vi /etc/httpd/conf/httpd.conf
-change DocumentRoot
-<Directory>
-
-SELinux messages are written with the audit label AVC: 
-grep AVC /var/log/audit/audit.log | grep index.html
-
-In some cases it's also useful to see if sealert has generated output. 
-You'll find that in journalctl output: journalctl | grep sealert
-
-ls -Z /var/www
-ls -Z /web
-semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
-restorecon -Rv /web
-
-
-
-
-
-
 
 
  =================================== NFS ======== AUTOMOUNT
