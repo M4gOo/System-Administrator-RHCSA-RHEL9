@@ -27,4 +27,21 @@ findmnt   mounted
 lsblk     not mounted
 
 grep -Rl root *
+grep 'ola$' file.txt   #bola, mola
+grep 'b.*t' file.txt   # bet, bot , boot
+egrep 'b.+t' file.txt   # bet, bot , boot
+egrep 'b.?t' file.txt   # bet, bot 
+grep 'b\{3\}t file.txt   #booot
+grep '^...$' file.txt     #3 characteres
+grep 'root\b' /          #specific this word
 
+to activate the root user set a password when installing the RHEL9
+root login ssh by default is disabled
+
+su                #is good to test accounts when you assign permissions
+su -              #open root shell
+sudo -i           #better option to open root shell
+su - <username>   #when you have priv you can access acc without write the password
+/etc/sudoers      #it is better to edit visudo (here does some checks to see everything is ok) or create drop-in file in /etc/sudoers.d (this wont be over written)
+
+Defaults timestamp_type=global,timestamp_timeout=60   #increase time to type the sudo password
