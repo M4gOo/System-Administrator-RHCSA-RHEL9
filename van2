@@ -1,0 +1,29 @@
+
+sudo vim /etc/sudoers.d/<username>
+
+by default RHEL server run sshd, ssh has access throught the firewall. But root access are denied using ssh
+
+Defaults timestamp_type=global,timestamp_timeout=60
+
+/etc/login.defs
+/etc/skel/<create-the-file-for-the-users-when-created>
+
+expiry date Y-M-D
+chage
+
+permissions 
+		        READ		WRITE			      EXECUTE
+file        open		modify			    run
+directory	  list		create/delete		cd
+
+specific user for umask
+ ~/.bashrc
+ 
+ the default umask for all users
+ /etc/bashrc 
+ 
+ the default umask for root
+ can be set in /etc/login.defs
+ 
+ 
+
