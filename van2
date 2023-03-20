@@ -60,3 +60,67 @@ subscription-manager attach     #to be registered
 
 
 killall <type-process-name>
+
+loginctl list-users
+loginctl list-session
+loginctl terminate-session
+
+nice -n 10 sleep 6000 &
+
+pkill -u <username>
+
+systemctl list-units -t timer
+systemctl list-unit-files
+systemctl list-dependencies sshd
+systemctl edit httpd        #[Service] Restart=always RestartSec=60s
+
+systemctl enable atd --now
+
+journalctl -p err
+journalctl -u sshd.service    #shows messages for sshd only
+
+ #making journal persistent
+ create directory /var/log/journal
+/etc/systemd/journal.conf
+            #Storage=auto                       #make sure there is this option
+ systemctl restart systemd-journald    OR journalctl --flush
+            
+Configuring rsyslogd
+this is another loggin srvice on redhat
+/etc/rsyslog.conf
+systemctl enable rsyslogd
+
+
+vim /etc/rsyslog.conf     #create an entry in rsyslog that writes all messages with severity of error 
+*.err   /var/log/error
+systemctl restart rsyslog.service
+logger -p err hello     #to check cat /var/log/error
+vi /etc/logrotate.conf              # rotated on a monthly basis
+
+stratis - next generationb volume managin filesystem that uses thin provisioning by default 
+
+XFS is the default filesystem
+fast and scalable
+size can be increase, not decreased
+
+EXT4 
+size can be increased and decreased
+
+VFAT offers multi-OS support
+used for shared devices (like thumb drivers)
+
+mount
+for temporary use /mnt
+findmnt
+extended partition cannot be mounted, only logical partition inside the extended partition can be mounted
+
+blkid - shows all devices with their naming attributes
+mkfs.* -L    is used to set a label while creating fs
+xfs_admin -L
+tune2fs -L   (ext)
+
+/etc/fstab    #this is for swap
+/dev/sda1   none swap defaults 0 0               #can be swap, but nowadays use none
+swapon -a
+free -m
+
