@@ -12,15 +12,16 @@ expiry date Y-M-D
 chage
 
 permissions 
-		        READ		WRITE			      EXECUTE
-file        open		modify			    run
-directory	  list		create/delete		cd
+            READ		WRITE			      EXECUTE
+file        open		modify			      run
+directory   list		create/delete		      cd
 
 specific user for umask
  ~/.bashrc
  
  the default umask for all users
  /etc/bashrc 
+ change the first umask in the shell script
  
  the default umask for root
  can be set in /etc/login.defs
