@@ -124,3 +124,4 @@ tune2fs -L   (ext)
 swapon -a
 free -m
 
+create a extended partition that includes all remaining disk space.
