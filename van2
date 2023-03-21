@@ -97,7 +97,6 @@ systemctl restart rsyslog.service
 logger -p err hello     #to check cat /var/log/error
 vi /etc/logrotate.conf              # rotated on a monthly basis
 
-stratis - next generationb volume managin filesystem that uses thin provisioning by default 
 
 XFS is the default filesystem
 fast and scalable
@@ -109,11 +108,6 @@ size can be increased and decreased
 VFAT offers multi-OS support
 used for shared devices (like thumb drivers)
 
-mount
-for temporary use /mnt
-findmnt
-extended partition cannot be mounted, only logical partition inside the extended partition can be mounted
-
 blkid - shows all devices with their naming attributes
 mkfs.* -L    is used to set a label while creating fs
 xfs_admin -L
@@ -124,4 +118,33 @@ tune2fs -L   (ext)
 swapon -a
 free -m
 
-create a extended partition that includes all remaining disk space.
+mount
+for temporary use /mnt
+findmnt
+extended partition cannot be mounted, only logical partition inside the extended partition can be mounted
+
+vgextend
+lvextend -r -L +1G    if dont use the -r neet do use other commands like resize2fs (ext) and xfs_growfs (xfs)
+
+reducing volume groups 
+1- use pvmove     #pvmove -v /dev/sdb2 /dev/sdb1
+2- vgreduce       #vgreduce volume_group_name /dev/sdb2
+
+
+stratis - next generationb volume managin filesystem that uses thin provisioning by default 
+implemented in user space, which makes API access possible. Important for container and cloud environment
+
+stratis pool need a minimal 4G
+stratisd stratis-cli
+systemctl enable stratisd --now
+in /etc/fstab defaults, x-systemd.requires=stratisd.service 0 0    #you dont need to add defaults
+
+stratis fs snapshot mypool myfs myfs-snapshot
+mkdir /mount/myfs-snapshot
+mount dev/stratis/mypool/myfs-snap /mount/myfs-snapshot
+
+
+
+
+
+
