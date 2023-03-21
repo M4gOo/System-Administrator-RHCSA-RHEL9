@@ -144,7 +144,58 @@ mkdir /mount/myfs-snapshot
 mount dev/stratis/mypool/myfs-snap /mount/myfs-snapshot
 
 
+cp /etc/[acf]* /myfiles/
 
 
+persistent changes 
+/etc/default/grub
+then compile the changes in grub.cfg
+grub2-mkconfig -o /boot/grub2/grug.cfg                      MBR system
+grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg             EFI system
+
+To know if you are in a MBR or EEFI system
+lsblk
+if your boot disc only as a boot partition
+in a EFI you will see a separete vfat partition that is mounted /boot/efi
+
+grub
+in the grub loader -> systemd.unit=multi-user.target
+in the emergency it will be only read-only file system
+mount -o remount,rw /
+ls /boot
+mount -a
 
 
+grub-loader
+init=/bin/bash
+mount -o remount,rw /
+passwd root
+touch /.autorelabel
+exec /usr/lib/systemd/systemd
+
+
+## enable debug shell  --- not good for security perspective
+systemctl enable --now debug-shell.service
+ctrl + alt +F9
+
+ssh-keygen
+ssh-copy-id
+ssh client persistent    /etc/ssh/ssh_config or ~/.ssh/ssh_config
+ssh -X <IP> <gedit>
+
+for server /etc/ssh/sshd_config
+port 22
+PermitRootLogin yes
+PubkeyAuthentication    enable by default
+PasswordAuthentication
+X11Forwarding   yes        allow to forward graphical sessions
+AllowUsers <username>
+After changes do systemctl restart sshd
+
+scp or sftp
+put /myfile
+get /yourfile
+exit to close an sftp session
+
+rsync is using ssh to synchronize files
+rsync -a * <IP>:/home/username
