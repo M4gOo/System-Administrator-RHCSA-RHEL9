@@ -199,3 +199,58 @@ exit to close an sftp session
 
 rsync is using ssh to synchronize files
 rsync -a * <IP>:/home/username
+
+enforcing=0 permissive
+enforcing=1 enforcing
+selinux=1 enabled SELinux
+
+restorecon or touch /.autorelabel
+
+install selinux man pages
+dnf -y install selinux-policy-doc
+
+man httpd_selinux   #can check some setsebool commands
+
+troubleshooting SELinux
+put in permissive (setenforce permissive OR setenforce 0) 
+grep AVC /var/log/audit/audit.log | grep ssh
+-a or -m (-m in case says already that context is already assign)
+
+semanage boolean -l -C   #check everything that has changed, show all the booleans have a non-default setting
+
+sealert with UUID message to advice on how to troubleshoot specific issues
+journalctl | grep sealert
+then get
+sealert -l 87346054838572334987 | less
+then you see some suggestions, leave the window and type what they suggested.
+instead use touch /.autorelabel it is better restorecon -Rv /
+
+to check if it is the selinux issue put  setenforce to permissive and try again if persist it is not/only the selinux problem it is something else
+try
+grep AVC /var/log/audit/audit.log
+journalctl | grep sealert    (dnf provides */sealert)    (dnf -y install setroubles* - then reboot)
+
+monitoring network sockets SS
+a network socket is a connection endpoint, consisting of an IP addres followed by a port
+ss -tu (tcp and udp)
+ss -tln (shows TCP taht are in listening state only)
+ss -tulpn 
+
+dnf -y install firewalld
+systemctl enable firewalld --now
+firewall-cmd --add-service http --permanent
+firewall-cmd --reload
+firewall-cmd --list-all
+firewall-cmd --get-services   #show all the services configured in firewalld
+
+after installation, a file anaconda-ks.cfg is created and saved in the root home directory. You can edit, once after editing
+run the command ksvalidator /root/anaconda-ks.cfg to verify file syntax
+
+
+hwclock --hctosys
+
+chronyd
+pool 2.rhel.pool.ntp.org iburst        - sserver
+server myserver.example.com iburst     - configure single ntp time source
+iburst                                 - permit fast sync
+chronyc sources
