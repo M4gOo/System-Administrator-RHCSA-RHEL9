@@ -1,9 +1,56 @@
 
+create new tty and select another tty
+sudo chvt 2
+
+see who is looged in, check other tty
+who OR w
+
+good options for man
+man -a passwd
+man 5 passwd
+man man
+man 5 intro
+man -k OR apropos   (sudo mandb)
+man -k user | grep 8    (it will list many option one of them it will be useradd)
+
+vim tutor
+
+merge command to one terminal. close and open the terminal again
+history -w
+
+echo '$PATH' OR  echo /$PATH
+$PATH
+echo "$PATH"
+/home/user:...
+
+findmnt   mounted
+lsblk     not mounted
+
+grep -Rl root *
+grep 'ola$' file.txt   #bola, mola
+grep 'b.*t' file.txt   # bet, bot , boot
+egrep 'b.+t' file.txt   # bet, bot , boot
+egrep 'b.?t' file.txt   # bet, bot 
+grep 'b\{3\}t file.txt   #booot
+grep '^...$' file.txt     #3 characteres
+grep 'root\b' /          #specific this word
+
+to activate the root user set a password when installing the RHEL9
+root login ssh by default is disabled
+
+su                #is good to test accounts when you assign permissions
+su -              #open root shell
+sudo -i           #better option to open root shell
+su - <username>   #when you have priv you can access acc without write the password
+/etc/sudoers      #it is better to edit visudo (here does some checks to see everything is ok) or create drop-in file in /etc/sudoers.d (this wont be over written)
+
+Defaults timestamp_type=global,timestamp_timeout=60   #increase time to type the sudo password
+
+
 sudo vim /etc/sudoers.d/<username>
 
 by default RHEL server run sshd, ssh has access throught the firewall. But root access are denied using ssh
 
-Defaults timestamp_type=global,timestamp_timeout=60
 
 /etc/login.defs
 /etc/skel/<create-the-file-for-the-users-when-created>
@@ -254,3 +301,71 @@ pool 2.rhel.pool.ntp.org iburst        - sserver
 server myserver.example.com iburst     - configure single ntp time source
 iburst                                 - permit fast sync
 chronyc sources
+
+
+NFS client
+dnf -y install nfs-utils
+showmount -e <nfsserver_or_IP>
+
+automount  - common used for home directories
+dnf -y install autofs
+/etc/auto.master    #add a line   /share  /etc/auto.share
+/etc/auto.share     #add a line   files -rw nfshare:/share
+systemctl enable autofs --now
+
+/etc/auto.master    #add a line   /homes  /etc/auto.homes
+/etc/auto.homes     #add a line   * -rw nfshare:/home/ldap/*
+systemctl restart autofs --now
+
+images optimized for use in RedHat environment use quay.io
+podman login registry.redhat.io   use developer credentials to login to a registry
+registry access is configured in /etc/containers/registries.conf
+dnf install container-tools
+podman info    #can checkk many info one of them is the registries by default
+podman login registry.access.redhat.com
+podman build -t namefortheimage .
+podman images    #verify the image built
+
+podman logs <container_ID>
+
+to pass variables use
+-e KEY=VALUE
+use skopeo
+skopeo inspect docker://quay.io/... THEN look at the USAGE (it will show about howwe should be using it)
+
+rootless containers can only map to non-privileged port (higheer than 1024)
+podman port -a
+firewall-cmd --add-port=8080/tcp --permanent
+
+bind-mounting
+it is important the file ownership
+rootless the uid need to match in the container as well, can use podman inspect on the image for check the user
+
+root user
+podman unshare run commands inside the container namespace
+to get uid mapping use podman unshare cat /proc/self/uid_map
+
+non-root user
+find th uid
+            podman inspect imagename
+            podman exec containername grep username /etc/passwd   (podman exec mydb grep mysql /etc/passwd) output it will be mysql:x:27:27:MySQL SEerver...
+podman unshare chown nn:nn directoryname     (mkdir mydb, then podman unshare chown 27:27 mydb)       
+
+loginctl enable-linger <username>   #need root priv.
+mkdir ~/.config/systemd/user
+cd ~/.config/systemd/user
+podman generate systemd --name myweb --files --new          # --new it will delete the stopped container and generate a new container
+edit the file ~/.config/systemd/user
+            WantedBy=default.target
+systemctl --user daemon-reload                  #--user need a ssh session to work
+systemctl --user enable myweb.service           #requires linger
+ps faux | less
+
+mkdir /etc/systemd/system  #for root
+
+sudo dnf provides */Containerfile
+sudo dnf install buildah-test
+sudo find / -name "Containerfile" -exec ls -l {} \;
+
+
+
