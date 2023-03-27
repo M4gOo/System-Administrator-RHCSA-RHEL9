@@ -378,3 +378,13 @@ alias dir='ls -ltr'
 Then to apply changes
 source .bash_profile
 
+
+cd /etc/yum.repos.d/repo/AppStream/Packages
+ls http*
+rpm -qp --script httpd...
+
+
+systemctl edit httpd
+[Service]
+Restart=always
+RestartSec=5s
