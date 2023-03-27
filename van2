@@ -46,8 +46,9 @@ su - <username>   #when you have priv you can access acc without write the passw
 
 Defaults timestamp_type=global,timestamp_timeout=60   #increase time to type the sudo password
 
-
 sudo vim /etc/sudoers.d/<username>
+linda ALL=/usr/sbin/useradd, /usr/bin/passwd, ! /usr/bin/passwd root
+
 
 by default RHEL server run sshd, ssh has access throught the firewall. But root access are denied using ssh
 
