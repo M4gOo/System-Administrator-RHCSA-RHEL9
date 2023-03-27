@@ -368,4 +368,12 @@ sudo dnf install buildah-test
 sudo find / -name "Containerfile" -exec ls -l {} \;
 
 
+============================================= exec =======================================
+
+.bash_profile
+export color=red
+export HIST_FILE_SIZE=2500
+alias dir='ls -ltr'
+Then to apply changes
+source .bash_profile
 
