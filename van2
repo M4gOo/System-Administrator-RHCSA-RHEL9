@@ -388,3 +388,7 @@ systemctl edit httpd
 [Service]
 Restart=always
 RestartSec=5s
+
+
+pvmove -v /dev/sda2 /dev/sda1
+vgreduce vggroup /dev/sda2
