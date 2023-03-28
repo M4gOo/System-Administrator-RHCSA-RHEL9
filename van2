@@ -348,7 +348,8 @@ to get uid mapping use podman unshare cat /proc/self/uid_map
 
 non-root user
 find th uid
-            podman inspect imagename
+            podman inspect imagename          # here you can find the UID of the user that runs the main application
+                        OR
             podman exec containername grep username /etc/passwd   (podman exec mydb grep mysql /etc/passwd) output it will be mysql:x:27:27:MySQL SEerver...
 podman unshare chown nn:nn directoryname     (mkdir mydb, then podman unshare chown 27:27 mydb)       
 
