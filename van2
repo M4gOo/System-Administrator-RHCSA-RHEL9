@@ -390,5 +390,12 @@ Restart=always
 RestartSec=5s
 
 
-pvmove -v /dev/sda2 /dev/sda1
-vgreduce vggroup /dev/sda2
+vi /etc/systemd/rsyslog.conf
+*.err   /var/log/error
+to test -> logger --help OR logger -p err message
+
+vi /etc/logrotate.conf
+cd /etc/logrotate.d/       #check one of the files and change for err
+
+cp /etc/[acf]* 
+
