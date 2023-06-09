@@ -1,0 +1,49 @@
+
+
+
+#!/bin/bash
+for name in $(ls /home/bob/assets/)
+do
+  echo "Cleaning file $name" >> /home/bob/clean.log
+  rm -rf /home/bob/assets/$name
+done
+
+
+#Write a shell script named exit_test.sh and save it in the directory /home/bob/. 
+#The script should echo Exiting with code 150. and set the exit code to 150.
+#Make your script executable.
+
+#!/bin/bash
+echo "Exiting with code 150."
+exit 150
+
+
+#Write a shell script named file_check.sh and save it in the directory /home/bob/. The script should check if the file /opt/assets/asset75 exists.
+#If the file exists, the script should echo File exists. Making a copy. It should then create the directory /home/bob/backups/ and copy the file /opt/assets/asset75 to the directory /home/bob/backups/. If the file is not found, the script should echo File not found.. Also make your script executable and run it.
+
+#!/bin/bash
+if [ -f "/opt/assets2/asset75" ]
+then
+  echo "File exists. Making a copy."
+  mkdir /home/bob/backups/
+  cp /opt/assets2/asset75 /home/bob/backups/
+else
+  echo "File not found."
+fi
+
+#Write a shell script named read_log.sh and save it in the directory /home/bob/.
+#The script should list the contents of /opt/assets3/ and for every entry, it should echo Read file $file. 
+#where $file is the name of a file from the list of files in /opt/assets3/. 
+#Each time this echo statement runs, it should append the output to a file located at /home/bob/read_log.txt.
+
+#!/bin/bash
+
+for file in $(ls /opt/assets3/)
+do
+    echo "Read file $file." >> /home/bob/read_log.txt
+done
+
+
+
+
+
