@@ -920,7 +920,10 @@ archive also store permissions and ownership info
  best way to use this utility is using tar --help
  
  #
- 
+
+tar -czvf name-of-archive.tar.gz /path/to/directory-or-file
+
+
  tar rf archive.tar file1    add a file to tar archive
  tar cf archive.tar Pictures/  create a tar file with entirely directory content to archive
  tar cf archive.tar /home/user/Pictures/  the content it be save with the path /home/user/Pictures/
