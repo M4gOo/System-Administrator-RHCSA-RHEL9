@@ -732,6 +732,8 @@ find /opt/assets/ -type f -exec grep -Iq . {} \; -print        find file that co
 #
 find /opt/assets -type f -perm 2664 -exec cp -p {} /home/bob/specialfiles/ \;
 
+ find /home/usersdata/ -type f -user bob -exec cp --parents {} /media \;
+--parents => preserve the directories path 
 
 SUID - 4
 SGID - 2
