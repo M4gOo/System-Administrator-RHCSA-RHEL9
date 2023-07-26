@@ -193,7 +193,9 @@ dnf/yum repolist    # to check the repolist
  
  
  --------------------------------------------- NTP
- chrony is an implementation of the Network Time Protocol (NTP)
+ chrony is an implementation of the Network Time Protocol (NTP)   
+
+ sudo yum install ntp 
  
  chrony consists of chronyd, a daemon that runs in user space
  chronyc a command line program which can be used to monitor the performance of chronyd and to change various operating parameters when it is running.
