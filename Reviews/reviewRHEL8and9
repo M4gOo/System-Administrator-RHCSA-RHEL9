@@ -19,7 +19,7 @@
 IP-server2 server2.example.com server2
 IP-server1 server1.example.com server1
  
- 
+
  #Automount
 ---SERVER1
 sudo yum -y install nfs-utils autofs
